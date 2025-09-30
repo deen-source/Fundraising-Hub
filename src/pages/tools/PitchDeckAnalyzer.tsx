@@ -6,11 +6,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
-import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight, BookOpen, Lightbulb, AlertCircle, Users, DollarSign, LineChart, Presentation } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 
 const PitchDeckAnalyzer = () => {
   const navigate = useNavigate();
@@ -98,20 +100,39 @@ const PitchDeckAnalyzer = () => {
               </p>
             </div>
 
-            {/* Input Card */}
-            <Card className="border-2 border-dashed border-primary/20 bg-card/50 backdrop-blur">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-primary" />
-                  Your Pitch Deck Content
-                </CardTitle>
-                <CardDescription>
-                  Paste your pitch deck content slide by slide. Include all key information: problem, solution, market, traction, team, and financials.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Textarea
-                  placeholder="Slide 1: Problem
+            {/* Tabs Interface */}
+            <Tabs defaultValue="analyzer" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-8">
+                <TabsTrigger value="analyzer" className="gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Analyzer
+                </TabsTrigger>
+                <TabsTrigger value="understanding" className="gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  Understanding Pitch Decks
+                </TabsTrigger>
+                <TabsTrigger value="best-practices" className="gap-2">
+                  <Lightbulb className="w-4 h-4" />
+                  Best Practices
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Analyzer Tab */}
+              <TabsContent value="analyzer" className="space-y-8">
+                {/* Input Card */}
+                <Card className="border-2 border-dashed border-primary/20 bg-card/50 backdrop-blur">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-primary" />
+                      Your Pitch Deck Content
+                    </CardTitle>
+                    <CardDescription>
+                      Paste your pitch deck content slide by slide. Include all key information: problem, solution, market, traction, team, and financials.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Textarea
+                      placeholder="Slide 1: Problem
 We're solving the $X billion problem of...
 
 Slide 2: Solution
@@ -128,34 +149,34 @@ Slide 4: Traction
 - X% MoM growth
 
 (Continue with all slides: Business Model, Competition, Team, Financials, Ask)"
-                  value={deckContent}
-                  onChange={(e) => setDeckContent(e.target.value)}
-                  rows={20}
-                  className="font-mono text-sm"
-                />
+                      value={deckContent}
+                      onChange={(e) => setDeckContent(e.target.value)}
+                      rows={20}
+                      className="font-mono text-sm"
+                    />
 
-                <Button 
-                  onClick={handleAnalyze} 
-                  disabled={loading || !deckContent.trim()} 
-                  className="w-full" 
-                  size="lg"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Analyzing Your Pitch Deck...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Analyze Pitch Deck
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
+                    <Button 
+                      onClick={handleAnalyze} 
+                      disabled={loading || !deckContent.trim()} 
+                      className="w-full" 
+                      size="lg"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Analyzing Your Pitch Deck...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          Analyze Pitch Deck
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
 
-            {analysis && (
+                {analysis && (
               <div className="space-y-6">
                 {/* Executive Summary Banner */}
                 <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-background border-2 border-primary/30 p-8">
@@ -409,8 +430,407 @@ Slide 4: Traction
                     </CardContent>
                   </Card>
                 )}
-              </div>
-            )}
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Understanding Pitch Decks Tab */}
+              <TabsContent value="understanding" className="space-y-6">
+                <Card className="border-2 border-primary/10">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <BookOpen className="w-5 h-5 text-primary" />
+                      Understanding Pitch Decks
+                    </CardTitle>
+                    <CardDescription>
+                      Learn what makes a pitch deck effective and how investors evaluate them
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="what-is">
+                        <AccordionTrigger className="text-left">
+                          <div className="flex items-center gap-2">
+                            <Presentation className="w-4 h-4 text-primary" />
+                            What is a Pitch Deck?
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 text-muted-foreground">
+                          <p>
+                            A pitch deck is a brief presentation that provides investors with an overview of your business. 
+                            It's typically 10-20 slides and is used during face-to-face or online meetings with potential 
+                            investors, customers, partners, and co-founders.
+                          </p>
+                          <div className="space-y-2">
+                            <p className="font-medium text-foreground">Purpose:</p>
+                            <ul className="space-y-1 ml-4">
+                              <li>• Tell a compelling story about your company</li>
+                              <li>• Demonstrate market opportunity and business viability</li>
+                              <li>• Show traction and momentum</li>
+                              <li>• Generate investor interest for a follow-up meeting</li>
+                            </ul>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="essential-slides">
+                        <AccordionTrigger className="text-left">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            Essential Slides Every Deck Needs
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 text-muted-foreground">
+                          <div className="grid gap-4">
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">1. Problem</div>
+                              <p className="text-sm">Clearly articulate the pain point you're solving. Make it relatable and urgent.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">2. Solution</div>
+                              <p className="text-sm">Show your product/service and how it elegantly solves the problem.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">3. Market Opportunity</div>
+                              <p className="text-sm">Demonstrate TAM, SAM, SOM with credible data sources. Show you're in a large, growing market.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">4. Traction</div>
+                              <p className="text-sm">Prove momentum with metrics: revenue, users, growth rate, partnerships, etc.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">5. Business Model</div>
+                              <p className="text-sm">Show how you make money. Include pricing, unit economics, and path to profitability.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">6. Competition</div>
+                              <p className="text-sm">Position yourself honestly against competitors. Show your unique advantages.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">7. Team</div>
+                              <p className="text-sm">Highlight relevant experience, domain expertise, and complementary skills.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">8. Financials</div>
+                              <p className="text-sm">3-5 year projections with key metrics. Show understanding of your unit economics.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-muted/50">
+                              <div className="font-medium text-foreground mb-2">9. The Ask</div>
+                              <p className="text-sm">Specific amount raising, use of funds, and what milestones you'll achieve.</p>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="investor-perspective">
+                        <AccordionTrigger className="text-left">
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-primary" />
+                            What Investors Look For
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 text-muted-foreground">
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                              <Target className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                              <div>
+                                <div className="font-medium text-foreground">Large Market Opportunity</div>
+                                <p className="text-sm">They want to see you're addressing a $1B+ market with strong growth potential.</p>
+                              </div>
+                            </div>
+                            <Separator />
+                            <div className="flex items-start gap-3">
+                              <TrendingUp className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                              <div>
+                                <div className="font-medium text-foreground">Traction & Momentum</div>
+                                <p className="text-sm">Evidence you can execute: growing revenue, user base, partnerships, or engagement.</p>
+                              </div>
+                            </div>
+                            <Separator />
+                            <div className="flex items-start gap-3">
+                              <Users className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                              <div>
+                                <div className="font-medium text-foreground">Strong Team</div>
+                                <p className="text-sm">Domain expertise, complementary skills, and ability to execute on the vision.</p>
+                              </div>
+                            </div>
+                            <Separator />
+                            <div className="flex items-start gap-3">
+                              <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                              <div>
+                                <div className="font-medium text-foreground">Differentiation</div>
+                                <p className="text-sm">Clear competitive advantage and defensibility. Why you'll win.</p>
+                              </div>
+                            </div>
+                            <Separator />
+                            <div className="flex items-start gap-3">
+                              <DollarSign className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                              <div>
+                                <div className="font-medium text-foreground">Business Model Clarity</div>
+                                <p className="text-sm">Proven or credible path to profitability with attractive unit economics.</p>
+                              </div>
+                            </div>
+                            <Separator />
+                            <div className="flex items-start gap-3">
+                              <LineChart className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                              <div>
+                                <div className="font-medium text-foreground">Realistic Yet Ambitious</div>
+                                <p className="text-sm">Projections that are aggressive but grounded in reality and clear assumptions.</p>
+                              </div>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="storytelling">
+                        <AccordionTrigger className="text-left">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-primary" />
+                            The Art of Storytelling
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 text-muted-foreground">
+                          <p>
+                            Great pitch decks tell a compelling story, not just present facts. Here's how to craft your narrative:
+                          </p>
+                          <div className="space-y-3">
+                            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                              <div className="font-medium text-foreground mb-2">Start with Why</div>
+                              <p className="text-sm">Begin with the problem and why it matters. Make investors feel the pain.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                              <div className="font-medium text-foreground mb-2">Show, Don't Tell</div>
+                              <p className="text-sm">Use visuals, customer quotes, and data instead of bullet points where possible.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                              <div className="font-medium text-foreground mb-2">Build Momentum</div>
+                              <p className="text-sm">Structure slides to build excitement. Each slide should lead naturally to the next.</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                              <div className="font-medium text-foreground mb-2">End Strong</div>
+                              <p className="text-sm">Close with a clear ask and compelling vision of what success looks like.</p>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      <AccordionItem value="common-formats">
+                        <AccordionTrigger className="text-left">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-primary" />
+                            Different Deck Formats
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 text-muted-foreground">
+                          <div className="space-y-4">
+                            <div className="p-4 rounded-lg border">
+                              <div className="font-medium text-foreground mb-2">Presentation Deck (10-15 slides)</div>
+                              <p className="text-sm mb-2">
+                                Designed to be presented in person or over video call. Visual, concise, meant to guide 
+                                conversation.
+                              </p>
+                              <p className="text-sm text-primary">Best for: Initial meetings, pitch competitions</p>
+                            </div>
+                            <div className="p-4 rounded-lg border">
+                              <div className="font-medium text-foreground mb-2">Reading Deck (15-25 slides)</div>
+                              <p className="text-sm mb-2">
+                                More detailed, can stand alone. Includes more context and explanation for someone 
+                                reading without you present.
+                              </p>
+                              <p className="text-sm text-primary">Best for: Cold outreach, email follow-ups</p>
+                            </div>
+                            <div className="p-4 rounded-lg border">
+                              <div className="font-medium text-foreground mb-2">One-Pager</div>
+                              <p className="text-sm mb-2">
+                                Ultra-condensed version on a single page. All key information at a glance.
+                              </p>
+                              <p className="text-sm text-primary">Best for: Quick overviews, leaving behind after meetings</p>
+                            </div>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Best Practices Tab */}
+              <TabsContent value="best-practices" className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Tips for Founders */}
+                  <Card className="border-2 border-success/20 bg-success/5">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-success">
+                        <Lightbulb className="w-5 h-5" />
+                        Tips for Founders
+                      </CardTitle>
+                      <CardDescription>
+                        Best practices to make your pitch deck stand out
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Lead with Traction</div>
+                            <p className="text-sm text-muted-foreground">
+                              Put your best metrics early. Show traction on slide 2-3 if you have strong numbers.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Use Customer Quotes</div>
+                            <p className="text-sm text-muted-foreground">
+                              Include real testimonials and use cases. Let customers tell your story.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Keep Design Clean</div>
+                            <p className="text-sm text-muted-foreground">
+                              One main point per slide. Use visuals over text. Professional but not overdone.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Show Unit Economics</div>
+                            <p className="text-sm text-muted-foreground">
+                              Include CAC, LTV, payback period. Prove you understand your business model.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Be Specific in The Ask</div>
+                            <p className="text-sm text-muted-foreground">
+                              "$2M to achieve $10M ARR in 18 months" beats "Raising Series A".
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Acknowledge Risks</div>
+                            <p className="text-sm text-muted-foreground">
+                              Address obvious concerns proactively. Show you've thought through challenges.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Practice Your Delivery</div>
+                            <p className="text-sm text-muted-foreground">
+                              Know your deck cold. Be ready to skip slides or go deep based on interest.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Common Mistakes */}
+                  <Card className="border-2 border-destructive/20 bg-destructive/5">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-destructive">
+                        <AlertCircle className="w-5 h-5" />
+                        Common Mistakes to Avoid
+                      </CardTitle>
+                      <CardDescription>
+                        Pitfalls that can hurt your fundraising efforts
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Too Much Text</div>
+                            <p className="text-sm text-muted-foreground">
+                              Dense slides lose attention. If investors are reading, they're not listening to you.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Burying the Lead</div>
+                            <p className="text-sm text-muted-foreground">
+                              Don't hide your best stuff. If you have $5M ARR, say it early and prominently.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Unrealistic Projections</div>
+                            <p className="text-sm text-muted-foreground">
+                              "Hockey stick" growth with no justification destroys credibility instantly.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Ignoring Competition</div>
+                            <p className="text-sm text-muted-foreground">
+                              "We have no competitors" is a red flag. Show you understand the landscape.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Vague Value Proposition</div>
+                            <p className="text-sm text-muted-foreground">
+                              "AI-powered platform" says nothing. Be specific about what you do and for whom.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">Missing Financials</div>
+                            <p className="text-sm text-muted-foreground">
+                              No revenue model or unit economics raises serious questions about business viability.
+                            </p>
+                          </div>
+                        </div>
+                        <Separator />
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
+                          <div>
+                            <div className="font-medium text-foreground">One-Size-Fits-All</div>
+                            <p className="text-sm text-muted-foreground">
+                              Tailor your deck to your audience. A seed deck is different from Series A.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
