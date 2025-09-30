@@ -14,6 +14,214 @@ export type Database = {
   }
   public: {
     Tables: {
+      email_campaigns: {
+        Row: {
+          body: string
+          created_at: string | null
+          filters: Json | null
+          id: string
+          name: string
+          scheduled_date: string | null
+          sent_count: number | null
+          sent_date: string | null
+          status: string | null
+          subject: string
+          target_investor_ids: string[] | null
+          template_id: string | null
+          total_recipients: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          name: string
+          scheduled_date?: string | null
+          sent_count?: number | null
+          sent_date?: string | null
+          status?: string | null
+          subject: string
+          target_investor_ids?: string[] | null
+          template_id?: string | null
+          total_recipients?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          name?: string
+          scheduled_date?: string | null
+          sent_count?: number | null
+          sent_date?: string | null
+          status?: string | null
+          subject?: string
+          target_investor_ids?: string[] | null
+          template_id?: string | null
+          total_recipients?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "email_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_templates: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          name: string
+          subject: string
+          template_type: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          name: string
+          subject: string
+          template_type?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          subject?: string
+          template_type?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      investor_interactions: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          interaction_date: string | null
+          interaction_type: string
+          investor_id: string
+          outcome: string | null
+          subject: string | null
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_date?: string | null
+          interaction_type: string
+          investor_id: string
+          outcome?: string | null
+          subject?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_date?: string | null
+          interaction_type?: string
+          investor_id?: string
+          outcome?: string | null
+          subject?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_interactions_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      investors: {
+        Row: {
+          check_size_max: number | null
+          check_size_min: number | null
+          created_at: string | null
+          email: string | null
+          firm_name: string | null
+          geographies: string[] | null
+          id: string
+          industries: string[] | null
+          last_contact_date: string | null
+          linkedin_url: string | null
+          name: string
+          next_follow_up_date: string | null
+          notes: string | null
+          pipeline_stage: string
+          priority: string | null
+          stage: string[] | null
+          tags: string[] | null
+          updated_at: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          check_size_max?: number | null
+          check_size_min?: number | null
+          created_at?: string | null
+          email?: string | null
+          firm_name?: string | null
+          geographies?: string[] | null
+          id?: string
+          industries?: string[] | null
+          last_contact_date?: string | null
+          linkedin_url?: string | null
+          name: string
+          next_follow_up_date?: string | null
+          notes?: string | null
+          pipeline_stage?: string
+          priority?: string | null
+          stage?: string[] | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          check_size_max?: number | null
+          check_size_min?: number | null
+          created_at?: string | null
+          email?: string | null
+          firm_name?: string | null
+          geographies?: string[] | null
+          id?: string
+          industries?: string[] | null
+          last_contact_date?: string | null
+          linkedin_url?: string | null
+          name?: string
+          next_follow_up_date?: string | null
+          notes?: string | null
+          pipeline_stage?: string
+          priority?: string | null
+          stage?: string[] | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           company_name: string | null
