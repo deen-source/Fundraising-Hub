@@ -1,0 +1,475 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { AuthGuard } from "@/components/AuthGuard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  ArrowLeft, 
+  Search, 
+  Filter, 
+  Plus, 
+  Upload,
+  Building2,
+  MapPin,
+  TrendingUp,
+  Clock,
+  Star
+} from "lucide-react";
+import { InvestorDialog } from "@/components/investor/InvestorDialog";
+import { BulkImportDialog } from "@/components/investor/BulkImportDialog";
+
+interface Investor {
+  id: string;
+  name: string;
+  firm_name: string | null;
+  email: string | null;
+  website: string | null;
+  linkedin_url: string | null;
+  geographies: string[] | null;
+  stage: string[] | null;
+  industries: string[] | null;
+  check_size_min: number | null;
+  check_size_max: number | null;
+  pipeline_stage: string;
+  priority: string;
+  tags: string[] | null;
+  notes: string | null;
+  last_contact_date: string | null;
+  next_follow_up_date: string | null;
+  contact_person: string | null;
+  contact_email: string | null;
+  warm_intro_path: string | null;
+  fit_score: number | null;
+  created_at: string;
+}
+
+const InvestorCRM = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [investors, setInvestors] = useState<Investor[]>([]);
+  const [filteredInvestors, setFilteredInvestors] = useState<Investor[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [pipelineFilter, setPipelineFilter] = useState<string>("all");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [stageFilter, setStageFilter] = useState<string>("all");
+  const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [selectedInvestor, setSelectedInvestor] = useState<Investor | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+
+  const pipelineStages = [
+    { value: "research", label: "Research", color: "bg-slate-500" },
+    { value: "target", label: "Target", color: "bg-blue-500" },
+    { value: "outreach", label: "Outreach", color: "bg-purple-500" },
+    { value: "engaged", label: "Engaged", color: "bg-yellow-500" },
+    { value: "meeting", label: "Meeting", color: "bg-orange-500" },
+    { value: "due_diligence", label: "Due Diligence", color: "bg-green-500" },
+    { value: "term_sheet", label: "Term Sheet", color: "bg-emerald-500" },
+    { value: "closed", label: "Closed", color: "bg-green-600" },
+    { value: "passed", label: "Passed", color: "bg-red-500" }
+  ];
+
+  useEffect(() => {
+    loadInvestors();
+  }, []);
+
+  useEffect(() => {
+    filterInvestors();
+  }, [investors, searchQuery, pipelineFilter, priorityFilter, stageFilter, locationFilter]);
+
+  const loadInvestors = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("investors")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setInvestors(data || []);
+    } catch (error: any) {
+      toast({
+        title: "Error loading investors",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterInvestors = () => {
+    let filtered = [...investors];
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(inv => 
+        inv.name.toLowerCase().includes(query) ||
+        inv.firm_name?.toLowerCase().includes(query) ||
+        inv.email?.toLowerCase().includes(query) ||
+        inv.contact_person?.toLowerCase().includes(query)
+      );
+    }
+
+    // Pipeline filter
+    if (pipelineFilter !== "all") {
+      filtered = filtered.filter(inv => inv.pipeline_stage === pipelineFilter);
+    }
+
+    // Priority filter
+    if (priorityFilter !== "all") {
+      filtered = filtered.filter(inv => inv.priority === priorityFilter);
+    }
+
+    // Stage filter
+    if (stageFilter !== "all") {
+      filtered = filtered.filter(inv => 
+        inv.stage?.includes(stageFilter)
+      );
+    }
+
+    // Location filter
+    if (locationFilter !== "all") {
+      filtered = filtered.filter(inv => 
+        inv.geographies?.some(geo => geo.toLowerCase().includes(locationFilter.toLowerCase()))
+      );
+    }
+
+    setFilteredInvestors(filtered);
+  };
+
+  const getPipelineColor = (stage: string) => {
+    return pipelineStages.find(s => s.value === stage)?.color || "bg-gray-500";
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "high": return "bg-red-500";
+      case "medium": return "bg-yellow-500";
+      case "low": return "bg-green-500";
+      default: return "bg-gray-500";
+    }
+  };
+
+  const handleAddInvestor = () => {
+    setSelectedInvestor(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditInvestor = (investor: Investor) => {
+    setSelectedInvestor(investor);
+    setIsDialogOpen(true);
+  };
+
+  const handleImportComplete = () => {
+    loadInvestors();
+    setIsImportDialogOpen(false);
+  };
+
+  // Get unique values for filters
+  const uniqueLocations = Array.from(new Set(
+    investors.flatMap(inv => inv.geographies || [])
+  )).sort();
+
+  const uniqueStages = Array.from(new Set(
+    investors.flatMap(inv => inv.stage || [])
+  )).sort();
+
+  return (
+    <AuthGuard>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/dashboard")}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  Investor CRM
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  Manage your investor pipeline and relationships
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => setIsImportDialogOpen(true)} variant="outline">
+                <Upload className="h-4 w-4 mr-2" />
+                Bulk Import
+              </Button>
+              <Button onClick={handleAddInvestor}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Investor
+              </Button>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Total Investors
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{investors.length}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Active Pipeline
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {investors.filter(inv => 
+                    ["outreach", "engaged", "meeting", "due_diligence"].includes(inv.pipeline_stage)
+                  ).length}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  High Priority
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {investors.filter(inv => inv.priority === "high").length}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  Follow-ups Due
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {investors.filter(inv => 
+                    inv.next_follow_up_date && new Date(inv.next_follow_up_date) <= new Date()
+                  ).length}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Filters */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filters
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search investors..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                <Select value={pipelineFilter} onValueChange={setPipelineFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pipeline Stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Stages</SelectItem>
+                    {pipelineStages.map(stage => (
+                      <SelectItem key={stage.value} value={stage.value}>
+                        {stage.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Priorities</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={stageFilter} onValueChange={setStageFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Investment Stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Investment Stages</SelectItem>
+                    {uniqueStages.map(stage => (
+                      <SelectItem key={stage} value={stage}>{stage}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={locationFilter} onValueChange={setLocationFilter}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Locations</SelectItem>
+                    {uniqueLocations.map(location => (
+                      <SelectItem key={location} value={location}>{location}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Investors Table */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Investors ({filteredInvestors.length})</CardTitle>
+              <CardDescription>
+                Click on an investor to view details and track interactions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="text-center py-8">Loading investors...</div>
+              ) : filteredInvestors.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No investors found. Add your first investor or import a database.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Firm</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Stage Focus</TableHead>
+                        <TableHead>Pipeline</TableHead>
+                        <TableHead>Priority</TableHead>
+                        <TableHead>Fit Score</TableHead>
+                        <TableHead>Last Contact</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredInvestors.map((investor) => (
+                        <TableRow 
+                          key={investor.id}
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleEditInvestor(investor)}
+                        >
+                          <TableCell className="font-medium">
+                            {investor.name}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Building2 className="h-4 w-4 text-muted-foreground" />
+                              {investor.firm_name || "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-muted-foreground" />
+                              {investor.geographies?.[0] || "-"}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {investor.stage?.slice(0, 2).map(stage => (
+                                <Badge key={stage} variant="secondary" className="text-xs">
+                                  {stage}
+                                </Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={getPipelineColor(investor.pipeline_stage)}>
+                              {pipelineStages.find(s => s.value === investor.pipeline_stage)?.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={getPriorityColor(investor.priority)}>
+                              {investor.priority}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {investor.fit_score ? (
+                              <div className="flex items-center gap-1">
+                                <Star className="h-4 w-4 text-yellow-500" />
+                                {investor.fit_score}
+                              </div>
+                            ) : (
+                              "-"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {investor.last_contact_date ? (
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-muted-foreground" />
+                                {new Date(investor.last_contact_date).toLocaleDateString()}
+                              </div>
+                            ) : (
+                              "-"
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <InvestorDialog
+        investor={selectedInvestor}
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSuccess={loadInvestors}
+      />
+
+      <BulkImportDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
+        onSuccess={handleImportComplete}
+      />
+    </AuthGuard>
+  );
+};
+
+export default InvestorCRM;

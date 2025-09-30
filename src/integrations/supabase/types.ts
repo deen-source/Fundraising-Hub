@@ -109,6 +109,45 @@ export type Database = {
         }
         Relationships: []
       }
+      investor_data_imports: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error_log: Json | null
+          failed_imports: number
+          file_name: string
+          id: string
+          status: string
+          successful_imports: number
+          total_records: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error_log?: Json | null
+          failed_imports?: number
+          file_name: string
+          id?: string
+          status?: string
+          successful_imports?: number
+          total_records?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error_log?: Json | null
+          failed_imports?: number
+          file_name?: string
+          id?: string
+          status?: string
+          successful_imports?: number
+          total_records?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       investor_interactions: {
         Row: {
           content: string | null
@@ -155,69 +194,114 @@ export type Database = {
       }
       investors: {
         Row: {
+          average_response_time: number | null
           check_size_max: number | null
           check_size_min: number | null
+          contact_email: string | null
+          contact_person: string | null
+          contact_phone: string | null
           created_at: string | null
           email: string | null
           firm_name: string | null
+          fit_score: number | null
           geographies: string[] | null
           id: string
+          import_source: string | null
           industries: string[] | null
+          investment_thesis: string | null
           last_contact_date: string | null
+          last_outreach_date: string | null
+          last_research_date: string | null
           linkedin_url: string | null
           name: string
+          next_action: string | null
+          next_action_date: string | null
           next_follow_up_date: string | null
           notes: string | null
           pipeline_stage: string
+          portfolio_companies: string[] | null
           priority: string | null
+          research_notes: string | null
+          response_rate: number | null
           stage: string[] | null
           tags: string[] | null
           updated_at: string | null
           user_id: string
+          warm_intro_path: string | null
           website: string | null
         }
         Insert: {
+          average_response_time?: number | null
           check_size_max?: number | null
           check_size_min?: number | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string | null
           email?: string | null
           firm_name?: string | null
+          fit_score?: number | null
           geographies?: string[] | null
           id?: string
+          import_source?: string | null
           industries?: string[] | null
+          investment_thesis?: string | null
           last_contact_date?: string | null
+          last_outreach_date?: string | null
+          last_research_date?: string | null
           linkedin_url?: string | null
           name: string
+          next_action?: string | null
+          next_action_date?: string | null
           next_follow_up_date?: string | null
           notes?: string | null
           pipeline_stage?: string
+          portfolio_companies?: string[] | null
           priority?: string | null
+          research_notes?: string | null
+          response_rate?: number | null
           stage?: string[] | null
           tags?: string[] | null
           updated_at?: string | null
           user_id: string
+          warm_intro_path?: string | null
           website?: string | null
         }
         Update: {
+          average_response_time?: number | null
           check_size_max?: number | null
           check_size_min?: number | null
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
           created_at?: string | null
           email?: string | null
           firm_name?: string | null
+          fit_score?: number | null
           geographies?: string[] | null
           id?: string
+          import_source?: string | null
           industries?: string[] | null
+          investment_thesis?: string | null
           last_contact_date?: string | null
+          last_outreach_date?: string | null
+          last_research_date?: string | null
           linkedin_url?: string | null
           name?: string
+          next_action?: string | null
+          next_action_date?: string | null
           next_follow_up_date?: string | null
           notes?: string | null
           pipeline_stage?: string
+          portfolio_companies?: string[] | null
           priority?: string | null
+          research_notes?: string | null
+          response_rate?: number | null
           stage?: string[] | null
           tags?: string[] | null
           updated_at?: string | null
           user_id?: string
+          warm_intro_path?: string | null
           website?: string | null
         }
         Relationships: []

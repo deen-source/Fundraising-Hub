@@ -18,10 +18,19 @@ import {
   LogOut,
   CheckCircle2,
   Target,
+  Users,
 } from 'lucide-react';
 
 const toolsByStage = {
   preparation: [
+    {
+      id: 'investor-crm',
+      title: 'Investor CRM',
+      description: 'Manage your investor pipeline',
+      icon: Users,
+      path: '/investor-crm',
+      dataKey: 'hasInvestors',
+    },
     {
       id: 'pitch-deck',
       title: 'Pitch Deck Analyzer',
@@ -112,6 +121,7 @@ const Dashboard = () => {
   const [userName, setUserName] = useState('');
   const [savedCalculations, setSavedCalculations] = useState<any[]>([]);
   const [termSheetAnalyses, setTermSheetAnalyses] = useState<any[]>([]);
+  const [investorCount, setInvestorCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [currentStage, setCurrentStage] = useState('preparation');
 
@@ -147,6 +157,17 @@ const Dashboard = () => {
 
     if (analyses) setTermSheetAnalyses(analyses);
 
+    // Load investor count
+    const { count: investorCount } = await supabase
+      .from('investors')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    // Store investor count in state if needed
+    if (investorCount && investorCount > 0) {
+      setInvestorCount(investorCount);
+    }
+
     setLoading(false);
   };
 
@@ -157,6 +178,7 @@ const Dashboard = () => {
 
   // Calculate completion status
   const completionStatus = {
+    hasInvestors: investorCount > 0,
     hasPitchDeck: termSheetAnalyses.length > 0,
     hasValuation: savedCalculations.some(c => c.tool_type === 'valuation'),
     hasBenchmarks: savedCalculations.some(c => c.tool_type === 'benchmarks'),
