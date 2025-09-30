@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,13 +9,16 @@ import { AuthGuard } from '@/components/AuthGuard';
 import { 
   ArrowLeft, Plus, X, PieChart as PieChartIcon, TrendingDown, 
   Users, DollarSign, Target, Info, AlertCircle, CheckCircle,
-  ArrowRight, Percent, Shield, Award, Layers, Calculator
+  ArrowRight, Percent, Shield, Award, Layers, Calculator, Save, FolderOpen
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Progress } from '@/components/ui/progress';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface Stakeholder {
   id: string;
@@ -48,6 +51,7 @@ interface OptionPool {
 
 const CapTable = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   
   const [stakeholders, setStakeholders] = useState<Stakeholder[]>([
     { 
@@ -81,6 +85,152 @@ const CapTable = () => {
   const [newRoundLiqPref, setNewRoundLiqPref] = useState('1');
   const [newRoundParticipating, setNewRoundParticipating] = useState(false);
   const [exitValuation, setExitValuation] = useState('');
+  
+  const [saveTitle, setSaveTitle] = useState('');
+  const [savedCalculations, setSavedCalculations] = useState<any[]>([]);
+  const [currentCalculationId, setCurrentCalculationId] = useState<string | null>(null);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showLoadDialog, setShowLoadDialog] = useState(false);
+
+  useEffect(() => {
+    fetchSavedCalculations();
+  }, []);
+
+  const fetchSavedCalculations = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('saved_calculations')
+      .select('*')
+      .eq('tool_type', 'cap_table')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching saved calculations:', error);
+      return;
+    }
+
+    setSavedCalculations(data || []);
+  };
+
+  const saveCalculation = async () => {
+    if (!saveTitle.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please enter a title for this cap table",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const calculationData = {
+      stakeholders,
+      fundingRounds,
+      optionPool,
+    };
+
+    if (currentCalculationId) {
+      const { error } = await supabase
+        .from('saved_calculations')
+        .update({
+          title: saveTitle,
+          calculation_data: calculationData as any,
+        })
+        .eq('id', currentCalculationId);
+
+      if (error) {
+        toast({
+          title: "Error saving",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      const { data, error } = await supabase
+        .from('saved_calculations')
+        .insert({
+          user_id: user.id,
+          tool_type: 'cap_table',
+          title: saveTitle,
+          calculation_data: calculationData as any,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Error saving",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setCurrentCalculationId(data.id);
+    }
+
+    toast({
+      title: "Saved successfully",
+      description: "Your cap table has been saved",
+    });
+
+    setShowSaveDialog(false);
+    fetchSavedCalculations();
+  };
+
+  const loadCalculation = (calculation: any) => {
+    const data = calculation.calculation_data;
+    setStakeholders(data.stakeholders || []);
+    setFundingRounds(data.fundingRounds || []);
+    setOptionPool(data.optionPool || {
+      totalShares: 1000000,
+      allocated: 250000,
+      exercised: 100000,
+      unvested: 150000,
+    });
+    setSaveTitle(calculation.title);
+    setCurrentCalculationId(calculation.id);
+    setShowLoadDialog(false);
+
+    toast({
+      title: "Loaded successfully",
+      description: `Loaded "${calculation.title}"`,
+    });
+  };
+
+  const deleteCalculation = async (id: string) => {
+    const { error } = await supabase
+      .from('saved_calculations')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        title: "Error deleting",
+        description: error.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Deleted successfully",
+      description: "Cap table has been deleted",
+    });
+
+    fetchSavedCalculations();
+    
+    if (currentCalculationId === id) {
+      setCurrentCalculationId(null);
+      setSaveTitle('');
+    }
+  };
 
   const totalShares = stakeholders.reduce((sum, s) => sum + s.shares, 0);
   const commonShares = stakeholders.filter(s => s.shareClass === 'common').reduce((sum, s) => sum + s.shares, 0);
@@ -244,14 +394,100 @@ const CapTable = () => {
         <StarField />
         
         <div className="relative z-10 container mx-auto px-4 py-8">
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/dashboard')} 
-            className="mb-6 gap-2 bg-white/5 border-white/10 hover:bg-white/10 text-white"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Button>
+          <div className="flex items-center justify-between mb-6">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/dashboard')} 
+              className="gap-2 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Button>
+            
+            <div className="flex gap-2">
+              <Dialog open={showLoadDialog} onOpenChange={setShowLoadDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="gap-2 bg-white/5 border-white/10 hover:bg-white/10 text-white">
+                    <FolderOpen className="w-4 h-4" />
+                    Load
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-gray-900 border-white/10 text-white">
+                  <DialogHeader>
+                    <DialogTitle>Load Cap Table</DialogTitle>
+                    <DialogDescription className="text-white/60">
+                      Select a saved cap table to load
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {savedCalculations.length === 0 ? (
+                      <p className="text-white/60 text-center py-4">No saved cap tables</p>
+                    ) : (
+                      savedCalculations.map((calc) => (
+                        <div key={calc.id} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
+                          <div>
+                            <div className="font-medium">{calc.title}</div>
+                            <div className="text-xs text-white/60">
+                              {new Date(calc.created_at).toLocaleDateString()}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => loadCalculation(calc)}
+                              className="bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30"
+                            >
+                              Load
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => deleteCalculation(calc.id)}
+                              className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                <DialogTrigger asChild>
+                  <Button className="gap-2 bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30">
+                    <Save className="w-4 h-4" />
+                    Save
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-gray-900 border-white/10 text-white">
+                  <DialogHeader>
+                    <DialogTitle>Save Cap Table</DialogTitle>
+                    <DialogDescription className="text-white/60">
+                      Enter a title for this cap table
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="save-title">Title</Label>
+                      <Input
+                        id="save-title"
+                        value={saveTitle}
+                        onChange={(e) => setSaveTitle(e.target.value)}
+                        placeholder="e.g., Series A - Q1 2024"
+                        className="bg-white/5 border-white/10 text-white"
+                      />
+                    </div>
+                    <Button onClick={saveCalculation} className="w-full bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30">
+                      {currentCalculationId ? 'Update' : 'Save'}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
 
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header Banner */}
