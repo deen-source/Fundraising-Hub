@@ -105,11 +105,21 @@ const DocumentTemplates = () => {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'Legal': return 'bg-blue-100 text-blue-800';
-      case 'Fundraising': return 'bg-green-100 text-green-800';
-      case 'Communication': return 'bg-purple-100 text-purple-800';
-      case 'Due Diligence': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'Legal': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'Fundraising': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'Communication': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
+      case 'Due Diligence': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'Legal': return '⚖️';
+      case 'Fundraising': return '💰';
+      case 'Communication': return '📧';
+      case 'Due Diligence': return '🔍';
+      default: return '📄';
     }
   };
 
@@ -130,12 +140,17 @@ const DocumentTemplates = () => {
 
           {/* Category Tabs */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-6">
-            <TabsList>
-              {categories.map(category => (
-                <TabsTrigger key={category} value={category}>
-                  {category === 'all' ? 'All Templates' : category}
-                </TabsTrigger>
-              ))}
+            <TabsList className="w-full justify-start overflow-x-auto">
+              {categories.map(category => {
+                const count = category === 'all' ? templates.length : templates.filter(t => t.category === category).length;
+                return (
+                  <TabsTrigger key={category} value={category} className="flex items-center gap-2">
+                    {category !== 'all' && <span>{getCategoryIcon(category)}</span>}
+                    {category === 'all' ? 'All Templates' : category}
+                    <Badge variant="secondary" className="ml-1">{count}</Badge>
+                  </TabsTrigger>
+                );
+              })}
             </TabsList>
           </Tabs>
 
@@ -152,24 +167,36 @@ const DocumentTemplates = () => {
               {filteredTemplates.map(template => (
                 <Card
                   key={template.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow"
+                  className="cursor-pointer hover:shadow-lg transition-all hover:-translate-y-1"
                   onClick={() => handleViewTemplate(template)}
                 >
                   <CardHeader>
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-primary/10 rounded-lg">
-                        {getTemplateIcon(template.template_type)}
+                      <div className="text-3xl">
+                        {getCategoryIcon(template.category)}
                       </div>
-                      <div className="flex-1">
-                        <CardTitle className="text-lg mb-2">{template.name}</CardTitle>
-                        <Badge className={getCategoryColor(template.category)}>
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-lg mb-2 line-clamp-2">{template.name}</CardTitle>
+                        <Badge variant="outline" className={getCategoryColor(template.category)}>
                           {template.category}
                         </Badge>
                       </div>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription>{template.description}</CardDescription>
+                    <CardDescription className="line-clamp-3">{template.description}</CardDescription>
+                    <div className="mt-4 flex gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewTemplate(template);
+                        }}
+                      >
+                        View Template
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}

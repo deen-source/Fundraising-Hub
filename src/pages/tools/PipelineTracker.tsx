@@ -4,15 +4,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
-import { ArrowLeft, Plus, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Plus, TrendingUp, Mail, Linkedin, Building2, DollarSign, Calendar, Target } from 'lucide-react';
 
 interface Investor {
   id: string;
   name: string;
   firm_name: string;
+  email: string;
+  linkedin_url: string;
   pipeline_stage: string;
   priority: string;
   check_size_min: number | null;
@@ -23,9 +27,11 @@ interface Investor {
 }
 
 const PIPELINE_STAGES = [
-  { id: 'research', name: 'Research', color: 'bg-gray-500' },
+  { id: 'research', name: 'Research', color: 'bg-slate-500' },
   { id: 'outreach', name: 'Outreach', color: 'bg-blue-500' },
-  { id: 'in_conversation', name: 'In Conversation', color: 'bg-yellow-500' },
+  { id: 'in_conversation', name: 'In Conversation', color: 'bg-purple-500' },
+  { id: 'meeting_scheduled', name: 'Meeting Scheduled', color: 'bg-indigo-500' },
+  { id: 'pitch_sent', name: 'Pitch Sent', color: 'bg-cyan-500' },
   { id: 'due_diligence', name: 'Due Diligence', color: 'bg-orange-500' },
   { id: 'committed', name: 'Committed', color: 'bg-green-500' },
   { id: 'passed', name: 'Passed', color: 'bg-red-500' },
@@ -36,6 +42,8 @@ const PipelineTracker = () => {
   const { toast } = useToast();
   const [investors, setInvestors] = useState<Investor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
 
   useEffect(() => {
     loadInvestors();
@@ -96,16 +104,12 @@ const PipelineTracker = () => {
     }
   };
 
-  const getInvestorsByStage = (stage: string) => {
-    return investors.filter(inv => inv.pipeline_stage === stage);
-  };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-300';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'low': return 'bg-gray-100 text-gray-800 border-gray-300';
-      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+      case 'high': return 'border-red-300 text-red-700 bg-red-50';
+      case 'medium': return 'border-yellow-300 text-yellow-700 bg-yellow-50';
+      case 'low': return 'border-green-300 text-green-700 bg-green-50';
+      default: return 'border-gray-300 text-gray-700 bg-gray-50';
     }
   };
 
@@ -117,6 +121,14 @@ const PipelineTracker = () => {
     return 'N/A';
   };
 
+  const filteredInvestors = investors.filter(investor => {
+    const matchesSearch = searchQuery === '' || 
+      investor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      investor.firm_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesPriority = priorityFilter === 'all' || investor.priority === priorityFilter;
+    return matchesSearch && matchesPriority;
+  });
+
   const totalInvestors = investors.length;
   const activeConversations = investors.filter(i => i.pipeline_stage === 'in_conversation').length;
   const committed = investors.filter(i => i.pipeline_stage === 'committed').length;
@@ -126,18 +138,42 @@ const PipelineTracker = () => {
       <div className="min-h-screen bg-background">
         <div className="container mx-auto py-8 px-4">
           {/* Header */}
-          <div className="flex items-center gap-4 mb-6">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold">Investor Pipeline Tracker</h1>
-              <p className="text-muted-foreground">Visual pipeline management for your fundraising</p>
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold">Investor Pipeline</h1>
+                <p className="text-muted-foreground">Track and manage your fundraising process</p>
+              </div>
+              <Button onClick={() => navigate('/investor-crm')}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Investor
+              </Button>
             </div>
-            <Button onClick={() => navigate('/investor-crm')}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Investor
-            </Button>
+
+            {/* Filters */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <Input
+                  placeholder="Search investors..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Priorities</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Stats */}
@@ -167,25 +203,23 @@ const PipelineTracker = () => {
             <div className="text-center py-12">Loading pipeline...</div>
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              <div className="flex gap-4 overflow-x-auto pb-4">
                 {PIPELINE_STAGES.map(stage => {
-                  const stageInvestors = getInvestorsByStage(stage.id);
+                  const stageInvestors = filteredInvestors.filter(inv => inv.pipeline_stage === stage.id);
                   return (
-                    <div key={stage.id} className="flex flex-col">
-                      <div className={`${stage.color} text-white p-3 rounded-t-lg font-semibold`}>
-                        <div className="flex justify-between items-center">
-                          <span>{stage.name}</span>
-                          <Badge variant="secondary" className="bg-white/20 text-white">
-                            {stageInvestors.length}
-                          </Badge>
-                        </div>
+                    <div key={stage.id} className="flex flex-col min-w-[320px]">
+                      <div className={`${stage.color} text-white p-3 rounded-t-lg font-semibold flex items-center justify-between`}>
+                        <span>{stage.name}</span>
+                        <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                          {stageInvestors.length}
+                        </Badge>
                       </div>
                       <Droppable droppableId={stage.id}>
                         {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
                             {...provided.droppableProps}
-                            className={`flex-1 p-2 border-x border-b rounded-b-lg min-h-[400px] ${
+                            className={`flex-1 p-3 border-x border-b rounded-b-lg min-h-[500px] space-y-3 ${
                               snapshot.isDraggingOver ? 'bg-accent' : 'bg-card'
                             }`}
                           >
@@ -200,45 +234,67 @@ const PipelineTracker = () => {
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    className={`mb-2 cursor-move hover:shadow-md transition-shadow ${
-                                      snapshot.isDragging ? 'shadow-lg rotate-2' : ''
+                                    className={`p-4 cursor-move transition-all ${
+                                      snapshot.isDragging ? 'shadow-lg ring-2 ring-primary rotate-2' : 'hover:shadow-md'
                                     }`}
-                                    onClick={() => navigate('/investor-crm')}
                                   >
-                                    <CardHeader className="p-3">
-                                      <CardTitle className="text-sm font-semibold">
-                                        {investor.name}
-                                      </CardTitle>
-                                      {investor.firm_name && (
-                                        <CardDescription className="text-xs">
-                                          {investor.firm_name}
-                                        </CardDescription>
-                                      )}
-                                    </CardHeader>
-                                    <CardContent className="p-3 pt-0 space-y-2">
-                                      <div className="flex items-center gap-2">
-                                        <Badge
-                                          variant="outline"
-                                          className={`text-xs ${getPriorityColor(investor.priority)}`}
-                                        >
-                                          {investor.priority}
-                                        </Badge>
-                                        {investor.fit_score && (
-                                          <Badge variant="outline" className="text-xs">
-                                            <TrendingUp className="h-3 w-3 mr-1" />
-                                            {investor.fit_score}%
-                                          </Badge>
+                                    <div className="space-y-3">
+                                      <div>
+                                        <p className="font-semibold text-sm mb-1">{investor.name}</p>
+                                        {investor.firm_name && (
+                                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                            <Building2 className="h-3 w-3" />
+                                            {investor.firm_name}
+                                          </div>
                                         )}
                                       </div>
-                                      <div className="text-xs text-muted-foreground">
-                                        {formatCheckSize(investor.check_size_min, investor.check_size_max)}
-                                      </div>
-                                      {investor.next_follow_up_date && (
-                                        <div className="text-xs text-muted-foreground">
-                                          Follow-up: {new Date(investor.next_follow_up_date).toLocaleDateString()}
-                                        </div>
+
+                                      {investor.priority && (
+                                        <Badge variant="outline" className={getPriorityColor(investor.priority)}>
+                                          {investor.priority}
+                                        </Badge>
                                       )}
-                                    </CardContent>
+
+                                      <div className="space-y-2 text-xs">
+                                        {(investor.check_size_min || investor.check_size_max) && (
+                                          <div className="flex items-center gap-1 text-muted-foreground">
+                                            <DollarSign className="h-3 w-3" />
+                                            {formatCheckSize(investor.check_size_min, investor.check_size_max)}
+                                          </div>
+                                        )}
+                                        
+                                        {investor.fit_score && (
+                                          <div className="flex items-center gap-1 text-muted-foreground">
+                                            <Target className="h-3 w-3" />
+                                            Fit Score: {investor.fit_score}%
+                                          </div>
+                                        )}
+
+                                        {investor.next_follow_up_date && (
+                                          <div className="flex items-center gap-1 text-muted-foreground">
+                                            <Calendar className="h-3 w-3" />
+                                            {new Date(investor.next_follow_up_date).toLocaleDateString()}
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      <div className="flex gap-2 pt-2 border-t">
+                                        {investor.email && (
+                                          <Button variant="ghost" size="sm" className="h-7 px-2" asChild>
+                                            <a href={`mailto:${investor.email}`}>
+                                              <Mail className="h-3 w-3" />
+                                            </a>
+                                          </Button>
+                                        )}
+                                        {investor.linkedin_url && (
+                                          <Button variant="ghost" size="sm" className="h-7 px-2" asChild>
+                                            <a href={investor.linkedin_url} target="_blank" rel="noopener noreferrer">
+                                              <Linkedin className="h-3 w-3" />
+                                            </a>
+                                          </Button>
+                                        )}
+                                      </div>
+                                    </div>
                                   </Card>
                                 )}
                               </Draggable>

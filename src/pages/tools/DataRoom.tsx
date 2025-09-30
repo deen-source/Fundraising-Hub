@@ -6,20 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Upload, FileText, Download, Trash2, FolderOpen, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { ArrowLeft, Upload, FileText, Download, Trash2, FolderOpen, Eye, Clock, Share2, File, Image as ImageIcon } from 'lucide-react';
 
 interface Document {
   id: string;
@@ -31,16 +24,18 @@ interface Document {
   description: string | null;
   uploaded_at: string;
   view_count: number;
+  last_viewed_at: string | null;
 }
 
 const FOLDERS = [
-  'Corporate Documents',
-  'Financial Documents',
-  'Legal Documents',
-  'Intellectual Property',
-  'Product & Technology',
-  'Customer & Market',
-  'Team',
+  { value: 'all', label: 'All Documents', icon: FolderOpen },
+  { value: 'Corporate Documents', label: 'Corporate Documents', icon: FileText },
+  { value: 'Financial Documents', label: 'Financial Documents', icon: FileText },
+  { value: 'Legal Documents', label: 'Legal Documents', icon: File },
+  { value: 'Intellectual Property', label: 'Intellectual Property', icon: FileText },
+  { value: 'Product & Technology', label: 'Product & Technology', icon: FileText },
+  { value: 'Customer & Market', label: 'Customer & Market', icon: FileText },
+  { value: 'Team', label: 'Team', icon: FileText },
 ];
 
 const DataRoom = () => {
@@ -49,13 +44,14 @@ const DataRoom = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
-  const [selectedFolder, setSelectedFolder] = useState<string>('Corporate Documents');
-  const [filterFolder, setFilterFolder] = useState<string>('all');
+  const [selectedFolder, setSelectedFolder] = useState<string>('all');
   const [uploading, setUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Upload form state
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadDescription, setUploadDescription] = useState('');
+  const [uploadFolderSelection, setUploadFolderSelection] = useState('Corporate Documents');
 
   useEffect(() => {
     loadDocuments();
@@ -81,6 +77,29 @@ const DataRoom = () => {
       setIsLoading(false);
     }
   };
+
+  const getFileIcon = (fileType: string) => {
+    if (fileType.includes('image')) return <ImageIcon className="h-5 w-5 text-blue-500" />;
+    if (fileType.includes('pdf')) return <FileText className="h-5 w-5 text-red-500" />;
+    if (fileType.includes('spreadsheet') || fileType.includes('excel')) return <FileText className="h-5 w-5 text-green-500" />;
+    return <File className="h-5 w-5 text-gray-500" />;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const filteredDocuments = documents.filter(doc => {
+    const matchesFolder = selectedFolder === 'all' || doc.folder === selectedFolder;
+    const matchesSearch = searchQuery === '' || 
+      doc.file_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFolder && matchesSearch;
+  });
 
   const handleFileUpload = async () => {
     if (!uploadFile) {
@@ -115,7 +134,7 @@ const DataRoom = () => {
           file_path: filePath,
           file_size: uploadFile.size,
           file_type: uploadFile.type,
-          folder: selectedFolder,
+          folder: uploadFolderSelection,
           description: uploadDescription || null,
         });
 
@@ -212,18 +231,6 @@ const DataRoom = () => {
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-  };
-
-  const filteredDocuments = filterFolder === 'all' 
-    ? documents 
-    : documents.filter(doc => doc.folder === filterFolder);
-
   const totalSize = documents.reduce((acc, doc) => acc + doc.file_size, 0);
   const totalViews = documents.reduce((acc, doc) => acc + doc.view_count, 0);
 
@@ -232,18 +239,28 @@ const DataRoom = () => {
       <div className="min-h-screen bg-background">
         <div className="container mx-auto py-8 px-4">
           {/* Header */}
-          <div className="flex items-center gap-4 mb-6">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold">Data Room Manager</h1>
-              <p className="text-muted-foreground">Organize and share due diligence documents</p>
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold">Data Room</h1>
+                <p className="text-muted-foreground">Organize and share due diligence documents</p>
+              </div>
+              <Button onClick={() => setUploadDialogOpen(true)}>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Document
+              </Button>
             </div>
-            <Button onClick={() => setUploadDialogOpen(true)}>
-              <Upload className="h-4 w-4 mr-2" />
-              Upload Document
-            </Button>
+
+            {/* Search */}
+            <Input
+              placeholder="Search documents..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="max-w-md"
+            />
           </div>
 
           {/* Stats */}
@@ -268,98 +285,105 @@ const DataRoom = () => {
             </Card>
           </div>
 
-          {/* Filter */}
-          <Card className="mb-6">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Documents</CardTitle>
-                  <CardDescription>Filter by folder to organize your data room</CardDescription>
-                </div>
-                <Select value={filterFolder} onValueChange={setFilterFolder}>
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="All Folders" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Folders</SelectItem>
-                    {FOLDERS.map(folder => (
-                      <SelectItem key={folder} value={folder}>{folder}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
+          {/* Folders and Documents */}
+          <Tabs value={selectedFolder} onValueChange={setSelectedFolder} className="w-full">
+            <TabsList className="w-full justify-start overflow-x-auto flex-wrap h-auto">
+              {FOLDERS.map((folder) => {
+                const Icon = folder.icon;
+                const count = documents.filter(d => folder.value === 'all' || d.folder === folder.value).length;
+                return (
+                  <TabsTrigger key={folder.value} value={folder.value} className="flex items-center gap-2">
+                    <Icon className="h-4 w-4" />
+                    {folder.label}
+                    <Badge variant="secondary" className="ml-1">{count}</Badge>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+
+            <TabsContent value={selectedFolder} className="mt-6">
               {isLoading ? (
-                <div className="text-center py-8">Loading documents...</div>
+                <div className="text-center py-12">Loading documents...</div>
               ) : filteredDocuments.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No documents yet. Upload your first document to get started.</p>
+                <div className="text-center py-12">
+                  <FolderOpen className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                  <p className="text-muted-foreground">
+                    {searchQuery ? 'No documents match your search' : 'No documents in this folder'}
+                  </p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Folder</TableHead>
-                      <TableHead>Size</TableHead>
-                      <TableHead>Views</TableHead>
-                      <TableHead>Uploaded</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredDocuments.map(doc => (
-                      <TableRow key={doc.id}>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4" />
-                            {doc.file_name}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredDocuments.map((doc) => (
+                    <Card key={doc.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start gap-3">
+                          {getFileIcon(doc.file_type)}
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-sm truncate">{doc.file_name}</CardTitle>
+                            <CardDescription className="text-xs mt-1">
+                              {doc.folder}
+                            </CardDescription>
                           </div>
-                          {doc.description && (
-                            <p className="text-xs text-muted-foreground mt-1">{doc.description}</p>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{formatFileSize(doc.file_size)}</span>
+                          <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
+                        </div>
+
+                        {doc.description && (
+                          <p className="text-xs text-muted-foreground line-clamp-2">{doc.description}</p>
+                        )}
+
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Eye className="h-3 w-3" />
+                          <span>{doc.view_count || 0} views</span>
+                          {doc.last_viewed_at && (
+                            <>
+                              <Clock className="h-3 w-3 ml-2" />
+                              <span>Last: {new Date(doc.last_viewed_at).toLocaleDateString()}</span>
+                            </>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            <FolderOpen className="h-3 w-3 mr-1" />
-                            {doc.folder}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{formatFileSize(doc.file_size)}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">
-                            <Eye className="h-3 w-3 mr-1" />
-                            {doc.view_count}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{new Date(doc.uploaded_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDownload(doc)}
-                            >
-                              <Download className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(doc)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                        </div>
+
+                        <div className="flex gap-2 pt-2 border-t">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1"
+                            onClick={() => handleDownload(doc)}
+                          >
+                            <Download className="h-4 w-4 mr-2" />
+                            Download
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              toast({
+                                title: 'Share',
+                                description: 'Sharing functionality coming soon',
+                              });
+                            }}
+                          >
+                            <Share2 className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(doc)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               )}
-            </CardContent>
-          </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
@@ -383,13 +407,13 @@ const DataRoom = () => {
             </div>
             <div>
               <Label htmlFor="folder">Folder</Label>
-              <Select value={selectedFolder} onValueChange={setSelectedFolder}>
+              <Select value={uploadFolderSelection} onValueChange={setUploadFolderSelection}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {FOLDERS.map(folder => (
-                    <SelectItem key={folder} value={folder}>{folder}</SelectItem>
+                  {FOLDERS.filter(f => f.value !== 'all').map(folder => (
+                    <SelectItem key={folder.value} value={folder.value}>{folder.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
