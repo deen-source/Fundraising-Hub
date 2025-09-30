@@ -6,23 +6,73 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
-import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight, BookOpen, Lightbulb, AlertCircle, Users, DollarSign, LineChart, Presentation } from 'lucide-react';
+import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight, BookOpen, Lightbulb, AlertCircle, Users, DollarSign, LineChart, Presentation, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Set up PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 const PitchDeckAnalyzer = () => {
   const navigate = useNavigate();
   const [deckContent, setDeckContent] = useState('');
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [extracting, setExtracting] = useState(false);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file');
+      return;
+    }
+
+    setUploadedFile(file);
+    setExtracting(true);
+
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      let extractedText = '';
+
+      // Extract text from each page
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        extractedText += `\n\nSlide ${i}:\n${pageText}`;
+      }
+
+      setDeckContent(extractedText.trim());
+      toast.success(`Extracted content from ${pdf.numPages} slides`);
+    } catch (error) {
+      console.error('PDF extraction error:', error);
+      toast.error('Failed to extract text from PDF');
+      setUploadedFile(null);
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setUploadedFile(null);
+    setDeckContent('');
+  };
 
   const handleAnalyze = async () => {
     if (!deckContent.trim()) {
-      toast.error('Please enter your pitch deck content');
+      toast.error('Please upload a pitch deck or enter content');
       return;
     }
 
@@ -124,13 +174,69 @@ const PitchDeckAnalyzer = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <FileText className="w-5 h-5 text-primary" />
-                      Your Pitch Deck Content
+                      Your Pitch Deck
                     </CardTitle>
                     <CardDescription>
-                      Paste your pitch deck content slide by slide. Include all key information: problem, solution, market, traction, team, and financials.
+                      Upload your pitch deck PDF or paste the content manually
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* File Upload Section */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Upload className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Upload PDF</span>
+                      </div>
+                      
+                      {uploadedFile ? (
+                        <div className="flex items-center justify-between p-4 rounded-lg border bg-background">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-5 h-5 text-primary" />
+                            <div>
+                              <div className="text-sm font-medium">{uploadedFile.name}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                              </div>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleRemoveFile}
+                            disabled={extracting || loading}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="relative">
+                          <Input
+                            type="file"
+                            accept=".pdf"
+                            onChange={handleFileUpload}
+                            disabled={extracting || loading}
+                            className="cursor-pointer"
+                          />
+                          {extracting && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-md">
+                              <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                              <span className="ml-2 text-sm">Extracting text...</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">Or paste content</span>
+                      </div>
+                    </div>
+
+                    {/* Manual Input Section */}
                     <Textarea
                       placeholder="Slide 1: Problem
 We're solving the $X billion problem of...
@@ -151,13 +257,14 @@ Slide 4: Traction
 (Continue with all slides: Business Model, Competition, Team, Financials, Ask)"
                       value={deckContent}
                       onChange={(e) => setDeckContent(e.target.value)}
-                      rows={20}
+                      rows={15}
                       className="font-mono text-sm"
+                      disabled={extracting}
                     />
 
                     <Button 
                       onClick={handleAnalyze} 
-                      disabled={loading || !deckContent.trim()} 
+                      disabled={loading || extracting || !deckContent.trim()} 
                       className="w-full" 
                       size="lg"
                     >
