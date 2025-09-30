@@ -190,9 +190,7 @@ const PitchDeckAnalyzer = () => {
   return (
     <AuthGuard>
       <div className="min-h-screen relative bg-background">
-        <StarField />
-        
-        <div className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
+        <div className="container mx-auto px-4 py-8 max-w-7xl">
           <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-6 gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard

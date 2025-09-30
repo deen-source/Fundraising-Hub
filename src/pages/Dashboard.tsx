@@ -181,16 +181,12 @@ const Dashboard = () => {
   return (
     <AuthGuard>
       <div className="min-h-screen relative">
-        <StarField />
-        
-        <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
-
-        <div className="relative z-10 container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-bold mb-2">
-                Welcome back, <span className="bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">{userName}</span>
+              <h1 className="text-3xl font-semibold mb-2">
+                Welcome back, {userName}
               </h1>
               <p className="text-muted-foreground">
                 Your fundraising journey at a glance
@@ -203,18 +199,17 @@ const Dashboard = () => {
           </div>
 
           {/* Overall Progress */}
-          <Card className="glass-card border-primary/20 mb-8">
+          <Card className="border mb-8">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <Target className="w-5 h-5 text-primary" />
+                  <CardTitle className="flex items-center gap-2 text-lg">
                     Fundraising Readiness
                   </CardTitle>
                   <CardDescription className="mt-1">Track your progress across all stages</CardDescription>
                 </div>
                 <div className="text-right">
-                  <div className="text-5xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                  <div className="text-4xl font-bold">
                     {overallCompletion}%
                   </div>
                   <div className="text-sm text-muted-foreground">Complete</div>
@@ -227,7 +222,7 @@ const Dashboard = () => {
                   <div key={stage.id} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${stage.color} flex items-center justify-center text-white font-bold text-sm`}>
+                        <div className="w-6 h-6 flex items-center justify-center bg-foreground text-background font-semibold text-xs">
                           {idx + 1}
                         </div>
                         <span className="font-medium">{stage.name}</span>
@@ -237,13 +232,13 @@ const Dashboard = () => {
                           {Math.round(stageCompletion[stage.id])}%
                         </span>
                         {stageCompletion[stage.id] === 100 && (
-                          <CheckCircle2 className="w-4 h-4 text-primary" />
+                          <span className="text-xs">✓</span>
                         )}
                       </div>
                     </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-2 bg-muted overflow-hidden">
                       <div
-                        className={`h-full bg-gradient-to-r ${stage.color} transition-all duration-500`}
+                        className="h-full bg-foreground transition-all duration-500"
                         style={{ width: `${stageCompletion[stage.id]}%` }}
                       />
                     </div>
@@ -259,11 +254,10 @@ const Dashboard = () => {
             {stages.map((stage) => (
               <div key={stage.id}>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className={`h-1 w-12 rounded-full bg-gradient-to-r ${stage.color}`} />
-                  <h2 className="text-2xl font-bold">{stage.name}</h2>
-                  <Badge variant="outline" className="ml-auto">
+                  <h2 className="text-xl font-semibold">{stage.name}</h2>
+                  <span className="ml-auto text-sm text-muted-foreground">
                     {Math.round(stageCompletion[stage.id])}% Complete
-                  </Badge>
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -274,20 +268,17 @@ const Dashboard = () => {
                     return (
                       <Card
                         key={tool.id}
-                        className="group hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2 hover:border-primary/20 cursor-pointer relative overflow-hidden"
+                        className="group hover:shadow-md transition-all duration-300 border-2 cursor-pointer relative"
                         onClick={() => navigate(tool.path)}
                       >
                         {isComplete && (
-                          <div className="absolute top-3 right-3 z-10">
-                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                          <div className="absolute top-3 right-3">
+                            <span className="text-sm">✓</span>
                           </div>
                         )}
                         
                         <CardHeader>
-                          <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${stage.color} shadow-lg mb-3`}>
-                            <Icon className="h-6 w-6 text-white" />
-                          </div>
-                          <CardTitle className="text-lg">{tool.title}</CardTitle>
+                          <CardTitle className="text-base">{tool.title}</CardTitle>
                           <CardDescription className="mt-2">{tool.description}</CardDescription>
                         </CardHeader>
                       </Card>
@@ -300,26 +291,26 @@ const Dashboard = () => {
 
           {/* Key Metrics */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="glass-card border-primary/20">
+            <Card className="border">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">{savedCalculations.length}</div>
+                  <div className="text-3xl font-bold mb-2">{savedCalculations.length}</div>
                   <div className="text-sm text-muted-foreground">Saved Calculations</div>
                 </div>
               </CardContent>
             </Card>
-            <Card className="glass-card border-primary/20">
+            <Card className="border">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">{termSheetAnalyses.length}</div>
+                  <div className="text-3xl font-bold mb-2">{termSheetAnalyses.length}</div>
                   <div className="text-sm text-muted-foreground">Pitch Deck Analyses</div>
                 </div>
               </CardContent>
             </Card>
-            <Card className="glass-card border-primary/20">
+            <Card className="border">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">8</div>
+                  <div className="text-3xl font-bold mb-2">8</div>
                   <div className="text-sm text-muted-foreground">Tools Available</div>
                 </div>
               </CardContent>

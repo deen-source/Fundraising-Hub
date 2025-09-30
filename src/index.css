@@ -31,27 +31,27 @@ All colors MUST be HSL.
     --accent: 0 0% 96%;
     --accent-foreground: 0 0% 9%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 0% 20%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 120 84% 40%;
+    --success: 0 0% 20%;
     --success-foreground: 0 0% 98%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 9%;
+    --warning: 0 0% 20%;
+    --warning-foreground: 0 0% 98%;
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
     --ring: 0 0% 9%;
 
-    --radius: 0.5rem;
+    --radius: 0rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 9% / 0.05), hsl(0 0% 20% / 0.03));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.8), hsl(0 0% 98% / 0.8));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 96% / 0.5), transparent);
+    --gradient-primary: none;
+    --gradient-card: none;
+    --gradient-hero: none;
     
-    --shadow-glow: 0 0 40px hsl(0 0% 0% / 0.1);
-    --shadow-card: 0 1px 3px hsl(0 0% 0% / 0.1), 0 1px 2px hsl(0 0% 0% / 0.06);
+    --shadow-glow: none;
+    --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.05);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -83,12 +83,12 @@ All colors MUST be HSL.
     --input: 0 0% 14%;
     --ring: 0 0% 83%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 98% / 0.05), hsl(0 0% 80% / 0.03));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 9% / 0.8), hsl(0 0% 11% / 0.8));
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 14% / 0.5), transparent);
+    --gradient-primary: none;
+    --gradient-card: none;
+    --gradient-hero: none;
     
-    --shadow-glow: 0 0 40px hsl(0 0% 100% / 0.1);
-    --shadow-card: 0 1px 3px hsl(0 0% 0% / 0.3), 0 1px 2px hsl(0 0% 0% / 0.2);
+    --shadow-glow: none;
+    --shadow-card: 0 1px 2px hsl(0 0% 0% / 0.2);
   }
 }
 
@@ -126,18 +126,18 @@ All colors MUST be HSL.
   }
 
   .glass-card {
-    background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(8px);
+    background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
   }
 
-  /* Notion-style button variants */
+  /* Minimal sharp buttons */
   .notion-button {
-    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+    @apply inline-flex items-center justify-center text-sm font-medium transition-colors;
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring;
     @apply disabled:pointer-events-none disabled:opacity-50;
     @apply bg-primary text-primary-foreground hover:bg-primary/90;
-    @apply h-10 px-4 py-2;
+    @apply h-9 px-3 py-2;
+    border-radius: 0;
   }
 
   .notion-button-outline {
