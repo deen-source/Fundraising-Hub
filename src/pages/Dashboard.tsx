@@ -289,33 +289,6 @@ const Dashboard = () => {
             ))}
           </div>
 
-          {/* Key Metrics */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="border">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">{savedCalculations.length}</div>
-                  <div className="text-sm text-muted-foreground">Saved Calculations</div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">{termSheetAnalyses.length}</div>
-                  <div className="text-sm text-muted-foreground">Pitch Deck Analyses</div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border">
-              <CardContent className="pt-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold mb-2">8</div>
-                  <div className="text-sm text-muted-foreground">Tools Available</div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
     </AuthGuard>
