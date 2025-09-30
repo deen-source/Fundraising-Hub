@@ -8,50 +8,87 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 214 100% 7%;
-    --foreground: 180 100% 95%;
+    /* Notion-inspired black and white design system */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
 
-    --card: 214 50% 12%;
-    --card-foreground: 180 100% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
 
-    --popover: 214 60% 10%;
-    --popover-foreground: 180 100% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
 
-    --primary: 174 70% 50%;
-    --primary-foreground: 214 100% 7%;
-    --primary-glow: 174 80% 60%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 0 0% 20%;
 
-    --secondary: 214 40% 20%;
-    --secondary-foreground: 180 100% 95%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 214 35% 15%;
-    --muted-foreground: 180 20% 65%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 174 70% 50%;
-    --accent-foreground: 214 100% 7%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
 
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 180 100% 95%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214 30% 18%;
-    --input: 214 30% 18%;
-    --ring: 174 70% 50%;
+    --success: 120 84% 40%;
+    --success-foreground: 0 0% 98%;
 
-    --radius: 0.75rem;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 9%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(174 70% 50% / 0.3), hsl(174 80% 60% / 0.2));
-    --gradient-card: linear-gradient(135deg, hsl(214 50% 12% / 0.95), hsl(214 40% 10% / 0.95));
-    --gradient-hero: radial-gradient(ellipse 80% 50% at 50% 40%, hsl(174 70% 50% / 0.15), transparent);
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
+
+    --radius: 0.5rem;
+
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 9% / 0.05), hsl(0 0% 20% / 0.03));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100% / 0.8), hsl(0 0% 98% / 0.8));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 96% / 0.5), transparent);
     
-    --shadow-glow: 0 0 40px hsl(174 70% 50% / 0.3);
-    --shadow-card: 0 10px 30px -10px hsl(214 100% 7% / 0.5);
+    --shadow-glow: 0 0 40px hsl(0 0% 0% / 0.1);
+    --shadow-card: 0 1px 3px hsl(0 0% 0% / 0.1), 0 1px 2px hsl(0 0% 0% / 0.06);
 
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 214 100% 7%;
-    --foreground: 180 100% 95%;
+    --background: 0 0% 9%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --primary-glow: 0 0% 80%;
+
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 63%;
+
+    --accent: 0 0% 14%;
+    --accent-foreground: 0 0% 98%;
+
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 0 0% 83%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 98% / 0.05), hsl(0 0% 80% / 0.03));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 9% / 0.8), hsl(0 0% 11% / 0.8));
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 14% / 0.5), transparent);
+    
+    --shadow-glow: 0 0 40px hsl(0 0% 100% / 0.1);
+    --shadow-card: 0 1px 3px hsl(0 0% 0% / 0.3), 0 1px 2px hsl(0 0% 0% / 0.2);
   }
 }
 
@@ -62,11 +99,7 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground antialiased;
-    background-image: 
-      radial-gradient(ellipse 80% 50% at 50% 40%, hsl(174 70% 50% / 0.15), transparent),
-      radial-gradient(circle at 20% 80%, hsl(174 60% 40% / 0.1), transparent),
-      radial-gradient(circle at 80% 20%, hsl(174 60% 40% / 0.1), transparent);
-    background-attachment: fixed;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   @keyframes float {
@@ -93,8 +126,27 @@ All colors MUST be HSL.
   }
 
   .glass-card {
-    background: linear-gradient(135deg, hsl(214 50% 12% / 0.7), hsl(214 40% 10% / 0.7));
-    backdrop-filter: blur(10px);
-    border: 1px solid hsl(214 30% 18%);
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--border));
+  }
+
+  /* Notion-style button variants */
+  .notion-button {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    @apply h-10 px-4 py-2;
+  }
+
+  .notion-button-outline {
+    @apply notion-button;
+    @apply border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .notion-button-ghost {
+    @apply notion-button;
+    @apply hover:bg-accent hover:text-accent-foreground;
   }
 }
