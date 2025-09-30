@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
-import { ArrowLeft, Loader2, AlertTriangle, Shield, TrendingUp, Target, DollarSign, Scale, FileText, Download, Lightbulb, Mail, CheckCircle, AlertCircle, Copy } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertTriangle, Shield, TrendingUp, Target, DollarSign, Scale, FileText, Download, Lightbulb, Mail, CheckCircle, AlertCircle, Copy, ArrowUpRight, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -198,49 +198,47 @@ Best regards,
 
   return (
     <AuthGuard>
-      <div className="min-h-screen relative">
+      <div className="min-h-screen relative bg-gradient-to-b from-[#1a2947] via-[#0f1729] to-background">
         <StarField />
-        <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
+        
+        {/* Cyan Banner */}
+        <div className="relative z-10 bg-cyan-400 text-gray-900 py-4 text-center font-medium">
+          AI-Powered Term Sheet Analysis • Launched 2025
+        </div>
 
-        <div className="relative z-10 container mx-auto px-4 py-8">
+        <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
           <Button
-            variant="outline"
+            variant="ghost"
             onClick={() => navigate('/dashboard')}
-            className="mb-6 gap-2"
+            className="mb-8 text-gray-400 hover:text-white"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
 
-          <div className="max-w-7xl mx-auto space-y-6">
-            <Card className="glass-card border-primary/20">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-3xl mb-2">AI-Powered Term Sheet Analysis</CardTitle>
-                    <CardDescription>
-                      Expert-level analysis powered by AI trained on 1000s of term sheets. Get instant insights,
-                      negotiation strategies, and financial modeling.
-                    </CardDescription>
+          {/* Input Section */}
+          <div className="mb-8">
+            <div className="text-sm text-cyan-400 mb-2 uppercase tracking-wider">Analysis Tool</div>
+            <h1 className="text-5xl md:text-6xl font-bold mb-8 leading-tight">
+              Analyze term sheets with AI-powered insights for smarter negotiation decisions.
+            </h1>
+            
+            <Card className="bg-white/5 backdrop-blur border-white/10">
+              <CardContent className="p-8">
+                <div className="flex justify-between items-center mb-4">
+                  <label className="text-sm font-medium text-gray-300">
+                    Paste your term sheet below
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-500">{termSheetText.length} characters</span>
+                    <Button onClick={loadExample} variant="outline" size="sm" className="gap-2 border-cyan-400/30 text-cyan-400 hover:bg-cyan-400/10">
+                      <Sparkles className="w-4 h-4" />
+                      Load Example
+                    </Button>
                   </div>
-                  <Button onClick={loadExample} variant="outline" size="sm" className="gap-2">
-                    <Lightbulb className="w-4 h-4" />
-                    Load Example
-                  </Button>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium">
-                      Paste your complete term sheet below
-                    </label>
-                    <span className="text-xs text-muted-foreground">
-                      {termSheetText.length} characters
-                    </span>
-                  </div>
-                  <Textarea
-                    placeholder="SERIES A PREFERRED STOCK TERM SHEET
+                <Textarea
+                  placeholder="SERIES A PREFERRED STOCK TERM SHEET
 
 Company: [Company Name]
 Amount: $5,000,000
@@ -248,368 +246,392 @@ Pre-Money Valuation: $20,000,000
 
 1. LIQUIDATION PREFERENCE
 2. DIVIDENDS
-3. ANTI-DILUTION PROVISIONS
-...
-
-Click 'Load Example' to see a sample term sheet"
-                    value={termSheetText}
-                    onChange={(e) => setTermSheetText(e.target.value)}
-                    rows={12}
-                    className="bg-background/50 font-mono text-sm resize-none"
-                  />
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground">
-                        💡 <strong>Pro tip:</strong> Include all sections for comprehensive analysis: valuation, liquidation preference,
-                        anti-dilution, board composition, voting rights, and protective provisions
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
+..."
+                  value={termSheetText}
+                  onChange={(e) => setTermSheetText(e.target.value)}
+                  rows={10}
+                  className="bg-black/20 border-white/10 text-white placeholder:text-gray-600 font-mono text-sm resize-none"
+                />
+                
+                <div className="flex gap-3 mt-6">
                   <Button
                     onClick={handleAnalyze}
                     disabled={loading || !termSheetText.trim()}
-                    className="flex-1"
+                    className="flex-1 bg-cyan-400 hover:bg-cyan-500 text-gray-900 font-semibold"
                     size="lg"
                   >
                     {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        AI Analyzing Term Sheet...
+                        Analyzing with AI...
                       </>
                     ) : (
                       <>
                         <Shield className="w-4 h-4 mr-2" />
-                        Analyze with AI
+                        Analyze Term Sheet
                       </>
                     )}
                   </Button>
                   
                   {analysis && (
-                    <Button variant="outline" size="lg" className="gap-2">
+                    <Button variant="outline" size="lg" className="gap-2 border-white/20 text-gray-300 hover:bg-white/5">
                       <Download className="w-4 h-4" />
-                      Export PDF
+                      Export
                     </Button>
                   )}
                 </div>
               </CardContent>
             </Card>
-
-            {analysis && (
-              <div className="space-y-6">
-                {/* Executive Summary */}
-                <Card className="glass-card p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6" />
-                    Executive Summary
-                  </h2>
-                  <p className="text-muted-foreground leading-relaxed mb-6">{analysis.summary}</p>
-                  <div className="grid md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
-                      <div className="text-4xl font-bold text-primary mb-1">
-                        {analysis.overall_score}/10
-                      </div>
-                      <div className="text-sm text-muted-foreground">Overall Score</div>
-                    </div>
-                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
-                      <div className="text-4xl font-bold text-destructive mb-1">
-                        {analysis.red_flags?.length || 0}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Critical Issues</div>
-                    </div>
-                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
-                      <div className="text-4xl font-bold text-orange-500 mb-1">
-                        {analysis.investor_friendliness}/10
-                      </div>
-                      <div className="text-sm text-muted-foreground">Investor Bias</div>
-                    </div>
-                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
-                      <div className="text-4xl font-bold text-blue-500 mb-1">
-                        {analysis.critical_terms?.length || 0}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Terms Analyzed</div>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Critical Issues Section */}
-                {analysis.red_flags && analysis.red_flags.length > 0 && (
-                  <Card className="glass-card p-6 border-destructive/50 bg-destructive/5">
-                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-destructive">
-                      <AlertTriangle className="w-6 h-6" />
-                      Critical Issues Requiring Immediate Attention
-                    </h2>
-                    <div className="space-y-4">
-                      {analysis.red_flags.map((flag: any, index: number) => (
-                        <Card key={index} className="p-5 bg-background border-destructive/20">
-                          <div className="space-y-3">
-                            <div className="flex items-start justify-between">
-                              <h3 className="font-semibold text-lg flex items-center gap-2">
-                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-destructive-foreground text-sm">
-                                  {index + 1}
-                                </span>
-                                {flag.clause}
-                              </h3>
-                              <Badge variant="destructive">
-                                {flag.severity}
-                              </Badge>
-                            </div>
-                            <div className="pl-8 space-y-3">
-                              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                                <h4 className="text-sm font-semibold mb-1 flex items-center gap-2 text-destructive">
-                                  <AlertTriangle className="w-4 h-4" />
-                                  The Issue
-                                </h4>
-                                <p className="text-sm text-muted-foreground">{flag.issue}</p>
-                              </div>
-                              <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                                <h4 className="text-sm font-semibold mb-1 flex items-center gap-2 text-orange-500">
-                                  <AlertCircle className="w-4 h-4" />
-                                  Potential Consequence
-                                </h4>
-                                <p className="text-sm text-muted-foreground">{flag.consequence}</p>
-                              </div>
-                              <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                                <h4 className="text-sm font-semibold mb-1 flex items-center gap-2 text-green-600">
-                                  <CheckCircle className="w-4 h-4" />
-                                  Recommended Solution
-                                </h4>
-                                <p className="text-sm text-muted-foreground">{flag.solution}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-
-                {/* Areas to Improve */}
-                {analysis.critical_terms && analysis.critical_terms.filter((t: any) => t.risk_level === 'Medium' || t.risk_level === 'High').length > 0 && (
-                  <Card className="glass-card p-6 border-yellow-500/50 bg-yellow-500/5">
-                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-yellow-600">
-                      <AlertCircle className="w-6 h-6" />
-                      Areas for Improvement
-                    </h2>
-                    <div className="space-y-3">
-                      {analysis.critical_terms
-                        .filter((term: any) => term.risk_level === 'Medium' || term.risk_level === 'High')
-                        .map((term: any, index: number) => (
-                          <Card key={index} className="p-5 bg-background">
-                            <div className="grid md:grid-cols-2 gap-4">
-                              <div>
-                                <div className="flex items-center justify-between mb-3">
-                                  <h3 className="font-semibold text-lg">{term.term}</h3>
-                                  <Badge variant={term.risk_level === 'High' ? 'destructive' : 'default'}>
-                                    {term.risk_level} risk
-                                  </Badge>
-                                </div>
-                                <div className="space-y-2">
-                                  <div>
-                                    <span className="text-sm font-medium">Current Value:</span>
-                                    <p className="text-sm text-muted-foreground">{term.value}</p>
-                                  </div>
-                                  <div>
-                                    <span className="text-sm font-medium">Market Standard:</span>
-                                    <p className="text-sm text-muted-foreground">{term.market_standard}</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div>
-                                <h4 className="font-semibold mb-2">Impact & Recommendation</h4>
-                                <p className="text-sm text-muted-foreground mb-3">{term.analysis}</p>
-                                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                                  <p className="text-sm">{term.negotiation_advice}</p>
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
-                        ))}
-                    </div>
-                  </Card>
-                )}
-
-                {/* Strong Points */}
-                {analysis.green_flags && analysis.green_flags.length > 0 && (
-                  <Card className="glass-card p-6 border-green-500/50 bg-green-500/5">
-                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-green-600">
-                      <CheckCircle className="w-6 h-6" />
-                      Strong Points & Favorable Terms
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      {analysis.green_flags.map((flag: string, index: number) => (
-                        <Card key={index} className="p-4 bg-background flex items-start gap-3">
-                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm">{flag}</p>
-                        </Card>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-
-                {/* Detailed Term Analysis */}
-                <Card className="glass-card p-6">
-                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <FileText className="w-6 h-6" />
-                    Detailed Term Analysis
-                  </h2>
-                  <Accordion type="single" collapsible className="w-full">
-                    {analysis.critical_terms?.map((term: any, index: number) => (
-                      <AccordionItem key={index} value={`term-${index}`}>
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center justify-between w-full pr-4">
-                            <div className="flex items-center gap-3">
-                              <Badge className={getRiskColor(term.risk_level)}>
-                                {term.risk_level}
-                              </Badge>
-                              <span className="font-semibold">{term.term}</span>
-                            </div>
-                            <span className="text-sm text-primary">{term.value}</span>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-4">
-                          <div className="grid md:grid-cols-2 gap-4">
-                            <div className="p-4 rounded-lg bg-background/50 border">
-                              <h4 className="font-semibold mb-2">Market Standard</h4>
-                              <p className="text-sm text-muted-foreground">{term.market_standard}</p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-background/50 border">
-                              <h4 className="font-semibold mb-2">Impact Analysis</h4>
-                              <p className="text-sm text-muted-foreground">{term.analysis}</p>
-                            </div>
-                          </div>
-                          <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                            <h4 className="font-semibold mb-2 flex items-center gap-2 text-primary">
-                              <Target className="w-4 h-4" />
-                              Negotiation Advice
-                            </h4>
-                            <p className="text-sm">{term.negotiation_advice}</p>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </Card>
-
-                {/* Negotiation Strategy */}
-                <Card className="glass-card p-6 bg-gradient-to-br from-blue-500/5 to-purple-500/5 border-blue-500/20">
-                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <Target className="w-6 h-6" />
-                    Negotiation Strategy & Action Plan
-                  </h2>
-                  {analysis.negotiation_priorities && analysis.negotiation_priorities.length > 0 ? (
-                    <div className="space-y-4">
-                      {analysis.negotiation_priorities.map((priority: any, index: number) => (
-                        <Card key={index} className="p-5 bg-background">
-                          <div className="flex items-start justify-between mb-3">
-                            <h3 className="font-semibold text-lg flex items-center gap-3">
-                              <Badge variant="default" className="text-lg px-3 py-1">
-                                #{priority.priority}
-                              </Badge>
-                              {priority.item}
-                            </h3>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-2"
-                              onClick={() => {
-                                const email = generateNegotiationEmail(priority);
-                                navigator.clipboard.writeText(email);
-                                toast.success('Email template copied to clipboard!');
-                              }}
-                            >
-                              <Copy className="w-4 h-4" />
-                              Copy Email
-                            </Button>
-                          </div>
-                          <div className="space-y-3 pl-12">
-                            <div className="p-3 rounded-lg bg-background/50 border">
-                              <h4 className="text-sm font-medium mb-1 text-muted-foreground">Why This Matters</h4>
-                              <p className="text-sm">{priority.rationale}</p>
-                            </div>
-                            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                              <h4 className="text-sm font-medium mb-1 text-primary">Suggested Approach</h4>
-                              <p className="text-sm">{priority.suggested_approach}</p>
-                            </div>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">No specific negotiation priorities identified.</p>
-                  )}
-                </Card>
-
-                {/* Financial Impact */}
-                <Card className="glass-card p-6">
-                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <DollarSign className="w-6 h-6" />
-                    Financial Impact Analysis
-                  </h2>
-                  {analysis.financial_scenarios && exitScenarios.length > 0 ? (
-                    <div className="space-y-6">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={exitScenarios}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                          <XAxis dataKey="name" stroke="#94a3b8" />
-                          <YAxis stroke="#94a3b8" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
-                          <Tooltip
-                            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                            formatter={(value: any) => formatCurrency(value)}
-                          />
-                          <Legend />
-                          <Bar dataKey="Your Return" fill="#22d3ee" />
-                          <Bar dataKey="Investor Return" fill="#06b6d4" />
-                        </BarChart>
-                      </ResponsiveContainer>
-
-                      <div className="grid md:grid-cols-3 gap-4">
-                        {Object.entries(analysis.financial_scenarios).map(([scenario, data]: [string, any]) => (
-                          <Card key={scenario} className="p-4 bg-muted/50">
-                            <h4 className="font-semibold mb-3 capitalize text-center">
-                              {scenario.replace('exit_', '').replace('x', 'x Exit')}
-                            </h4>
-                            <div className="space-y-3">
-                              <div className="text-center pb-2 border-b">
-                                <div className="text-xs text-muted-foreground mb-1">Company Value</div>
-                                <div className="text-xl font-bold text-primary">{formatCurrency(data.company_exit_value)}</div>
-                              </div>
-                              <div className="text-center">
-                                <div className="text-xs text-muted-foreground mb-1">Your Return</div>
-                                <div className="text-2xl font-bold text-green-500">{formatCurrency(data.founder_return)}</div>
-                                <div className="text-xs text-muted-foreground mt-1">{data.founder_percentage?.toFixed(2)}% ownership</div>
-                              </div>
-                              <div className="text-center pt-2 border-t">
-                                <div className="text-xs text-muted-foreground mb-1">Investor Return</div>
-                                <div className="text-xl font-bold text-blue-500">{formatCurrency(data.investor_return)}</div>
-                              </div>
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground">No financial scenarios available.</p>
-                  )}
-                </Card>
-
-                {/* Final Recommendation */}
-                <Card className="glass-card border-primary/20 border-2 bg-primary/5 p-6">
-                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6 text-primary" />
-                    Final Recommendation
-                  </h2>
-                  <div className="p-6 rounded-lg bg-primary/20 border border-primary">
-                    <p className="text-lg font-medium leading-relaxed">
-                      {analysis.final_recommendation}
-                    </p>
-                  </div>
-                </Card>
-              </div>
-            )}
           </div>
+
+          {/* Analysis Results */}
+          {analysis && (
+            <div className="space-y-8 bg-white rounded-lg p-8">
+              {/* Executive Summary Card */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+                <div className="text-sm text-gray-500 mb-2 uppercase tracking-wider">Executive Summary</div>
+                <h2 className="text-4xl font-bold mb-6 text-gray-900">
+                  {analysis.summary}
+                </h2>
+                
+                <div className="flex items-center gap-3 mb-8">
+                  <Badge className="bg-cyan-400 text-gray-900 hover:bg-cyan-500 rounded-full px-4 py-1">
+                    {analysis.deal_type}
+                  </Badge>
+                  <Badge className="bg-cyan-400 text-gray-900 hover:bg-cyan-500 rounded-full px-4 py-1">
+                    Score: {analysis.overall_score}/10
+                  </Badge>
+                  <ArrowUpRight className="w-5 h-5 text-gray-400" />
+                </div>
+
+                <div className="grid md:grid-cols-4 gap-6">
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-gray-900 mb-1">
+                      {analysis.overall_score}<span className="text-2xl text-gray-400">/10</span>
+                    </div>
+                    <div className="text-sm text-gray-500">Overall Quality</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-red-500 mb-1">
+                      {analysis.red_flags?.length || 0}
+                    </div>
+                    <div className="text-sm text-gray-500">Critical Issues</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-orange-500 mb-1">
+                      {analysis.investor_friendliness}<span className="text-2xl text-gray-400">/10</span>
+                    </div>
+                    <div className="text-sm text-gray-500">Investor Bias</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-gray-900 mb-1">
+                      {analysis.critical_terms?.length || 0}
+                    </div>
+                    <div className="text-sm text-gray-500">Terms Analyzed</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Critical Issues */}
+              {analysis.red_flags && analysis.red_flags.length > 0 && (
+                <div className="border-2 border-dashed border-red-200 rounded-lg p-8 bg-red-50/50">
+                  <div className="flex items-center gap-3 mb-6">
+                    <AlertTriangle className="w-6 h-6 text-red-500" />
+                    <div>
+                      <div className="text-sm text-gray-500 uppercase tracking-wider">Critical Issues</div>
+                      <h2 className="text-3xl font-bold text-gray-900">
+                        {analysis.red_flags.length} item{analysis.red_flags.length !== 1 ? 's' : ''} requiring immediate attention
+                      </h2>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {analysis.red_flags.map((flag: any, index: number) => (
+                      <div key={index} className="bg-white rounded-lg p-6 border border-red-200">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white text-sm font-bold">
+                              {index + 1}
+                            </span>
+                            <h3 className="font-bold text-xl text-gray-900">{flag.clause}</h3>
+                          </div>
+                          <Badge variant="destructive" className="rounded-full">
+                            {flag.severity}
+                          </Badge>
+                        </div>
+                        
+                        <div className="ml-11 space-y-4">
+                          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div className="text-xs font-semibold text-red-600 mb-2 uppercase tracking-wider">The Issue</div>
+                            <p className="text-sm text-gray-700">{flag.issue}</p>
+                          </div>
+                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <div className="text-xs font-semibold text-orange-600 mb-2 uppercase tracking-wider">Consequence</div>
+                            <p className="text-sm text-gray-700">{flag.consequence}</p>
+                          </div>
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div className="text-xs font-semibold text-green-600 mb-2 uppercase tracking-wider">Solution</div>
+                            <p className="text-sm text-gray-700">{flag.solution}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Areas to Improve */}
+              {analysis.critical_terms && analysis.critical_terms.filter((t: any) => t.risk_level === 'Medium' || t.risk_level === 'High').length > 0 && (
+                <div className="border-2 border-dashed border-yellow-200 rounded-lg p-8 bg-yellow-50/50">
+                  <div className="flex items-center gap-3 mb-6">
+                    <AlertCircle className="w-6 h-6 text-yellow-600" />
+                    <div>
+                      <div className="text-sm text-gray-500 uppercase tracking-wider">Areas to Improve</div>
+                      <h2 className="text-3xl font-bold text-gray-900">
+                        Terms that need negotiation
+                      </h2>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {analysis.critical_terms
+                      .filter((term: any) => term.risk_level === 'Medium' || term.risk_level === 'High')
+                      .map((term: any, index: number) => (
+                        <div key={index} className="bg-white rounded-lg p-6 border border-yellow-200">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-bold text-xl text-gray-900">{term.term}</h3>
+                            <Badge variant={term.risk_level === 'High' ? 'destructive' : 'default'} className="rounded-full">
+                              {term.risk_level} risk
+                            </Badge>
+                          </div>
+                          
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Current Value</div>
+                              <p className="text-sm text-gray-700 mb-4">{term.value}</p>
+                              <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Market Standard</div>
+                              <p className="text-sm text-gray-700">{term.market_standard}</p>
+                            </div>
+                            <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+                              <div className="text-xs font-semibold text-cyan-700 mb-2 uppercase tracking-wider">Recommendation</div>
+                              <p className="text-sm text-gray-700">{term.negotiation_advice}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Strong Points */}
+              {analysis.green_flags && analysis.green_flags.length > 0 && (
+                <div className="border-2 border-dashed border-green-200 rounded-lg p-8 bg-green-50/50">
+                  <div className="flex items-center gap-3 mb-6">
+                    <CheckCircle className="w-6 h-6 text-green-600" />
+                    <div>
+                      <div className="text-sm text-gray-500 uppercase tracking-wider">Strong Points</div>
+                      <h2 className="text-3xl font-bold text-gray-900">
+                        Favorable terms in your agreement
+                      </h2>
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {analysis.green_flags.map((flag: string, index: number) => (
+                      <div key={index} className="bg-white rounded-lg p-5 border border-green-200 flex items-start gap-3">
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-gray-700">{flag}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Detailed Analysis */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <FileText className="w-6 h-6 text-gray-600" />
+                  <div>
+                    <div className="text-sm text-gray-500 uppercase tracking-wider">Detailed Analysis</div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      Complete term breakdown
+                    </h2>
+                  </div>
+                </div>
+                
+                <Accordion type="single" collapsible className="w-full">
+                  {analysis.critical_terms?.map((term: any, index: number) => (
+                    <AccordionItem key={index} value={`term-${index}`} className="border-gray-200">
+                      <AccordionTrigger className="hover:no-underline py-4">
+                        <div className="flex items-center justify-between w-full pr-4">
+                          <div className="flex items-center gap-3">
+                            <Badge className={`${getRiskColor(term.risk_level)} rounded-full`}>
+                              {term.risk_level}
+                            </Badge>
+                            <span className="font-semibold text-gray-900">{term.term}</span>
+                          </div>
+                          <span className="text-sm text-gray-600 font-mono">{term.value}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-4 pb-6">
+                        <div className="grid md:grid-cols-2 gap-4 ml-4">
+                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Market Standard</div>
+                            <p className="text-sm text-gray-700">{term.market_standard}</p>
+                          </div>
+                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Impact Analysis</div>
+                            <p className="text-sm text-gray-700">{term.analysis}</p>
+                          </div>
+                        </div>
+                        <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4 ml-4 mt-4">
+                          <div className="text-xs font-semibold text-cyan-700 mb-2 uppercase tracking-wider flex items-center gap-2">
+                            <Target className="w-4 h-4" />
+                            Negotiation Advice
+                          </div>
+                          <p className="text-sm text-gray-700">{term.negotiation_advice}</p>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+
+              {/* Negotiation Strategy */}
+              <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 bg-blue-50/50">
+                <div className="flex items-center gap-3 mb-6">
+                  <Target className="w-6 h-6 text-blue-600" />
+                  <div>
+                    <div className="text-sm text-gray-500 uppercase tracking-wider">Negotiation Strategy</div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      Action plan & talking points
+                    </h2>
+                  </div>
+                </div>
+                
+                {analysis.negotiation_priorities && analysis.negotiation_priorities.length > 0 ? (
+                  <div className="space-y-4">
+                    {analysis.negotiation_priorities.map((priority: any, index: number) => (
+                      <div key={index} className="bg-white rounded-lg p-6 border border-blue-200">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Badge className="bg-blue-500 text-white hover:bg-blue-600 rounded-full text-base px-4 py-1">
+                              #{priority.priority}
+                            </Badge>
+                            <h3 className="font-bold text-xl text-gray-900">{priority.item}</h3>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2 border-gray-300 text-gray-700 hover:bg-gray-100"
+                            onClick={() => {
+                              const email = generateNegotiationEmail(priority);
+                              navigator.clipboard.writeText(email);
+                              toast.success('Email template copied!');
+                            }}
+                          >
+                            <Copy className="w-4 h-4" />
+                            Copy Email
+                          </Button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Why This Matters</div>
+                            <p className="text-sm text-gray-700">{priority.rationale}</p>
+                          </div>
+                          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <div className="text-xs font-semibold text-blue-600 mb-2 uppercase tracking-wider">Suggested Approach</div>
+                            <p className="text-sm text-gray-700">{priority.suggested_approach}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">No specific negotiation priorities identified.</p>
+                )}
+              </div>
+
+              {/* Financial Impact */}
+              {analysis.financial_scenarios && exitScenarios.length > 0 && (
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <DollarSign className="w-6 h-6 text-gray-600" />
+                    <div>
+                      <div className="text-sm text-gray-500 uppercase tracking-wider">Financial Impact</div>
+                      <h2 className="text-3xl font-bold text-gray-900">
+                        Exit scenario modeling
+                      </h2>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={exitScenarios}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis dataKey="name" stroke="#6b7280" />
+                        <YAxis stroke="#6b7280" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
+                        <Tooltip
+                          contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                          formatter={(value: any) => formatCurrency(value)}
+                        />
+                        <Bar dataKey="Your Return" fill="#22d3ee" radius={[8, 8, 0, 0]} />
+                        <Bar dataKey="Investor Return" fill="#06b6d4" radius={[8, 8, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {Object.entries(analysis.financial_scenarios).map(([scenario, data]: [string, any]) => (
+                      <div key={scenario} className="bg-white rounded-lg p-6 border border-gray-200">
+                        <div className="text-center mb-4">
+                          <h4 className="font-bold text-lg text-gray-900 mb-1 capitalize">
+                            {scenario.replace('exit_', '').replace('x', 'x Exit')}
+                          </h4>
+                          <div className="text-3xl font-bold text-gray-900">{formatCurrency(data.company_exit_value)}</div>
+                          <div className="text-xs text-gray-500">Company Value</div>
+                        </div>
+                        
+                        <div className="space-y-3 pt-4 border-t border-gray-200">
+                          <div className="flex justify-between">
+                            <span className="text-sm text-gray-600">Your Return</span>
+                            <span className="text-sm font-bold text-green-600">{formatCurrency(data.founder_return)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-gray-600">Your Ownership</span>
+                            <span className="text-sm font-bold text-gray-900">{data.founder_percentage?.toFixed(2)}%</span>
+                          </div>
+                          <div className="flex justify-between pt-2 border-t border-gray-100">
+                            <span className="text-sm text-gray-600">Investor Return</span>
+                            <span className="text-sm font-bold text-blue-600">{formatCurrency(data.investor_return)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Final Recommendation */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gradient-to-br from-cyan-50 to-blue-50">
+                <div className="flex items-center gap-3 mb-4">
+                  <TrendingUp className="w-6 h-6 text-gray-600" />
+                  <div>
+                    <div className="text-sm text-gray-500 uppercase tracking-wider">Final Recommendation</div>
+                    <h2 className="text-3xl font-bold text-gray-900">
+                      Our verdict
+                    </h2>
+                  </div>
+                </div>
+                <div className="bg-white rounded-lg p-6 border border-gray-200">
+                  <p className="text-lg leading-relaxed text-gray-700">
+                    {analysis.final_recommendation}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </AuthGuard>
