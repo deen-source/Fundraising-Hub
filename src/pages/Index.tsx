@@ -14,8 +14,6 @@ const tools = [
     title: 'Term Sheet Checker',
     description: 'AI-powered analysis of term sheets with detailed explanations of every clause and red flag detection.',
     path: '/tools/term-sheet',
-    gradient: 'from-blue-500/10 to-cyan-500/10',
-    iconGradient: 'from-blue-500 to-cyan-500',
     value: '98%',
     metric: 'accuracy rate',
     input: 'Upload term sheet',
@@ -26,8 +24,6 @@ const tools = [
     title: 'Metric Benchmarks',
     description: 'Compare your startup metrics against industry standards and get actionable insights for improvement.',
     path: '/tools/benchmarks',
-    gradient: 'from-purple-500/10 to-pink-500/10',
-    iconGradient: 'from-purple-500 to-pink-500',
     value: '50K+',
     metric: 'startups benchmarked',
     input: 'Your metrics',
@@ -38,8 +34,6 @@ const tools = [
     title: 'SAFE Calculator',
     description: 'Calculate post-money valuation, dilution, and ownership after SAFE note conversions with multiple scenarios.',
     path: '/tools/safe-calculator',
-    gradient: 'from-green-500/10 to-emerald-500/10',
-    iconGradient: 'from-green-500 to-emerald-500',
     value: 'Instant',
     metric: 'calculations',
     input: 'SAFE terms',
@@ -50,8 +44,6 @@ const tools = [
     title: 'Cap Table Manager',
     description: 'Visualize ownership structure, model new investments, and track dilution across funding rounds.',
     path: '/tools/cap-table',
-    gradient: 'from-orange-500/10 to-red-500/10',
-    iconGradient: 'from-orange-500 to-red-500',
     value: 'Live',
     metric: 'scenario modeling',
     input: 'Stakeholder data',
@@ -62,8 +54,6 @@ const tools = [
     title: 'Valuation Calculator',
     description: 'Multiple valuation methods including DCF, Revenue Multiple, and VC Method with detailed analysis.',
     path: '/tools/valuation',
-    gradient: 'from-indigo-500/10 to-blue-500/10',
-    iconGradient: 'from-indigo-500 to-blue-500',
     value: '3',
     metric: 'valuation methods',
     input: 'Financial data',
@@ -74,8 +64,6 @@ const tools = [
     title: 'Pitch Deck Analyzer',
     description: 'Get comprehensive AI feedback on your pitch deck with slide-by-slide analysis and recommendations.',
     path: '/tools/pitch-deck',
-    gradient: 'from-pink-500/10 to-rose-500/10',
-    iconGradient: 'from-pink-500 to-rose-500',
     value: 'AI',
     metric: 'powered insights',
     input: 'Upload deck',
@@ -86,8 +74,6 @@ const tools = [
     title: 'Dilution Calculator',
     description: 'Model ownership dilution across multiple funding rounds with option pool scenarios and waterfall analysis.',
     path: '/tools/dilution',
-    gradient: 'from-teal-500/10 to-cyan-500/10',
-    iconGradient: 'from-teal-500 to-cyan-500',
     value: '10+',
     metric: 'rounds supported',
     input: 'Funding rounds',
@@ -145,37 +131,28 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative bg-background">
-      <StarField />
-      
-      <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
-
-      <div className="relative z-10">
+      <div className="container mx-auto px-4 py-12">
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-20 md:py-32">
+        <section className="py-20 md:py-32">
           <div className="text-center max-w-5xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-in">
-              <Sparkles className="w-4 h-4 text-primary" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-muted border border-border mb-8">
               <span className="text-sm font-medium">AI-Powered Investment Tools for Founders</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight animate-fade-in">
-              The Complete{' '}
-              <span className="bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent">
-                Founder Toolkit
-              </span>{' '}
-              for Raising Capital
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              The Complete Founder Toolkit for Raising Capital
             </h1>
 
-            <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto animate-fade-in">
+            <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
               Professional-grade tools for term sheet analysis, cap table management, valuation modeling, 
               and fundraising planning—all in one place, powered by AI.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
                 onClick={() => navigate('/auth')}
-                className="text-lg px-8 py-6 shadow-glow hover:shadow-glow/80 transition-all group"
+                className="text-lg px-8 py-6 group"
               >
                 Get Started Free
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -192,27 +169,27 @@ const Index = () => {
 
             {/* Stats */}
             <div className="mt-20 grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="border-2 border-primary/20 bg-card/50 backdrop-blur">
+              <Card className="border">
                 <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">8+</div>
+                  <div className="text-4xl font-bold mb-2">8+</div>
                   <div className="text-sm text-muted-foreground">Professional Tools</div>
                 </CardContent>
               </Card>
-              <Card className="border-2 border-primary/20 bg-card/50 backdrop-blur">
+              <Card className="border">
                 <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">AI</div>
+                  <div className="text-4xl font-bold mb-2">AI</div>
                   <div className="text-sm text-muted-foreground">Powered Analysis</div>
                 </CardContent>
               </Card>
-              <Card className="border-2 border-primary/20 bg-card/50 backdrop-blur">
+              <Card className="border">
                 <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">24/7</div>
+                  <div className="text-4xl font-bold mb-2">24/7</div>
                   <div className="text-sm text-muted-foreground">Available Access</div>
                 </CardContent>
               </Card>
-              <Card className="border-2 border-primary/20 bg-card/50 backdrop-blur">
+              <Card className="border">
                 <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">Free</div>
+                  <div className="text-4xl font-bold mb-2">Free</div>
                   <div className="text-sm text-muted-foreground">To Get Started</div>
                 </CardContent>
               </Card>
@@ -221,11 +198,9 @@ const Index = () => {
         </section>
 
         {/* Tools Showcase */}
-        <section className="container mx-auto px-4 py-20">
+        <section className="py-20">
           <div className="text-center mb-16">
-            <Badge variant="outline" className="mb-4">
-              All-in-One Platform
-            </Badge>
+            <span className="text-sm font-medium mb-4 inline-block">All-in-One Platform</span>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               Every Tool You Need to Raise Capital
             </h2>
@@ -241,24 +216,17 @@ const Index = () => {
               return (
                 <Card 
                   key={idx}
-                  className={`group hover:shadow-xl transition-all duration-300 hover:scale-[1.02] bg-gradient-to-br ${tool.gradient} border-2 hover:border-primary/20 overflow-hidden relative cursor-pointer`}
+                  className="group hover:shadow-md transition-all duration-300 border-2 cursor-pointer"
                   onClick={() => navigate(tool.path)}
                 >
-                  {/* Background decoration */}
-                  <div className="absolute top-0 right-0 w-32 h-32 opacity-20 group-hover:opacity-30 transition-opacity">
-                    <div className={`w-full h-full bg-gradient-to-br ${tool.iconGradient} blur-3xl`} />
-                  </div>
-
-                  <CardHeader className="relative">
+                  <CardHeader>
                     <div className="flex items-start justify-between">
-                      {/* Icon */}
-                      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${tool.iconGradient} shadow-lg`}>
-                        <Icon className="h-7 w-7 text-white" />
+                      <div className="inline-flex items-center justify-center w-12 h-12 border-2 border-foreground">
+                        <Icon className="h-6 w-6" />
                       </div>
 
-                      {/* Stat */}
                       <div className="text-right">
-                        <div className={`text-3xl font-bold bg-gradient-to-br ${tool.iconGradient} bg-clip-text text-transparent`}>
+                        <div className="text-2xl font-bold">
                           {tool.value}
                         </div>
                         <div className="text-xs text-muted-foreground font-medium mt-1">

@@ -59,15 +59,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      <StarField />
-      
-      <div className="absolute inset-0 bg-gradient-hero pointer-events-none" />
-
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center relative z-10">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-8">
           <div className="space-y-4">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold">
               FounderTools
             </h1>
             <p className="text-2xl text-muted-foreground">
@@ -77,8 +73,8 @@ const Auth = () => {
 
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                <TrendingUp className="w-6 h-6 text-primary" />
+              <div className="p-3 border">
+                <TrendingUp className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="font-semibold mb-1">AI-Powered Analysis</h3>
@@ -89,8 +85,8 @@ const Auth = () => {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                <Shield className="w-6 h-6 text-primary" />
+              <div className="p-3 border">
+                <Shield className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="font-semibold mb-1">Secure & Private</h3>
@@ -101,8 +97,8 @@ const Auth = () => {
             </div>
 
             <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
-                <Zap className="w-6 h-6 text-primary" />
+              <div className="p-3 border">
+                <Zap className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="font-semibold mb-1">Lightning Fast</h3>
@@ -114,7 +110,7 @@ const Auth = () => {
           </div>
         </div>
 
-        <Card className="glass-card border-primary/20">
+        <Card className="border shadow-lg">
           <CardHeader>
             <CardTitle>Welcome Back</CardTitle>
             <CardDescription>Sign in to access your founder tools</CardDescription>
