@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AuthGuard } from "@/components/AuthGuard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Select, 
   SelectContent, 
@@ -36,6 +37,9 @@ import {
 } from "lucide-react";
 import { InvestorDialog } from "@/components/investor/InvestorDialog";
 import { BulkImportDialog } from "@/components/investor/BulkImportDialog";
+import { BulkActionsToolbar } from "@/components/investor/BulkActionsToolbar";
+import { OutreachCampaignDialog } from "@/components/investor/OutreachCampaignDialog";
+import { BulkUpdateDialog } from "@/components/investor/BulkUpdateDialog";
 
 interface Investor {
   id: string;
@@ -73,9 +77,18 @@ const InvestorCRM = () => {
   const [priorityFilter, setPriorityFilter] = useState<string>("all");
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [tagsFilter, setTagsFilter] = useState<string[]>([]);
+  const [industriesFilter, setIndustriesFilter] = useState<string[]>([]);
+  const [checkSizeMin, setCheckSizeMin] = useState<string>("");
+  const [checkSizeMax, setCheckSizeMax] = useState<string>("");
+  const [fitScoreMin, setFitScoreMin] = useState<string>("");
   const [selectedInvestor, setSelectedInvestor] = useState<Investor | null>(null);
+  const [selectedInvestorIds, setSelectedInvestorIds] = useState<string[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isCampaignDialogOpen, setIsCampaignDialogOpen] = useState(false);
+  const [isBulkUpdateDialogOpen, setIsBulkUpdateDialogOpen] = useState(false);
+  const [bulkUpdateType, setBulkUpdateType] = useState<"pipeline" | "priority" | "tags">("pipeline");
 
   const pipelineStages = [
     { value: "research", label: "Research", color: "bg-slate-500" },
@@ -95,7 +108,7 @@ const InvestorCRM = () => {
 
   useEffect(() => {
     filterInvestors();
-  }, [investors, searchQuery, pipelineFilter, priorityFilter, stageFilter, locationFilter]);
+  }, [investors, searchQuery, pipelineFilter, priorityFilter, stageFilter, locationFilter, tagsFilter, industriesFilter, checkSizeMin, checkSizeMax, fitScoreMin]);
 
   const loadInvestors = async () => {
     try {
@@ -156,6 +169,42 @@ const InvestorCRM = () => {
       );
     }
 
+    // Tags filter
+    if (tagsFilter.length > 0) {
+      filtered = filtered.filter(inv =>
+        inv.tags?.some(tag => tagsFilter.includes(tag))
+      );
+    }
+
+    // Industries filter
+    if (industriesFilter.length > 0) {
+      filtered = filtered.filter(inv =>
+        inv.industries?.some(industry => industriesFilter.includes(industry))
+      );
+    }
+
+    // Check size filter
+    if (checkSizeMin) {
+      const minValue = parseFloat(checkSizeMin);
+      filtered = filtered.filter(inv =>
+        inv.check_size_max && inv.check_size_max >= minValue
+      );
+    }
+    if (checkSizeMax) {
+      const maxValue = parseFloat(checkSizeMax);
+      filtered = filtered.filter(inv =>
+        inv.check_size_min && inv.check_size_min <= maxValue
+      );
+    }
+
+    // Fit score filter
+    if (fitScoreMin) {
+      const minScore = parseInt(fitScoreMin);
+      filtered = filtered.filter(inv =>
+        inv.fit_score && inv.fit_score >= minScore
+      );
+    }
+
     setFilteredInvestors(filtered);
   };
 
@@ -187,6 +236,32 @@ const InvestorCRM = () => {
     setIsImportDialogOpen(false);
   };
 
+  const handleSelectAll = () => {
+    if (selectedInvestorIds.length === filteredInvestors.length) {
+      setSelectedInvestorIds([]);
+    } else {
+      setSelectedInvestorIds(filteredInvestors.map(inv => inv.id));
+    }
+  };
+
+  const handleSelectInvestor = (investorId: string) => {
+    setSelectedInvestorIds(prev =>
+      prev.includes(investorId)
+        ? prev.filter(id => id !== investorId)
+        : [...prev, investorId]
+    );
+  };
+
+  const handleBulkAction = (type: "pipeline" | "priority" | "tags") => {
+    setBulkUpdateType(type);
+    setIsBulkUpdateDialogOpen(true);
+  };
+
+  const handleBulkUpdateSuccess = () => {
+    loadInvestors();
+    setSelectedInvestorIds([]);
+  };
+
   // Get unique values for filters
   const uniqueLocations = Array.from(new Set(
     investors.flatMap(inv => inv.geographies || [])
@@ -194,6 +269,14 @@ const InvestorCRM = () => {
 
   const uniqueStages = Array.from(new Set(
     investors.flatMap(inv => inv.stage || [])
+  )).sort();
+
+  const uniqueTags = Array.from(new Set(
+    investors.flatMap(inv => inv.tags || [])
+  )).sort();
+
+  const uniqueIndustries = Array.from(new Set(
+    investors.flatMap(inv => inv.industries || [])
   )).sort();
 
   return (
@@ -290,66 +373,138 @@ const InvestorCRM = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Filter className="h-5 w-5" />
-                Filters
+                Advanced Filters
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="relative md:col-span-3">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search investors..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Select value={pipelineFilter} onValueChange={setPipelineFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pipeline Stage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Stages</SelectItem>
+                      {pipelineStages.map(stage => (
+                        <SelectItem key={stage.value} value={stage.value}>
+                          {stage.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Priorities</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Select value={stageFilter} onValueChange={setStageFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Investment Stage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Investment Stages</SelectItem>
+                      {uniqueStages.map(stage => (
+                        <SelectItem key={stage} value={stage}>{stage}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Select value={locationFilter} onValueChange={setLocationFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Location" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Locations</SelectItem>
+                      {uniqueLocations.map(location => (
+                        <SelectItem key={location} value={location}>{location}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Min check ($M)"
+                      value={checkSizeMin}
+                      onChange={(e) => setCheckSizeMin(e.target.value)}
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Max check ($M)"
+                      value={checkSizeMax}
+                      onChange={(e) => setCheckSizeMax(e.target.value)}
+                    />
+                  </div>
+
                   <Input
-                    placeholder="Search investors..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
+                    type="number"
+                    placeholder="Min fit score"
+                    value={fitScoreMin}
+                    onChange={(e) => setFitScoreMin(e.target.value)}
+                    min="0"
+                    max="100"
                   />
                 </div>
-                <Select value={pipelineFilter} onValueChange={setPipelineFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pipeline Stage" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Stages</SelectItem>
-                    {pipelineStages.map(stage => (
-                      <SelectItem key={stage.value} value={stage.value}>
-                        {stage.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Priorities</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select value={stageFilter} onValueChange={setStageFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Investment Stage" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Investment Stages</SelectItem>
-                    {uniqueStages.map(stage => (
-                      <SelectItem key={stage} value={stage}>{stage}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select value={locationFilter} onValueChange={setLocationFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Locations</SelectItem>
-                    {uniqueLocations.map(location => (
-                      <SelectItem key={location} value={location}>{location}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+
+                {(uniqueTags.length > 0 || uniqueIndustries.length > 0) && (
+                  <div className="pt-4 border-t">
+                    <p className="text-sm font-medium mb-2">Filter by:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {uniqueTags.slice(0, 10).map(tag => (
+                        <Badge
+                          key={tag}
+                          variant={tagsFilter.includes(tag) ? "default" : "outline"}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setTagsFilter(prev =>
+                              prev.includes(tag)
+                                ? prev.filter(t => t !== tag)
+                                : [...prev, tag]
+                            );
+                          }}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                      {uniqueIndustries.slice(0, 10).map(industry => (
+                        <Badge
+                          key={industry}
+                          variant={industriesFilter.includes(industry) ? "default" : "outline"}
+                          className="cursor-pointer"
+                          onClick={() => {
+                            setIndustriesFilter(prev =>
+                              prev.includes(industry)
+                                ? prev.filter(i => i !== industry)
+                                : [...prev, industry]
+                            );
+                          }}
+                        >
+                          {industry}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -374,6 +529,12 @@ const InvestorCRM = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12">
+                          <Checkbox
+                            checked={selectedInvestorIds.length === filteredInvestors.length && filteredInvestors.length > 0}
+                            onCheckedChange={handleSelectAll}
+                          />
+                        </TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Firm</TableHead>
                         <TableHead>Location</TableHead>
@@ -388,25 +549,42 @@ const InvestorCRM = () => {
                       {filteredInvestors.map((investor) => (
                         <TableRow 
                           key={investor.id}
-                          className="cursor-pointer hover:bg-muted/50"
-                          onClick={() => handleEditInvestor(investor)}
+                          className="hover:bg-muted/50"
                         >
-                          <TableCell className="font-medium">
+                          <TableCell onClick={(e) => e.stopPropagation()}>
+                            <Checkbox
+                              checked={selectedInvestorIds.includes(investor.id)}
+                              onCheckedChange={() => handleSelectInvestor(investor.id)}
+                            />
+                          </TableCell>
+                          <TableCell 
+                            className="font-medium cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             {investor.name}
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             <div className="flex items-center gap-2">
                               <Building2 className="h-4 w-4 text-muted-foreground" />
                               {investor.firm_name || "-"}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-muted-foreground" />
                               {investor.geographies?.[0] || "-"}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             <div className="flex flex-wrap gap-1">
                               {investor.stage?.slice(0, 2).map(stage => (
                                 <Badge key={stage} variant="secondary" className="text-xs">
@@ -415,17 +593,26 @@ const InvestorCRM = () => {
                               ))}
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             <Badge className={getPipelineColor(investor.pipeline_stage)}>
                               {pipelineStages.find(s => s.value === investor.pipeline_stage)?.label}
                             </Badge>
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             <Badge className={getPriorityColor(investor.priority)}>
                               {investor.priority}
                             </Badge>
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             {investor.fit_score ? (
                               <div className="flex items-center gap-1">
                                 <Star className="h-4 w-4 text-yellow-500" />
@@ -435,7 +622,10 @@ const InvestorCRM = () => {
                               "-"
                             )}
                           </TableCell>
-                          <TableCell>
+                          <TableCell
+                            className="cursor-pointer"
+                            onClick={() => handleEditInvestor(investor)}
+                          >
                             {investor.last_contact_date ? (
                               <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-muted-foreground" />
@@ -467,6 +657,33 @@ const InvestorCRM = () => {
         open={isImportDialogOpen}
         onOpenChange={setIsImportDialogOpen}
         onSuccess={handleImportComplete}
+      />
+
+      <BulkActionsToolbar
+        selectedCount={selectedInvestorIds.length}
+        onCreateCampaign={() => setIsCampaignDialogOpen(true)}
+        onBulkUpdatePipeline={() => handleBulkAction("pipeline")}
+        onBulkUpdatePriority={() => handleBulkAction("priority")}
+        onBulkAddTags={() => handleBulkAction("tags")}
+        onClearSelection={() => setSelectedInvestorIds([])}
+      />
+
+      <OutreachCampaignDialog
+        open={isCampaignDialogOpen}
+        onOpenChange={setIsCampaignDialogOpen}
+        selectedInvestorIds={selectedInvestorIds}
+        onSuccess={() => {
+          setSelectedInvestorIds([]);
+          setIsCampaignDialogOpen(false);
+        }}
+      />
+
+      <BulkUpdateDialog
+        open={isBulkUpdateDialogOpen}
+        onOpenChange={setIsBulkUpdateDialogOpen}
+        selectedInvestorIds={selectedInvestorIds}
+        updateType={bulkUpdateType}
+        onSuccess={handleBulkUpdateSuccess}
       />
     </AuthGuard>
   );
