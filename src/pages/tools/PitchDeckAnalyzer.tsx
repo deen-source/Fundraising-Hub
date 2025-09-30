@@ -150,6 +150,49 @@ const PitchDeckAnalyzer = () => {
               </p>
             </div>
 
+            {/* How It Works */}
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+              <CardContent className="pt-8">
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="text-center space-y-3">
+                    <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-2xl font-bold">
+                      1
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-semibold text-lg">Upload Your Deck</div>
+                      <p className="text-sm text-muted-foreground">
+                        Upload a PDF or paste your pitch deck content
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center space-y-3">
+                    <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl font-bold">
+                      2
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-semibold text-lg">AI Analyzes</div>
+                      <p className="text-sm text-muted-foreground">
+                        Our AI evaluates your deck across 10+ criteria
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center space-y-3">
+                    <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white text-2xl font-bold">
+                      3
+                    </div>
+                    <div className="space-y-1">
+                      <div className="font-semibold text-lg">Get Insights</div>
+                      <p className="text-sm text-muted-foreground">
+                        Receive detailed feedback and recommendations
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Tabs Interface */}
             <Tabs defaultValue="analyzer" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-8">
