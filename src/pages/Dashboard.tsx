@@ -24,7 +24,10 @@ const tools = [
     description: 'AI-powered analysis of investment terms',
     icon: FileCheck,
     path: '/tools/term-sheet',
-    gradient: 'from-cyan-500 to-blue-500',
+    gradient: 'from-blue-500/10 to-cyan-500/10',
+    iconGradient: 'from-blue-500 to-cyan-500',
+    value: '98%',
+    metric: 'accuracy',
   },
   {
     id: 'benchmarks',
@@ -32,7 +35,10 @@ const tools = [
     description: 'Compare your metrics against industry standards',
     icon: TrendingUp,
     path: '/tools/benchmarks',
-    gradient: 'from-emerald-500 to-teal-500',
+    gradient: 'from-purple-500/10 to-pink-500/10',
+    iconGradient: 'from-purple-500 to-pink-500',
+    value: '50K+',
+    metric: 'startups',
   },
   {
     id: 'safe-calculator',
@@ -40,7 +46,10 @@ const tools = [
     description: 'Calculate SAFE note conversions and dilution',
     icon: Calculator,
     path: '/tools/safe-calculator',
-    gradient: 'from-violet-500 to-purple-500',
+    gradient: 'from-green-500/10 to-emerald-500/10',
+    iconGradient: 'from-green-500 to-emerald-500',
+    value: 'Instant',
+    metric: 'results',
   },
   {
     id: 'cap-table',
@@ -48,7 +57,10 @@ const tools = [
     description: 'Visualize ownership and dilution scenarios',
     icon: PieChart,
     path: '/tools/cap-table',
-    gradient: 'from-pink-500 to-rose-500',
+    gradient: 'from-orange-500/10 to-red-500/10',
+    iconGradient: 'from-orange-500 to-red-500',
+    value: 'Live',
+    metric: 'modeling',
   },
   {
     id: 'valuation',
@@ -56,7 +68,10 @@ const tools = [
     description: 'Determine your startup valuation',
     icon: DollarSign,
     path: '/tools/valuation',
-    gradient: 'from-amber-500 to-orange-500',
+    gradient: 'from-indigo-500/10 to-blue-500/10',
+    iconGradient: 'from-indigo-500 to-blue-500',
+    value: '3',
+    metric: 'methods',
   },
   {
     id: 'pitch-deck',
@@ -64,7 +79,10 @@ const tools = [
     description: 'Get AI feedback on your pitch deck',
     icon: FileText,
     path: '/tools/pitch-deck',
-    gradient: 'from-indigo-500 to-blue-500',
+    gradient: 'from-pink-500/10 to-rose-500/10',
+    iconGradient: 'from-pink-500 to-rose-500',
+    value: 'AI',
+    metric: 'powered',
   },
   {
     id: 'dilution',
@@ -72,7 +90,10 @@ const tools = [
     description: 'Calculate ownership dilution across rounds',
     icon: BarChart3,
     path: '/tools/dilution',
-    gradient: 'from-cyan-500 to-teal-500',
+    gradient: 'from-teal-500/10 to-cyan-500/10',
+    iconGradient: 'from-teal-500 to-cyan-500',
+    value: '10+',
+    metric: 'rounds',
   },
   {
     id: 'timeline',
@@ -80,7 +101,10 @@ const tools = [
     description: 'Plan your fundraising journey',
     icon: Calendar,
     path: '/tools/timeline',
-    gradient: 'from-green-500 to-emerald-500',
+    gradient: 'from-violet-500/10 to-purple-500/10',
+    iconGradient: 'from-violet-500 to-purple-500',
+    value: '12-16',
+    metric: 'weeks',
   },
 ];
 
@@ -139,17 +163,34 @@ const Dashboard = () => {
               return (
                 <Card
                   key={tool.id}
-                  className="glass-card border-primary/20 hover:border-primary/40 transition-all duration-300 cursor-pointer group hover:shadow-glow"
+                  className={`group hover:shadow-xl transition-all duration-300 hover:scale-[1.02] bg-gradient-to-br ${tool.gradient} border-2 hover:border-primary/20 overflow-hidden relative cursor-pointer`}
                   onClick={() => navigate(tool.path)}
                 >
-                  <CardHeader>
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${tool.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      <Icon className="w-6 h-6 text-white" />
+                  {/* Background decoration */}
+                  <div className="absolute top-0 right-0 w-32 h-32 opacity-20 group-hover:opacity-30 transition-opacity">
+                    <div className={`w-full h-full bg-gradient-to-br ${tool.iconGradient} blur-3xl`} />
+                  </div>
+
+                  <CardHeader className="relative">
+                    <div className="flex items-start justify-between">
+                      {/* Icon */}
+                      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br ${tool.iconGradient} shadow-lg`}>
+                        <Icon className="h-7 w-7 text-white" />
+                      </div>
+
+                      {/* Stat */}
+                      <div className="text-right">
+                        <div className={`text-3xl font-bold bg-gradient-to-br ${tool.iconGradient} bg-clip-text text-transparent`}>
+                          {tool.value}
+                        </div>
+                        <div className="text-xs text-muted-foreground font-medium mt-1">
+                          {tool.metric}
+                        </div>
+                      </div>
                     </div>
-                    <CardTitle className="group-hover:text-primary transition-colors">
-                      {tool.title}
-                    </CardTitle>
-                    <CardDescription>{tool.description}</CardDescription>
+
+                    <CardTitle className="text-lg mt-4">{tool.title}</CardTitle>
+                    <CardDescription className="mt-2">{tool.description}</CardDescription>
                   </CardHeader>
                 </Card>
               );
