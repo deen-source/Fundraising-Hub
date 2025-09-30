@@ -39,7 +39,8 @@ import {
   TrendingUp,
   Clock,
   Star,
-  ChevronDown
+  ChevronDown,
+  Download
 } from "lucide-react";
 import { InvestorDialog } from "@/components/investor/InvestorDialog";
 import { BulkImportDialog } from "@/components/investor/BulkImportDialog";
@@ -47,6 +48,7 @@ import { BulkActionsToolbar } from "@/components/investor/BulkActionsToolbar";
 import { OutreachCampaignDialog } from "@/components/investor/OutreachCampaignDialog";
 import { BulkUpdateDialog } from "@/components/investor/BulkUpdateDialog";
 import { MultiSelectFilter } from "@/components/investor/MultiSelectFilter";
+import { importInvestorDataToDatabase } from "@/utils/importInvestorData";
 
 interface Investor {
   id: string;
@@ -270,6 +272,31 @@ const InvestorCRM = () => {
     setSelectedInvestorIds([]);
   };
 
+  const handleQuickImport = async () => {
+    try {
+      setLoading(true);
+      const result = await importInvestorDataToDatabase();
+      
+      if (result.success) {
+        toast({
+          title: "Import successful",
+          description: `Imported ${result.count} investors from the list`,
+        });
+        loadInvestors();
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      toast({
+        title: "Import failed",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Get unique values for filters
   const uniqueLocations = Array.from(new Set(
     investors.flatMap(inv => inv.geographies || [])
@@ -311,9 +338,13 @@ const InvestorCRM = () => {
               </div>
             </div>
             <div className="flex gap-2">
+              <Button onClick={handleQuickImport} variant="secondary">
+                <Download className="h-4 w-4 mr-2" />
+                Quick Import Sample Data
+              </Button>
               <Button onClick={() => setIsImportDialogOpen(true)} variant="outline">
                 <Upload className="h-4 w-4 mr-2" />
-                Bulk Import
+                Bulk Import CSV
               </Button>
               <Button onClick={handleAddInvestor}>
                 <Plus className="h-4 w-4 mr-2" />
