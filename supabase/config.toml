@@ -1,0 +1,4 @@
+project_id = "wbqvaumniyyblihyizmi"
+
+[functions.analyze-term-sheet]
+verify_jwt = true
