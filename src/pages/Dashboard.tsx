@@ -19,6 +19,9 @@ import {
   CheckCircle2,
   Target,
   Users,
+  GitBranch,
+  FolderOpen,
+  FileStack,
 } from 'lucide-react';
 
 const toolsByStage = {
@@ -30,6 +33,30 @@ const toolsByStage = {
       icon: Users,
       path: '/investor-crm',
       dataKey: 'hasInvestors',
+    },
+    {
+      id: 'pipeline-tracker',
+      title: 'Pipeline Tracker',
+      description: 'Visual fundraising pipeline',
+      icon: GitBranch,
+      path: '/tools/pipeline-tracker',
+      dataKey: 'hasPipeline',
+    },
+    {
+      id: 'data-room',
+      title: 'Data Room',
+      description: 'Organize due diligence docs',
+      icon: FolderOpen,
+      path: '/tools/data-room',
+      dataKey: 'hasDataRoom',
+    },
+    {
+      id: 'document-templates',
+      title: 'Document Templates',
+      description: 'Legal & fundraising templates',
+      icon: FileStack,
+      path: '/tools/document-templates',
+      dataKey: 'hasTemplates',
     },
     {
       id: 'pitch-deck',
@@ -179,6 +206,9 @@ const Dashboard = () => {
   // Calculate completion status
   const completionStatus = {
     hasInvestors: investorCount > 0,
+    hasPipeline: investorCount > 0,
+    hasDataRoom: savedCalculations.some(c => c.tool_type === 'data_room'),
+    hasTemplates: true, // Templates are always available
     hasPitchDeck: termSheetAnalyses.length > 0,
     hasValuation: savedCalculations.some(c => c.tool_type === 'valuation'),
     hasBenchmarks: savedCalculations.some(c => c.tool_type === 'benchmarks'),

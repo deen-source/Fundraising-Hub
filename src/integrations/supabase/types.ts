@@ -14,6 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
+      data_room_documents: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          folder: string | null
+          id: string
+          last_viewed_at: string | null
+          shared_with_investors: string[] | null
+          updated_at: string | null
+          uploaded_at: string | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          folder?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          shared_with_investors?: string[] | null
+          updated_at?: string | null
+          uploaded_at?: string | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          folder?: string | null
+          id?: string
+          last_viewed_at?: string | null
+          shared_with_investors?: string[] | null
+          updated_at?: string | null
+          uploaded_at?: string | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      document_templates: {
+        Row: {
+          category: string
+          content: string | null
+          created_at: string | null
+          description: string | null
+          file_url: string | null
+          id: string
+          name: string
+          template_type: string
+        }
+        Insert: {
+          category: string
+          content?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          name: string
+          template_type: string
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          name?: string
+          template_type?: string
+        }
+        Relationships: []
+      }
       email_campaigns: {
         Row: {
           body: string

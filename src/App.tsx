@@ -14,6 +14,9 @@ import ValuationCalculator from "./pages/tools/ValuationCalculator";
 import PitchDeckAnalyzer from "./pages/tools/PitchDeckAnalyzer";
 import DilutionCalculator from "./pages/tools/DilutionCalculator";
 import FundraisingTimeline from "./pages/tools/FundraisingTimeline";
+import PipelineTracker from "./pages/tools/PipelineTracker";
+import DataRoom from "./pages/tools/DataRoom";
+import DocumentTemplates from "./pages/tools/DocumentTemplates";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
           <Route path="/tools/pitch-deck" element={<PitchDeckAnalyzer />} />
           <Route path="/tools/dilution" element={<DilutionCalculator />} />
           <Route path="/tools/timeline" element={<FundraisingTimeline />} />
+          <Route path="/tools/pipeline-tracker" element={<PipelineTracker />} />
+          <Route path="/tools/data-room" element={<DataRoom />} />
+          <Route path="/tools/document-templates" element={<DocumentTemplates />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
