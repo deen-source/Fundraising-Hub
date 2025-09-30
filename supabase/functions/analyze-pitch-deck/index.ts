@@ -31,30 +31,113 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert pitch deck consultant. Analyze pitch decks and provide detailed feedback on:
-            - Story and narrative flow
-            - Problem and solution clarity
-            - Market opportunity presentation
-            - Business model clarity
-            - Traction and metrics
-            - Team presentation
-            - Financial projections
-            - Visual design and clarity
-            - Overall investment appeal
-            
-            Provide analysis in JSON format with:
-            - overall_score (1-10)
-            - strengths (array of positive points)
-            - weaknesses (array of areas to improve)
-            - slide_feedback (array of {slide, score, feedback})
-            - recommendations (array of specific improvements)
-            - investor_readiness (1-10)`
+            content: `You are an expert pitch deck consultant and venture capital advisor. Analyze pitch decks comprehensively and provide actionable feedback.`
           },
           {
             role: 'user',
-            content: `Analyze this pitch deck:\n\n${deckContent}`
+            content: `Analyze this pitch deck in detail:\n\n${deckContent}`
           }
         ],
+        tools: [
+          {
+            type: 'function',
+            function: {
+              name: 'analyze_pitch_deck',
+              description: 'Provide comprehensive pitch deck analysis',
+              parameters: {
+                type: 'object',
+                properties: {
+                  overall_score: {
+                    type: 'number',
+                    description: 'Overall deck quality score from 1-10'
+                  },
+                  investor_readiness: {
+                    type: 'number',
+                    description: 'How ready this deck is for investors from 1-10'
+                  },
+                  executive_summary: {
+                    type: 'string',
+                    description: '2-3 sentence summary of the deck quality and key takeaways'
+                  },
+                  strengths: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        title: { type: 'string', description: 'Short title of the strength' },
+                        description: { type: 'string', description: 'Detailed explanation' }
+                      },
+                      required: ['title', 'description']
+                    },
+                    description: 'What the deck does well'
+                  },
+                  weaknesses: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        title: { type: 'string', description: 'Short title of the weakness' },
+                        description: { type: 'string', description: 'Detailed explanation' },
+                        severity: { type: 'string', enum: ['critical', 'high', 'medium'], description: 'How severe this issue is' }
+                      },
+                      required: ['title', 'description', 'severity']
+                    },
+                    description: 'Areas that need improvement'
+                  },
+                  slide_feedback: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        slide: { type: 'string', description: 'Slide name/number' },
+                        score: { type: 'number', description: 'Slide quality from 1-10' },
+                        feedback: { type: 'string', description: 'Detailed feedback' },
+                        suggestions: { type: 'array', items: { type: 'string' }, description: 'Specific improvements' }
+                      },
+                      required: ['slide', 'score', 'feedback']
+                    },
+                    description: 'Slide by slide analysis'
+                  },
+                  category_scores: {
+                    type: 'object',
+                    properties: {
+                      problem_solution: { type: 'number', description: 'Problem and solution clarity (1-10)' },
+                      market_opportunity: { type: 'number', description: 'Market size and opportunity (1-10)' },
+                      business_model: { type: 'number', description: 'Business model clarity (1-10)' },
+                      traction: { type: 'number', description: 'Traction and metrics (1-10)' },
+                      team: { type: 'number', description: 'Team presentation (1-10)' },
+                      financials: { type: 'number', description: 'Financial projections (1-10)' },
+                      storytelling: { type: 'number', description: 'Narrative flow and storytelling (1-10)' },
+                      design: { type: 'number', description: 'Visual design and clarity (1-10)' }
+                    },
+                    required: ['problem_solution', 'market_opportunity', 'business_model', 'traction', 'team', 'financials', 'storytelling', 'design']
+                  },
+                  recommendations: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        priority: { type: 'string', enum: ['high', 'medium', 'low'], description: 'Priority level' },
+                        action: { type: 'string', description: 'Specific action to take' },
+                        impact: { type: 'string', description: 'Expected impact of this change' }
+                      },
+                      required: ['priority', 'action', 'impact']
+                    },
+                    description: 'Prioritized action items'
+                  },
+                  next_steps: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Immediate next steps to improve the deck (3-5 items)'
+                  }
+                },
+                required: ['overall_score', 'investor_readiness', 'executive_summary', 'strengths', 'weaknesses', 'slide_feedback', 'category_scores', 'recommendations', 'next_steps'],
+                additionalProperties: false
+              }
+            }
+          }
+        ],
+        tool_choice: { type: 'function', function: { name: 'analyze_pitch_deck' } }
       }),
     });
 
@@ -73,24 +156,14 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    const analysisText = data.choices[0].message.content;
+    const toolCall = data.choices[0].message.tool_calls?.[0];
     
-    console.log('Analysis completed successfully');
-
-    let analysis;
-    try {
-      analysis = JSON.parse(analysisText);
-    } catch {
-      analysis = {
-        overall_score: 7,
-        strengths: [],
-        weaknesses: [],
-        slide_feedback: [],
-        recommendations: [],
-        investor_readiness: 7,
-        summary: analysisText
-      };
+    if (!toolCall) {
+      throw new Error('No analysis generated');
     }
+
+    const analysis = JSON.parse(toolCall.function.arguments);
+    console.log('Analysis completed successfully');
 
     return new Response(
       JSON.stringify({ analysis }),
