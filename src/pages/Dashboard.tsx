@@ -17,8 +17,6 @@ import {
   Calendar,
   LogOut,
   CheckCircle2,
-  AlertCircle,
-  ArrowRight,
   Target,
 } from 'lucide-react';
 
@@ -179,26 +177,6 @@ const Dashboard = () => {
     (stageCompletion.preparation + stageCompletion.structuring + stageCompletion.active) / 3
   );
 
-  const getRecommendations = () => {
-    const recs = [];
-    
-    if (!completionStatus.hasPitchDeck) {
-      recs.push({ text: 'Upload your pitch deck for AI-powered feedback', action: '/tools/pitch-deck', priority: 'high' });
-    }
-    if (!completionStatus.hasValuation) {
-      recs.push({ text: 'Calculate your startup valuation before investor meetings', action: '/tools/valuation', priority: 'high' });
-    }
-    if (!completionStatus.hasCapTable) {
-      recs.push({ text: 'Set up your cap table to track ownership', action: '/tools/cap-table', priority: 'medium' });
-    }
-    if (!completionStatus.hasTimeline) {
-      recs.push({ text: 'Create a fundraising timeline to stay organized', action: '/tools/timeline', priority: 'medium' });
-    }
-    
-    return recs;
-  };
-
-  const recommendations = getRecommendations();
 
   return (
     <AuthGuard>
@@ -275,37 +253,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* What Needs Attention */}
-          {recommendations.length > 0 && (
-            <Card className="glass-card border-primary/20 mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-primary" />
-                  What Needs Your Attention
-                </CardTitle>
-                <CardDescription>Recommended next steps to strengthen your fundraising position</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recommendations.map((rec, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-card/50 hover:bg-card/70 transition-colors cursor-pointer"
-                      onClick={() => navigate(rec.action)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Badge variant={rec.priority === 'high' ? 'default' : 'secondary'}>
-                          {rec.priority === 'high' ? 'High Priority' : 'Recommended'}
-                        </Badge>
-                        <span className="text-sm">{rec.text}</span>
-                      </div>
-                      <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Stage-Based Tools */}
           <div className="space-y-8">
