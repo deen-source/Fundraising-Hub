@@ -31,115 +31,141 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a senior venture capital lawyer and term sheet negotiation expert with 20+ years of experience. Analyze term sheets with extreme detail and provide actionable insights.
-
-Your analysis must include:
-
-1. **Overall Assessment** (1-10 score)
-   - Investor-friendliness vs founder-friendliness
-   - Market standard comparison
-   - Deal structure quality
-
-2. **Critical Terms Analysis** - For EACH key term found:
-   - Term name and exact value
-   - Risk level (Low/Medium/High/Critical)
-   - Market standard comparison
-   - Impact on founder control and economics
-   - Specific negotiation advice
-   
-   Key terms to analyze:
-   - Valuation (pre-money/post-money)
-   - Option pool (before/after money)
-   - Liquidation preference (1x, participating, capped participating)
-   - Dividends (cumulative/non-cumulative)
-   - Anti-dilution (broad-based weighted average, narrow-based, full ratchet)
-   - Protective provisions
-   - Board composition
-   - Drag-along rights
-   - Right of first refusal
-   - Pay-to-play provisions
-   - Vesting (founder shares)
-   - No-shop clause
-   - Exclusivity period
-
-3. **Red Flags** - Identify concerning clauses:
-   - Severity level (Minor/Moderate/Severe/Deal-breaker)
-   - Why it's problematic
-   - Potential consequences
-   - How to negotiate
-
-4. **Negotiation Strategy**
-   - Priority order (what to negotiate first)
-   - Suggested counter-terms
-   - Trade-offs to consider
-   - Market precedents to reference
-
-5. **Comparable Analysis**
-   - How this compares to typical Seed/Series A/Series B terms
-   - What top-tier VCs typically offer
-   - Industry-specific norms
-
-6. **Financial Impact Modeling**
-   - Exit scenarios (3x, 5x, 10x returns)
-   - Founder dilution projections
-   - Liquidation waterfall examples
-
-Return your analysis as valid JSON with this structure:
-{
-  "overall_score": number (1-10),
-  "deal_type": "seed" | "series-a" | "series-b" | "unknown",
-  "investor_friendliness": number (1-10, where 10 is very investor-friendly),
-  "summary": "2-3 sentence executive summary",
-  "critical_terms": [
-    {
-      "term": "Term name",
-      "value": "Actual value from term sheet",
-      "risk_level": "Low" | "Medium" | "High" | "Critical",
-      "market_standard": "What is typical in the market",
-      "analysis": "Detailed explanation of impact",
-      "negotiation_advice": "Specific counter-proposal"
-    }
-  ],
-  "red_flags": [
-    {
-      "clause": "Specific clause name",
-      "severity": "Minor" | "Moderate" | "Severe" | "Deal-breaker",
-      "issue": "What's wrong with it",
-      "consequence": "What could happen",
-      "solution": "How to fix/negotiate"
-    }
-  ],
-  "green_flags": [
-    "Positive aspects of the deal"
-  ],
-  "negotiation_priorities": [
-    {
-      "priority": number (1-5, where 1 is highest),
-      "item": "What to negotiate",
-      "rationale": "Why this matters",
-      "suggested_approach": "How to negotiate"
-    }
-  ],
-  "financial_scenarios": {
-    "exit_3x": {
-      "company_exit_value": number,
-      "investor_return": number,
-      "founder_return": number,
-      "founder_percentage": number
-    },
-    "exit_5x": { /* same structure */ },
-    "exit_10x": { /* same structure */ }
-  },
-  "comparable_deals": "How this stacks up against market standards",
-  "final_recommendation": "Take deal, negotiate first, or walk away - with reasoning"
-}`
+            content: `You are a senior venture capital lawyer with 20+ years experience analyzing term sheets. Provide detailed, actionable analysis.`
           },
           {
             role: 'user',
-            content: `Analyze this term sheet in extreme detail:\n\n${termSheetText}`
+            content: `Analyze this term sheet comprehensively:\n\n${termSheetText}`
           }
         ],
-        temperature: 0.3,
+        tools: [{
+          type: "function",
+          function: {
+            name: "analyze_term_sheet",
+            description: "Provide comprehensive term sheet analysis with scoring, risk assessment, and negotiation strategy",
+            parameters: {
+              type: "object",
+              properties: {
+                overall_score: {
+                  type: "number",
+                  description: "Overall quality score from 1-10"
+                },
+                deal_type: {
+                  type: "string",
+                  enum: ["seed", "series-a", "series-b", "series-c", "unknown"],
+                  description: "Type of funding round"
+                },
+                investor_friendliness: {
+                  type: "number",
+                  description: "Score from 1-10, where 10 is very investor-friendly"
+                },
+                summary: {
+                  type: "string",
+                  description: "2-3 sentence executive summary"
+                },
+                critical_terms: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      term: { type: "string" },
+                      value: { type: "string" },
+                      risk_level: {
+                        type: "string",
+                        enum: ["Low", "Medium", "High", "Critical"]
+                      },
+                      market_standard: { type: "string" },
+                      analysis: { type: "string" },
+                      negotiation_advice: { type: "string" }
+                    },
+                    required: ["term", "value", "risk_level", "market_standard", "analysis", "negotiation_advice"]
+                  }
+                },
+                red_flags: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      clause: { type: "string" },
+                      severity: {
+                        type: "string",
+                        enum: ["Minor", "Moderate", "Severe", "Deal-breaker"]
+                      },
+                      issue: { type: "string" },
+                      consequence: { type: "string" },
+                      solution: { type: "string" }
+                    },
+                    required: ["clause", "severity", "issue", "consequence", "solution"]
+                  }
+                },
+                green_flags: {
+                  type: "array",
+                  items: { type: "string" },
+                  description: "Positive aspects of the term sheet"
+                },
+                negotiation_priorities: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      priority: { type: "number" },
+                      item: { type: "string" },
+                      rationale: { type: "string" },
+                      suggested_approach: { type: "string" }
+                    },
+                    required: ["priority", "item", "rationale", "suggested_approach"]
+                  }
+                },
+                financial_scenarios: {
+                  type: "object",
+                  properties: {
+                    exit_3x: {
+                      type: "object",
+                      properties: {
+                        company_exit_value: { type: "number" },
+                        investor_return: { type: "number" },
+                        founder_return: { type: "number" },
+                        founder_percentage: { type: "number" }
+                      },
+                      required: ["company_exit_value", "investor_return", "founder_return", "founder_percentage"]
+                    },
+                    exit_5x: {
+                      type: "object",
+                      properties: {
+                        company_exit_value: { type: "number" },
+                        investor_return: { type: "number" },
+                        founder_return: { type: "number" },
+                        founder_percentage: { type: "number" }
+                      },
+                      required: ["company_exit_value", "investor_return", "founder_return", "founder_percentage"]
+                    },
+                    exit_10x: {
+                      type: "object",
+                      properties: {
+                        company_exit_value: { type: "number" },
+                        investor_return: { type: "number" },
+                        founder_return: { type: "number" },
+                        founder_percentage: { type: "number" }
+                      },
+                      required: ["company_exit_value", "investor_return", "founder_return", "founder_percentage"]
+                    }
+                  },
+                  required: ["exit_3x", "exit_5x", "exit_10x"]
+                },
+                comparable_deals: {
+                  type: "string",
+                  description: "How this compares to market standards"
+                },
+                final_recommendation: {
+                  type: "string",
+                  description: "Clear recommendation with reasoning"
+                }
+              },
+              required: ["overall_score", "deal_type", "investor_friendliness", "summary", "critical_terms", "red_flags", "green_flags", "negotiation_priorities", "financial_scenarios", "comparable_deals", "final_recommendation"]
+            }
+          }
+        }],
+        tool_choice: { type: "function", function: { name: "analyze_term_sheet" } }
       }),
     });
 
@@ -158,33 +184,52 @@ Return your analysis as valid JSON with this structure:
     }
 
     const data = await response.json();
-    const analysisText = data.choices[0].message.content;
     
     console.log('Analysis completed successfully');
 
     let analysis;
-    try {
-      // Extract JSON from markdown code blocks if present
-      const jsonMatch = analysisText.match(/```json\n([\s\S]*?)\n```/) || 
-                       analysisText.match(/```\n([\s\S]*?)\n```/);
-      const jsonText = jsonMatch ? jsonMatch[1] : analysisText;
-      analysis = JSON.parse(jsonText);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      // Fallback structure
-      analysis = {
-        overall_score: 7,
-        deal_type: 'unknown',
-        investor_friendliness: 7,
-        summary: analysisText.substring(0, 500),
-        critical_terms: [],
-        red_flags: [],
-        green_flags: [],
-        negotiation_priorities: [],
-        financial_scenarios: null,
-        comparable_deals: 'Unable to parse full analysis',
-        final_recommendation: 'Please review the full analysis text'
-      };
+    // Extract tool call result for structured output
+    if (data.choices[0].message.tool_calls && data.choices[0].message.tool_calls[0]) {
+      const toolCall = data.choices[0].message.tool_calls[0];
+      analysis = JSON.parse(toolCall.function.arguments);
+      console.log('Structured analysis extracted from tool call');
+    } else {
+      // Fallback to parsing content
+      const analysisText = data.choices[0].message.content;
+      try {
+        const jsonMatch = analysisText.match(/```json\n([\s\S]*?)\n```/) || 
+                         analysisText.match(/```\n([\s\S]*?)\n```/);
+        const jsonText = jsonMatch ? jsonMatch[1] : analysisText;
+        analysis = JSON.parse(jsonText);
+        console.log('Analysis parsed from text content');
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        console.error('Raw response:', analysisText.substring(0, 500));
+        // Fallback structure
+        analysis = {
+          overall_score: 5,
+          deal_type: 'unknown',
+          investor_friendliness: 5,
+          summary: 'Unable to parse complete analysis. The AI returned an unexpected format. Please try again or contact support if the issue persists.',
+          critical_terms: [],
+          red_flags: [{
+            clause: 'Analysis Error',
+            severity: 'Moderate',
+            issue: 'The AI was unable to provide a structured analysis',
+            consequence: 'You may not have complete visibility into all terms',
+            solution: 'Try resubmitting the term sheet or breaking it into smaller sections'
+          }],
+          green_flags: [],
+          negotiation_priorities: [],
+          financial_scenarios: {
+            exit_3x: { company_exit_value: 0, investor_return: 0, founder_return: 0, founder_percentage: 0 },
+            exit_5x: { company_exit_value: 0, investor_return: 0, founder_return: 0, founder_percentage: 0 },
+            exit_10x: { company_exit_value: 0, investor_return: 0, founder_return: 0, founder_percentage: 0 }
+          },
+          comparable_deals: 'Unable to compare due to parsing error',
+          final_recommendation: 'Please try analyzing the term sheet again or contact support'
+        };
+      }
     }
 
     return new Response(
