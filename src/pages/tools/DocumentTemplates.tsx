@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, FileText, Download, Copy, Check } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { ArrowLeft, FileText, Download, Copy, Check, HelpCircle, Sparkles } from 'lucide-react';
 
 interface Template {
   id: string;
@@ -123,6 +124,42 @@ const DocumentTemplates = () => {
     }
   };
 
+  const getCategoryDescription = (category: string) => {
+    switch (category) {
+      case 'Legal': return 'Legally binding documents for investor protection';
+      case 'Fundraising': return 'Essential templates for raising capital';
+      case 'Communication': return 'Keep investors informed and engaged';
+      case 'Due Diligence': return 'Organize information for investor review';
+      default: return 'Professional document templates';
+    }
+  };
+
+  // Empty state
+  if (!isLoading && templates.length === 0) {
+    return (
+      <AuthGuard>
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto py-8 px-4">
+            <div className="flex items-center gap-4 mb-6">
+              <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex-1">
+                <h1 className="text-3xl font-bold">Document Templates</h1>
+                <p className="text-muted-foreground">Pre-built templates for fundraising and legal documents</p>
+              </div>
+            </div>
+
+            <div className="max-w-2xl mx-auto text-center py-12">
+              <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
+              <p className="text-muted-foreground">No templates available</p>
+            </div>
+          </div>
+        </div>
+      </AuthGuard>
+    );
+  }
+
   return (
     <AuthGuard>
       <div className="min-h-screen bg-background">
@@ -133,26 +170,81 @@ const DocumentTemplates = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex-1">
-              <h1 className="text-3xl font-bold">Document Templates</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold">Document Templates</h1>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <HelpCircle className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <p className="text-sm">
+                        Ready-to-use templates for common fundraising documents. 
+                        Copy and customize them for your specific needs or download for offline editing.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <p className="text-muted-foreground">Pre-built templates for fundraising and legal documents</p>
             </div>
           </div>
 
+          {/* Info Banner */}
+          <Card className="mb-6 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+            <CardContent className="py-4">
+              <div className="flex items-start gap-3">
+                <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold mb-1">Professional Templates Ready to Use</p>
+                  <p className="text-sm text-muted-foreground">
+                    Save time with professionally crafted templates. Click any template to preview, 
+                    then copy or download to customize for your needs.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Category Tabs */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="mb-6">
-            <TabsList className="w-full justify-start overflow-x-auto">
+            <TabsList className="w-full justify-start overflow-x-auto flex-wrap h-auto">
               {categories.map(category => {
                 const count = category === 'all' ? templates.length : templates.filter(t => t.category === category).length;
                 return (
-                  <TabsTrigger key={category} value={category} className="flex items-center gap-2">
-                    {category !== 'all' && <span>{getCategoryIcon(category)}</span>}
-                    {category === 'all' ? 'All Templates' : category}
-                    <Badge variant="secondary" className="ml-1">{count}</Badge>
-                  </TabsTrigger>
+                  <TooltipProvider key={category}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value={category} className="flex items-center gap-2">
+                          {category !== 'all' && <span>{getCategoryIcon(category)}</span>}
+                          {category === 'all' ? 'All Templates' : category}
+                          <Badge variant="secondary" className="ml-1">{count}</Badge>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-sm">
+                          {category === 'all' ? 'View all available templates' : getCategoryDescription(category)}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 );
               })}
             </TabsList>
           </Tabs>
+
+          {/* Current Category Description */}
+          {selectedCategory !== 'all' && (
+            <Card className="mb-6 bg-muted/50">
+              <CardContent className="py-3">
+                <p className="text-sm text-muted-foreground">
+                  <strong>{selectedCategory}:</strong> {getCategoryDescription(selectedCategory)}
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Templates Grid */}
           {isLoading ? (
@@ -160,7 +252,7 @@ const DocumentTemplates = () => {
           ) : filteredTemplates.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="h-16 w-16 mx-auto mb-4 opacity-50" />
-              <p className="text-muted-foreground">No templates found</p>
+              <p className="text-muted-foreground">No templates in this category</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -184,16 +276,20 @@ const DocumentTemplates = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="line-clamp-3">{template.description}</CardDescription>
-                    <div className="mt-4 flex gap-2">
+                    <CardDescription className="line-clamp-3 mb-4">
+                      {template.description}
+                    </CardDescription>
+                    <div className="flex gap-2">
                       <Button 
-                        variant="ghost" 
+                        variant="outline" 
                         size="sm"
+                        className="flex-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleViewTemplate(template);
                         }}
                       >
+                        <FileText className="h-3 w-3 mr-2" />
                         View Template
                       </Button>
                     </div>
@@ -210,35 +306,56 @@ const DocumentTemplates = () => {
         <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
-              <span>{selectedTemplate?.name}</span>
+              <div className="flex items-center gap-2">
+                <span>{getCategoryIcon(selectedTemplate?.category || '')}</span>
+                <span>{selectedTemplate?.name}</span>
+              </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyTemplate}
-                  disabled={!selectedTemplate?.content}
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDownloadTemplate}
-                  disabled={!selectedTemplate?.content}
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyTemplate}
+                        disabled={!selectedTemplate?.content}
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="h-4 w-4 mr-2" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Copy template to clipboard</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDownloadTemplate}
+                        disabled={!selectedTemplate?.content}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Download as text file</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </DialogTitle>
             <DialogDescription>
