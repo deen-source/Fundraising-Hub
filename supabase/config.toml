@@ -2,3 +2,6 @@ project_id = "wbqvaumniyyblihyizmi"
 
 [functions.analyze-term-sheet]
 verify_jwt = true
+
+[functions.analyze-pitch-deck]
+verify_jwt = true
