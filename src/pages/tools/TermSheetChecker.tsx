@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
-import { ArrowLeft, Loader2, AlertTriangle, Shield, TrendingUp, Target, DollarSign, Scale, FileText, Download, Lightbulb, Mail } from 'lucide-react';
+import { ArrowLeft, Loader2, AlertTriangle, Shield, TrendingUp, Target, DollarSign, Scale, FileText, Download, Lightbulb, Mail, CheckCircle, AlertCircle, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -298,429 +298,316 @@ Click 'Load Example' to see a sample term sheet"
             </Card>
 
             {analysis && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <Card className="glass-card border-primary/20">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                        <Scale className="w-4 h-4" />
-                        Overall Score
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold text-primary mb-2">
+              <div className="space-y-6">
+                {/* Executive Summary */}
+                <Card className="glass-card p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-6 h-6" />
+                    Executive Summary
+                  </h2>
+                  <p className="text-muted-foreground leading-relaxed mb-6">{analysis.summary}</p>
+                  <div className="grid md:grid-cols-4 gap-4">
+                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
+                      <div className="text-4xl font-bold text-primary mb-1">
                         {analysis.overall_score}/10
                       </div>
-                      <Progress value={analysis.overall_score * 10} className="h-2 mb-2" />
-                      <Badge variant="outline" className="text-xs">
-                        {analysis.deal_type?.toUpperCase() || 'TERM SHEET'}
-                      </Badge>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-card border-primary/20">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4" />
-                        Investor Bias
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold text-orange-500 mb-2">
-                        {analysis.investor_friendliness}/10
-                      </div>
-                      <Progress value={analysis.investor_friendliness * 10} className="h-2 mb-2" />
-                      <p className="text-xs text-muted-foreground">
-                        {analysis.investor_friendliness > 7 ? 'Very investor-friendly' :
-                         analysis.investor_friendliness > 5 ? 'Balanced' : 'Founder-friendly'}
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-card border-primary/20">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        Issues Found
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold text-red-500 mb-2">
+                      <div className="text-sm text-muted-foreground">Overall Score</div>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
+                      <div className="text-4xl font-bold text-destructive mb-1">
                         {analysis.red_flags?.length || 0}
                       </div>
-                      <Progress value={Math.min((analysis.red_flags?.length || 0) * 20, 100)} className="h-2 mb-2" />
-                      <p className="text-xs text-muted-foreground">
-                        {analysis.red_flags?.length === 0 ? 'Clean term sheet' : 'Requires attention'}
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-card border-primary/20">
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                        <Target className="w-4 h-4" />
-                        Action Items
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold text-primary mb-2">
-                        {analysis.negotiation_priorities?.length || 0}
+                      <div className="text-sm text-muted-foreground">Critical Issues</div>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
+                      <div className="text-4xl font-bold text-orange-500 mb-1">
+                        {analysis.investor_friendliness}/10
                       </div>
-                      <Progress value={Math.min((analysis.negotiation_priorities?.length || 0) * 20, 100)} className="h-2 mb-2" />
-                      <p className="text-xs text-muted-foreground">
-                        Negotiation priorities
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card className="glass-card border-primary/20">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Risk Distribution</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={250}>
-                        <PieChart>
-                          <Pie
-                            data={riskChartData}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {riskChartData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="glass-card border-primary/20">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Term Sheet Balance</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={250}>
-                        <RadarChart data={termScoring}>
-                          <PolarGrid stroke="#334155" />
-                          <PolarAngleAxis dataKey="category" stroke="#94a3b8" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-                          <PolarRadiusAxis angle={90} domain={[0, 100]} stroke="#334155" tick={{ fill: '#94a3b8' }} />
-                          <Radar name="Score" dataKey="score" stroke="#22d3ee" fill="#22d3ee" fillOpacity={0.5} />
-                          <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-                        </RadarChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card className="glass-card border-primary/20">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-primary" />
-                      Executive Summary
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-muted-foreground leading-relaxed text-lg">{analysis.summary}</p>
-                    {analysis.comparable_deals && (
-                      <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                        <h4 className="font-semibold mb-2 flex items-center gap-2">
-                          <TrendingUp className="w-4 h-4" />
-                          Market Comparison
-                        </h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{analysis.comparable_deals}</p>
+                      <div className="text-sm text-muted-foreground">Investor Bias</div>
+                    </div>
+                    <div className="text-center p-4 bg-background/50 rounded-lg backdrop-blur">
+                      <div className="text-4xl font-bold text-blue-500 mb-1">
+                        {analysis.critical_terms?.length || 0}
                       </div>
-                    )}
-                  </CardContent>
+                      <div className="text-sm text-muted-foreground">Terms Analyzed</div>
+                    </div>
+                  </div>
                 </Card>
 
-                <Tabs defaultValue="terms" className="w-full">
-                  <TabsList className="grid w-full grid-cols-5">
-                    <TabsTrigger value="terms">Key Terms</TabsTrigger>
-                    <TabsTrigger value="risks">
-                      Red Flags
-                      {analysis.red_flags?.length > 0 && (
-                        <Badge variant="destructive" className="ml-2">{analysis.red_flags.length}</Badge>
-                      )}
-                    </TabsTrigger>
-                    <TabsTrigger value="positives">Green Flags</TabsTrigger>
-                    <TabsTrigger value="negotiation">Strategy</TabsTrigger>
-                    <TabsTrigger value="scenarios">Financial Impact</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="terms" className="mt-6 space-y-4">
-                    <Card className="glass-card border-primary/20">
-                      <CardHeader>
-                        <CardTitle>Critical Terms Deep Dive</CardTitle>
-                        <CardDescription>
-                          Click each term for detailed analysis and negotiation advice
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <Accordion type="single" collapsible className="w-full">
-                          {analysis.critical_terms?.map((term: any, idx: number) => (
-                            <AccordionItem key={idx} value={`term-${idx}`} className="border-border">
-                              <AccordionTrigger className="hover:no-underline">
-                                <div className="flex items-center justify-between w-full pr-4">
-                                  <div className="flex items-center gap-3">
-                                    <Badge className={getRiskColor(term.risk_level)}>
-                                      {term.risk_level}
-                                    </Badge>
-                                    <span className="font-semibold text-left">{term.term}</span>
-                                  </div>
-                                  <span className="text-sm text-primary">{term.value}</span>
-                                </div>
-                              </AccordionTrigger>
-                              <AccordionContent>
-                                <div className="space-y-4 pt-4">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-lg bg-background/50 border border-border">
-                                      <h5 className="text-xs font-medium text-muted-foreground mb-2">📊 Market Standard</h5>
-                                      <p className="text-sm">{term.market_standard}</p>
-                                    </div>
-                                    <div className="p-4 rounded-lg bg-background/50 border border-border">
-                                      <h5 className="text-xs font-medium text-muted-foreground mb-2">📈 Impact Analysis</h5>
-                                      <p className="text-sm text-muted-foreground">{term.analysis}</p>
-                                    </div>
-                                  </div>
-                                  <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                                    <h5 className="text-xs font-medium text-primary mb-2 flex items-center gap-2">
-                                      <Target className="w-4 h-4" />
-                                      Negotiation Advice
-                                    </h5>
-                                    <p className="text-sm">{term.negotiation_advice}</p>
-                                  </div>
-                                </div>
-                              </AccordionContent>
-                            </AccordionItem>
-                          ))}
-                        </Accordion>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-
-                  <TabsContent value="risks" className="mt-6 space-y-4">
-                    {analysis.red_flags?.length > 0 ? (
-                      analysis.red_flags.map((flag: any, idx: number) => (
-                        <Card key={idx} className="glass-card border-red-500/30">
-                          <CardHeader>
+                {/* Critical Issues Section */}
+                {analysis.red_flags && analysis.red_flags.length > 0 && (
+                  <Card className="glass-card p-6 border-destructive/50 bg-destructive/5">
+                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-destructive">
+                      <AlertTriangle className="w-6 h-6" />
+                      Critical Issues Requiring Immediate Attention
+                    </h2>
+                    <div className="space-y-4">
+                      {analysis.red_flags.map((flag: any, index: number) => (
+                        <Card key={index} className="p-5 bg-background border-destructive/20">
+                          <div className="space-y-3">
                             <div className="flex items-start justify-between">
-                              <CardTitle className="text-lg flex items-center gap-2">
-                                <AlertTriangle className="w-5 h-5 text-red-500" />
+                              <h3 className="font-semibold text-lg flex items-center gap-2">
+                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-destructive text-destructive-foreground text-sm">
+                                  {index + 1}
+                                </span>
                                 {flag.clause}
-                              </CardTitle>
-                              <Badge className={`${getSeverityColor(flag.severity)} border`}>
+                              </h3>
+                              <Badge variant="destructive">
                                 {flag.severity}
                               </Badge>
                             </div>
-                          </CardHeader>
-                          <CardContent className="space-y-3">
-                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                              <h5 className="text-sm font-semibold text-red-400 mb-1">⚠️ Issue</h5>
-                              <p className="text-sm">{flag.issue}</p>
-                            </div>
-                            <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                              <h5 className="text-sm font-semibold text-orange-400 mb-1">💥 Potential Consequence</h5>
-                              <p className="text-sm">{flag.consequence}</p>
-                            </div>
-                            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                              <h5 className="text-sm font-semibold text-green-400 mb-1">✅ Recommended Solution</h5>
-                              <p className="text-sm">{flag.solution}</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
-                    ) : (
-                      <Card className="glass-card border-green-500/30">
-                        <CardContent className="text-center py-12">
-                          <Shield className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                          <h3 className="text-2xl font-bold text-green-500 mb-2">No Major Red Flags!</h3>
-                          <p className="text-muted-foreground">
-                            This term sheet appears to have standard market terms with no critical issues.
-                          </p>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </TabsContent>
-
-                  <TabsContent value="positives" className="mt-6">
-                    <Card className="glass-card border-green-500/30">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-green-500">
-                          <Shield className="w-5 h-5" />
-                          Founder-Friendly Terms
-                        </CardTitle>
-                        <CardDescription>
-                          Positive aspects that work in your favor
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        {analysis.green_flags?.length > 0 ? (
-                          analysis.green_flags.map((flag: string, idx: number) => (
-                            <div key={idx} className="p-4 rounded-lg bg-green-500/10 border border-green-500/20 flex items-start gap-3">
-                              <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <span className="text-green-500 text-sm font-bold">✓</span>
+                            <div className="pl-8 space-y-3">
+                              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                                <h4 className="text-sm font-semibold mb-1 flex items-center gap-2 text-destructive">
+                                  <AlertTriangle className="w-4 h-4" />
+                                  The Issue
+                                </h4>
+                                <p className="text-sm text-muted-foreground">{flag.issue}</p>
                               </div>
-                              <p className="text-sm flex-1">{flag}</p>
+                              <div className="p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                                <h4 className="text-sm font-semibold mb-1 flex items-center gap-2 text-orange-500">
+                                  <AlertCircle className="w-4 h-4" />
+                                  Potential Consequence
+                                </h4>
+                                <p className="text-sm text-muted-foreground">{flag.consequence}</p>
+                              </div>
+                              <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                                <h4 className="text-sm font-semibold mb-1 flex items-center gap-2 text-green-600">
+                                  <CheckCircle className="w-4 h-4" />
+                                  Recommended Solution
+                                </h4>
+                                <p className="text-sm text-muted-foreground">{flag.solution}</p>
+                              </div>
                             </div>
-                          ))
-                        ) : (
-                          <p className="text-center text-muted-foreground py-8">
-                            No specific green flags identified in this analysis
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </Card>
+                )}
 
-                  <TabsContent value="negotiation" className="mt-6 space-y-4">
-                    {analysis.negotiation_priorities?.map((priority: any, idx: number) => (
-                      <Card key={idx} className="glass-card border-primary/20">
-                        <CardHeader>
-                          <div className="flex items-start justify-between">
-                            <CardTitle className="flex items-center gap-3">
+                {/* Areas to Improve */}
+                {analysis.critical_terms && analysis.critical_terms.filter((t: any) => t.risk_level === 'Medium' || t.risk_level === 'High').length > 0 && (
+                  <Card className="glass-card p-6 border-yellow-500/50 bg-yellow-500/5">
+                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-yellow-600">
+                      <AlertCircle className="w-6 h-6" />
+                      Areas for Improvement
+                    </h2>
+                    <div className="space-y-3">
+                      {analysis.critical_terms
+                        .filter((term: any) => term.risk_level === 'Medium' || term.risk_level === 'High')
+                        .map((term: any, index: number) => (
+                          <Card key={index} className="p-5 bg-background">
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div>
+                                <div className="flex items-center justify-between mb-3">
+                                  <h3 className="font-semibold text-lg">{term.term}</h3>
+                                  <Badge variant={term.risk_level === 'High' ? 'destructive' : 'default'}>
+                                    {term.risk_level} risk
+                                  </Badge>
+                                </div>
+                                <div className="space-y-2">
+                                  <div>
+                                    <span className="text-sm font-medium">Current Value:</span>
+                                    <p className="text-sm text-muted-foreground">{term.value}</p>
+                                  </div>
+                                  <div>
+                                    <span className="text-sm font-medium">Market Standard:</span>
+                                    <p className="text-sm text-muted-foreground">{term.market_standard}</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold mb-2">Impact & Recommendation</h4>
+                                <p className="text-sm text-muted-foreground mb-3">{term.analysis}</p>
+                                <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                                  <p className="text-sm">{term.negotiation_advice}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                    </div>
+                  </Card>
+                )}
+
+                {/* Strong Points */}
+                {analysis.green_flags && analysis.green_flags.length > 0 && (
+                  <Card className="glass-card p-6 border-green-500/50 bg-green-500/5">
+                    <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-green-600">
+                      <CheckCircle className="w-6 h-6" />
+                      Strong Points & Favorable Terms
+                    </h2>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {analysis.green_flags.map((flag: string, index: number) => (
+                        <Card key={index} className="p-4 bg-background flex items-start gap-3">
+                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm">{flag}</p>
+                        </Card>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+
+                {/* Detailed Term Analysis */}
+                <Card className="glass-card p-6">
+                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                    <FileText className="w-6 h-6" />
+                    Detailed Term Analysis
+                  </h2>
+                  <Accordion type="single" collapsible className="w-full">
+                    {analysis.critical_terms?.map((term: any, index: number) => (
+                      <AccordionItem key={index} value={`term-${index}`}>
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex items-center justify-between w-full pr-4">
+                            <div className="flex items-center gap-3">
+                              <Badge className={getRiskColor(term.risk_level)}>
+                                {term.risk_level}
+                              </Badge>
+                              <span className="font-semibold">{term.term}</span>
+                            </div>
+                            <span className="text-sm text-primary">{term.value}</span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-4">
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div className="p-4 rounded-lg bg-background/50 border">
+                              <h4 className="font-semibold mb-2">Market Standard</h4>
+                              <p className="text-sm text-muted-foreground">{term.market_standard}</p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-background/50 border">
+                              <h4 className="font-semibold mb-2">Impact Analysis</h4>
+                              <p className="text-sm text-muted-foreground">{term.analysis}</p>
+                            </div>
+                          </div>
+                          <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                            <h4 className="font-semibold mb-2 flex items-center gap-2 text-primary">
+                              <Target className="w-4 h-4" />
+                              Negotiation Advice
+                            </h4>
+                            <p className="text-sm">{term.negotiation_advice}</p>
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </Card>
+
+                {/* Negotiation Strategy */}
+                <Card className="glass-card p-6 bg-gradient-to-br from-blue-500/5 to-purple-500/5 border-blue-500/20">
+                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                    <Target className="w-6 h-6" />
+                    Negotiation Strategy & Action Plan
+                  </h2>
+                  {analysis.negotiation_priorities && analysis.negotiation_priorities.length > 0 ? (
+                    <div className="space-y-4">
+                      {analysis.negotiation_priorities.map((priority: any, index: number) => (
+                        <Card key={index} className="p-5 bg-background">
+                          <div className="flex items-start justify-between mb-3">
+                            <h3 className="font-semibold text-lg flex items-center gap-3">
                               <Badge variant="default" className="text-lg px-3 py-1">
                                 #{priority.priority}
                               </Badge>
-                              <span>{priority.item}</span>
-                            </CardTitle>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-2">
-                                  <Mail className="w-4 h-4" />
-                                  Email Template
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle>Negotiation Email Template</DialogTitle>
-                                  <DialogDescription>
-                                    Pre-written email to start the conversation
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <Textarea
-                                  value={generateNegotiationEmail(priority)}
-                                  rows={12}
-                                  className="font-mono text-sm"
-                                  readOnly
-                                />
-                                <Button onClick={() => {
-                                  navigator.clipboard.writeText(generateNegotiationEmail(priority));
-                                  toast.success('Email template copied to clipboard!');
-                                }}>
-                                  Copy to Clipboard
-                                </Button>
-                              </DialogContent>
-                            </Dialog>
+                              {priority.item}
+                            </h3>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-2"
+                              onClick={() => {
+                                const email = generateNegotiationEmail(priority);
+                                navigator.clipboard.writeText(email);
+                                toast.success('Email template copied to clipboard!');
+                              }}
+                            >
+                              <Copy className="w-4 h-4" />
+                              Copy Email
+                            </Button>
                           </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div className="p-4 rounded-lg bg-background/50 border border-border">
-                            <h5 className="text-sm font-medium mb-2 text-muted-foreground">Why This Matters</h5>
-                            <p className="text-sm">{priority.rationale}</p>
+                          <div className="space-y-3 pl-12">
+                            <div className="p-3 rounded-lg bg-background/50 border">
+                              <h4 className="text-sm font-medium mb-1 text-muted-foreground">Why This Matters</h4>
+                              <p className="text-sm">{priority.rationale}</p>
+                            </div>
+                            <div className="p-3 rounded-lg bg-primary/10 border border-primary/20">
+                              <h4 className="text-sm font-medium mb-1 text-primary">Suggested Approach</h4>
+                              <p className="text-sm">{priority.suggested_approach}</p>
+                            </div>
                           </div>
-                          <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                            <h5 className="text-sm font-medium mb-2 text-primary">Suggested Approach</h5>
-                            <p className="text-sm">{priority.suggested_approach}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </TabsContent>
-
-                  <TabsContent value="scenarios" className="mt-6 space-y-6">
-                    {analysis.financial_scenarios && exitScenarios.length > 0 && (
-                      <>
-                        <Card className="glass-card border-primary/20">
-                          <CardHeader>
-                            <CardTitle>Exit Scenario Comparison</CardTitle>
-                            <CardDescription>
-                              How your returns compare to investors across different outcomes
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                            <ResponsiveContainer width="100%" height={300}>
-                              <BarChart data={exitScenarios}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                                <XAxis dataKey="name" stroke="#94a3b8" />
-                                <YAxis stroke="#94a3b8" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
-                                <Tooltip
-                                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                                  formatter={(value: any) => formatCurrency(value)}
-                                />
-                                <Legend />
-                                <Bar dataKey="Your Return" fill="#22d3ee" />
-                                <Bar dataKey="Investor Return" fill="#06b6d4" />
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </CardContent>
                         </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground">No specific negotiation priorities identified.</p>
+                  )}
+                </Card>
 
+                {/* Financial Impact */}
+                <Card className="glass-card p-6">
+                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                    <DollarSign className="w-6 h-6" />
+                    Financial Impact Analysis
+                  </h2>
+                  {analysis.financial_scenarios && exitScenarios.length > 0 ? (
+                    <div className="space-y-6">
+                      <ResponsiveContainer width="100%" height={300}>
+                        <BarChart data={exitScenarios}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                          <XAxis dataKey="name" stroke="#94a3b8" />
+                          <YAxis stroke="#94a3b8" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
+                          <Tooltip
+                            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                            formatter={(value: any) => formatCurrency(value)}
+                          />
+                          <Legend />
+                          <Bar dataKey="Your Return" fill="#22d3ee" />
+                          <Bar dataKey="Investor Return" fill="#06b6d4" />
+                        </BarChart>
+                      </ResponsiveContainer>
+
+                      <div className="grid md:grid-cols-3 gap-4">
                         {Object.entries(analysis.financial_scenarios).map(([scenario, data]: [string, any]) => (
-                          <Card key={scenario} className="glass-card border-primary/20">
-                            <CardHeader>
-                              <CardTitle className="text-lg">
-                                {scenario.replace('exit_', '').replace('x', 'x Return')} Exit Scenario
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="p-4 rounded-lg bg-background/50 border border-border">
-                                  <div className="text-xs text-muted-foreground mb-1">Company Exit Value</div>
-                                  <div className="text-xl font-bold text-primary">
-                                    {formatCurrency(data.company_exit_value)}
-                                  </div>
-                                </div>
-                                <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                                  <div className="text-xs text-muted-foreground mb-1">Investor Return</div>
-                                  <div className="text-xl font-bold text-blue-500">
-                                    {formatCurrency(data.investor_return)}
-                                  </div>
-                                </div>
-                                <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
-                                  <div className="text-xs text-muted-foreground mb-1">Your Return</div>
-                                  <div className="text-xl font-bold text-green-500">
-                                    {formatCurrency(data.founder_return)}
-                                  </div>
-                                </div>
-                                <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                                  <div className="text-xs text-muted-foreground mb-1">Your Ownership</div>
-                                  <div className="text-xl font-bold text-primary">
-                                    {data.founder_percentage?.toFixed(2)}%
-                                  </div>
-                                </div>
+                          <Card key={scenario} className="p-4 bg-muted/50">
+                            <h4 className="font-semibold mb-3 capitalize text-center">
+                              {scenario.replace('exit_', '').replace('x', 'x Exit')}
+                            </h4>
+                            <div className="space-y-3">
+                              <div className="text-center pb-2 border-b">
+                                <div className="text-xs text-muted-foreground mb-1">Company Value</div>
+                                <div className="text-xl font-bold text-primary">{formatCurrency(data.company_exit_value)}</div>
                               </div>
-                            </CardContent>
+                              <div className="text-center">
+                                <div className="text-xs text-muted-foreground mb-1">Your Return</div>
+                                <div className="text-2xl font-bold text-green-500">{formatCurrency(data.founder_return)}</div>
+                                <div className="text-xs text-muted-foreground mt-1">{data.founder_percentage?.toFixed(2)}% ownership</div>
+                              </div>
+                              <div className="text-center pt-2 border-t">
+                                <div className="text-xs text-muted-foreground mb-1">Investor Return</div>
+                                <div className="text-xl font-bold text-blue-500">{formatCurrency(data.investor_return)}</div>
+                              </div>
+                            </div>
                           </Card>
                         ))}
-                      </>
-                    )}
-                  </TabsContent>
-                </Tabs>
-
-                <Card className="glass-card border-primary/20 border-2 bg-primary/5">
-                  <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-2">
-                      <TrendingUp className="w-6 h-6 text-primary" />
-                      Final Recommendation
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="p-6 rounded-lg bg-primary/20 border border-primary">
-                      <p className="text-lg font-medium leading-relaxed">
-                        {analysis.final_recommendation}
-                      </p>
+                      </div>
                     </div>
-                  </CardContent>
+                  ) : (
+                    <p className="text-muted-foreground">No financial scenarios available.</p>
+                  )}
                 </Card>
-              </>
+
+                {/* Final Recommendation */}
+                <Card className="glass-card border-primary/20 border-2 bg-primary/5 p-6">
+                  <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-6 h-6 text-primary" />
+                    Final Recommendation
+                  </h2>
+                  <div className="p-6 rounded-lg bg-primary/20 border border-primary">
+                    <p className="text-lg font-medium leading-relaxed">
+                      {analysis.final_recommendation}
+                    </p>
+                  </div>
+                </Card>
+              </div>
             )}
           </div>
         </div>
