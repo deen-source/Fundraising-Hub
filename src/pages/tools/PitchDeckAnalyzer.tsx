@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
-import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight, BookOpen, Lightbulb, AlertCircle, Users, DollarSign, LineChart, Presentation, Upload, X } from 'lucide-react';
+import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight, BookOpen, Lightbulb, AlertCircle, Users, DollarSign, LineChart, Presentation, Upload, X, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -29,6 +29,33 @@ const PitchDeckAnalyzer = () => {
   const [loading, setLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [extracting, setExtracting] = useState(false);
+  const [pastAnalyses, setPastAnalyses] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+
+  useEffect(() => {
+    loadPastAnalyses();
+  }, []);
+
+  const loadPastAnalyses = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('term_sheet_analyses')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      setPastAnalyses(data || []);
+    } catch (error) {
+      console.error('Error loading past analyses:', error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -81,6 +108,12 @@ const PitchDeckAnalyzer = () => {
 
     setLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Please sign in to analyze your deck');
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('analyze-pitch-deck', {
         body: { deckContent },
       });
@@ -88,13 +121,35 @@ const PitchDeckAnalyzer = () => {
       if (error) throw error;
 
       setAnalysis(data.analysis);
-      toast.success('Analysis complete!');
+
+      // Save to database
+      const { error: saveError } = await supabase
+        .from('term_sheet_analyses')
+        .insert({
+          user_id: user.id,
+          term_sheet_text: deckContent.substring(0, 1000), // Store preview
+          analysis_result: data.analysis
+        });
+
+      if (saveError) {
+        console.error('Error saving analysis:', saveError);
+        toast.error('Analysis complete but failed to save');
+      } else {
+        toast.success('Analysis complete and saved!');
+        loadPastAnalyses(); // Refresh history
+      }
     } catch (error: any) {
       console.error('Analysis error:', error);
       toast.error(error.message || 'Failed to analyze pitch deck');
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadPastAnalysis = (analysis: any) => {
+    setDeckContent(analysis.term_sheet_text);
+    setAnalysis(analysis.analysis_result);
+    toast.success('Loaded past analysis');
   };
 
   const getScoreColor = (score: number) => {
@@ -128,6 +183,7 @@ const PitchDeckAnalyzer = () => {
         return 'outline';
     }
   };
+
 
   return (
     <AuthGuard>
@@ -215,6 +271,42 @@ const PitchDeckAnalyzer = () => {
 
               {/* Analyzer Tab */}
               <TabsContent value="analyzer" className="space-y-8">
+                {/* Past Analyses */}
+                {pastAnalyses.length > 0 && (
+                  <Card className="border-2 border-primary/20">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-primary" />
+                        Recent Analyses
+                      </CardTitle>
+                      <CardDescription>
+                        Load a previous pitch deck analysis
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {pastAnalyses.map((item) => (
+                          <div
+                            key={item.id}
+                            onClick={() => loadPastAnalysis(item)}
+                            className="flex items-center justify-between p-4 rounded-lg border border-primary/20 bg-card/50 hover:bg-card/70 transition-colors cursor-pointer group"
+                          >
+                            <div className="flex-1">
+                              <div className="text-sm font-medium">
+                                {item.term_sheet_text.substring(0, 60)}...
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {new Date(item.created_at).toLocaleDateString()} at {new Date(item.created_at).toLocaleTimeString()}
+                              </div>
+                            </div>
+                            <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Input Card */}
                 <Card className="border-2 border-dashed border-primary/20 bg-card/50 backdrop-blur">
                   <CardHeader>
