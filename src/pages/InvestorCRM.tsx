@@ -12,6 +12,11 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 import { 
   Table, 
@@ -33,7 +38,8 @@ import {
   MapPin,
   TrendingUp,
   Clock,
-  Star
+  Star,
+  ChevronDown
 } from "lucide-react";
 import { InvestorDialog } from "@/components/investor/InvestorDialog";
 import { BulkImportDialog } from "@/components/investor/BulkImportDialog";
@@ -90,6 +96,7 @@ const InvestorCRM = () => {
   const [isCampaignDialogOpen, setIsCampaignDialogOpen] = useState(false);
   const [isBulkUpdateDialogOpen, setIsBulkUpdateDialogOpen] = useState(false);
   const [bulkUpdateType, setBulkUpdateType] = useState<"pipeline" | "priority" | "tags">("pipeline");
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const pipelineStages = [
     { value: "research", label: "Research", color: "bg-slate-500" },
@@ -370,136 +377,150 @@ const InvestorCRM = () => {
           </div>
 
           {/* Filters */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
-                Advanced Filters
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="relative md:col-span-3">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search investors..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9"
-                    />
+          <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+            <Card className="mb-6">
+              <CollapsibleTrigger asChild>
+                <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-5 w-5" />
+                      Advanced Filters
+                      {(searchQuery || pipelineFilter !== "all" || priorityFilter !== "all" || 
+                        stageFilter !== "all" || locationFilter !== "all" || tagsFilter.length > 0 || 
+                        industriesFilter.length > 0 || checkSizeMin || checkSizeMax || fitScoreMin) && (
+                        <Badge variant="secondary" className="ml-2">Active</Badge>
+                      )}
+                    </div>
+                    <ChevronDown className={`h-5 w-5 transition-transform ${isFiltersOpen ? 'rotate-180' : ''}`} />
+                  </CardTitle>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="relative md:col-span-3">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search investors..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-9"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Select value={pipelineFilter} onValueChange={setPipelineFilter}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Pipeline Stage" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Stages</SelectItem>
+                          {pipelineStages.map(stage => (
+                            <SelectItem key={stage.value} value={stage.value}>
+                              {stage.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Priority" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Priorities</SelectItem>
+                          <SelectItem value="high">High</SelectItem>
+                          <SelectItem value="medium">Medium</SelectItem>
+                          <SelectItem value="low">Low</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select value={stageFilter} onValueChange={setStageFilter}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Investment Stage" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Investment Stages</SelectItem>
+                          {uniqueStages.map(stage => (
+                            <SelectItem key={stage} value={stage}>{stage}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Select value={locationFilter} onValueChange={setLocationFilter}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Location" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Locations</SelectItem>
+                          {uniqueLocations.map(location => (
+                            <SelectItem key={location} value={location}>{location}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <MultiSelectFilter
+                        options={uniqueTags}
+                        selectedValues={tagsFilter}
+                        onChange={setTagsFilter}
+                        placeholder="Tags"
+                      />
+
+                      <MultiSelectFilter
+                        options={uniqueIndustries}
+                        selectedValues={industriesFilter}
+                        onChange={setIndustriesFilter}
+                        placeholder="Industries"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="flex gap-2 md:col-span-2">
+                        <Input
+                          type="number"
+                          placeholder="Min check ($M)"
+                          value={checkSizeMin}
+                          onChange={(e) => setCheckSizeMin(e.target.value)}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Max check ($M)"
+                          value={checkSizeMax}
+                          onChange={(e) => setCheckSizeMax(e.target.value)}
+                        />
+                      </div>
+
+                      <Input
+                        type="number"
+                        placeholder="Min fit score (0-100)"
+                        value={fitScoreMin}
+                        onChange={(e) => setFitScoreMin(e.target.value)}
+                        min="0"
+                        max="100"
+                      />
+                    </div>
+
+                    {(tagsFilter.length > 0 || industriesFilter.length > 0) && (
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        {tagsFilter.map(tag => (
+                          <Badge key={tag} variant="secondary">
+                            {tag}
+                          </Badge>
+                        ))}
+                        {industriesFilter.map(industry => (
+                          <Badge key={industry} variant="secondary">
+                            {industry}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Select value={pipelineFilter} onValueChange={setPipelineFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pipeline Stage" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Stages</SelectItem>
-                      {pipelineStages.map(stage => (
-                        <SelectItem key={stage.value} value={stage.value}>
-                          {stage.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Priorities</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={stageFilter} onValueChange={setStageFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Investment Stage" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Investment Stages</SelectItem>
-                      {uniqueStages.map(stage => (
-                        <SelectItem key={stage} value={stage}>{stage}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Select value={locationFilter} onValueChange={setLocationFilter}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Location" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Locations</SelectItem>
-                      {uniqueLocations.map(location => (
-                        <SelectItem key={location} value={location}>{location}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <MultiSelectFilter
-                    options={uniqueTags}
-                    selectedValues={tagsFilter}
-                    onChange={setTagsFilter}
-                    placeholder="Tags"
-                  />
-
-                  <MultiSelectFilter
-                    options={uniqueIndustries}
-                    selectedValues={industriesFilter}
-                    onChange={setIndustriesFilter}
-                    placeholder="Industries"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex gap-2 md:col-span-2">
-                    <Input
-                      type="number"
-                      placeholder="Min check ($M)"
-                      value={checkSizeMin}
-                      onChange={(e) => setCheckSizeMin(e.target.value)}
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Max check ($M)"
-                      value={checkSizeMax}
-                      onChange={(e) => setCheckSizeMax(e.target.value)}
-                    />
-                  </div>
-
-                  <Input
-                    type="number"
-                    placeholder="Min fit score (0-100)"
-                    value={fitScoreMin}
-                    onChange={(e) => setFitScoreMin(e.target.value)}
-                    min="0"
-                    max="100"
-                  />
-                </div>
-
-                {(tagsFilter.length > 0 || industriesFilter.length > 0) && (
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {tagsFilter.map(tag => (
-                      <Badge key={tag} variant="secondary">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {industriesFilter.map(industry => (
-                      <Badge key={industry} variant="secondary">
-                        {industry}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
 
           {/* Investors Table */}
           <Card>
