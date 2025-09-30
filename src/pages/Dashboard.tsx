@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   FileCheck,
   TrendingUp,
@@ -15,6 +17,9 @@ import {
   BarChart3,
   Calendar,
   LogOut,
+  Clock,
+  Trash2,
+  ExternalLink,
 } from 'lucide-react';
 
 const tools = [
@@ -111,28 +116,78 @@ const tools = [
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('');
+  const [savedCalculations, setSavedCalculations] = useState<any[]>([]);
+  const [termSheetAnalyses, setTermSheetAnalyses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUserName = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user.id)
-          .single();
-        
-        setUserName(profile?.full_name || user.email?.split('@')[0] || 'Founder');
-      }
-    };
-
-    getUserName();
+    loadUserData();
   }, []);
+
+  const loadUserData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Load user profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .single();
+    
+    setUserName(profile?.full_name || user.email?.split('@')[0] || 'Founder');
+
+    // Load saved calculations
+    const { data: calculations } = await supabase
+      .from('saved_calculations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (calculations) setSavedCalculations(calculations);
+
+    // Load term sheet analyses
+    const { data: analyses } = await supabase
+      .from('term_sheet_analyses')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (analyses) setTermSheetAnalyses(analyses);
+
+    setLoading(false);
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate('/auth');
   };
+
+  const handleDeleteCalculation = async (id: string) => {
+    await supabase.from('saved_calculations').delete().eq('id', id);
+    loadUserData();
+  };
+
+  const handleDeleteAnalysis = async (id: string) => {
+    await supabase.from('term_sheet_analyses').delete().eq('id', id);
+    loadUserData();
+  };
+
+  const getToolInfo = (toolType: string) => {
+    const toolMap: any = {
+      'cap_table': { name: 'Cap Table', icon: PieChart, path: '/tools/cap-table' },
+      'valuation': { name: 'Valuation', icon: DollarSign, path: '/tools/valuation' },
+      'safe': { name: 'SAFE Calculator', icon: Calculator, path: '/tools/safe-calculator' },
+      'dilution': { name: 'Dilution', icon: BarChart3, path: '/tools/dilution' },
+      'timeline': { name: 'Timeline', icon: Calendar, path: '/tools/timeline' },
+      'benchmarks': { name: 'Benchmarks', icon: TrendingUp, path: '/tools/benchmarks' },
+    };
+    return toolMap[toolType] || { name: toolType, icon: FileText, path: '/dashboard' };
+  };
+
+  const totalActivity = savedCalculations.length + termSheetAnalyses.length;
 
   return (
     <AuthGuard>
@@ -197,25 +252,238 @@ const Dashboard = () => {
             })}
           </div>
 
+          {/* Stats Overview */}
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card className="glass-card border-primary/20">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary mb-2">{totalActivity}</div>
+                  <div className="text-sm text-muted-foreground">Total Activities</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="glass-card border-primary/20">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary mb-2">{savedCalculations.length}</div>
+                  <div className="text-sm text-muted-foreground">Saved Calculations</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="glass-card border-primary/20">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary mb-2">{termSheetAnalyses.length}</div>
+                  <div className="text-sm text-muted-foreground">Term Sheet Analyses</div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="glass-card border-primary/20">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary mb-2">8</div>
+                  <div className="text-sm text-muted-foreground">Tools Available</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Activity */}
           <div className="mt-12">
             <Card className="glass-card border-primary/20">
               <CardHeader>
-                <CardTitle>Quick Stats</CardTitle>
-                <CardDescription>Your activity overview</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-primary" />
+                  Recent Activity
+                </CardTitle>
+                <CardDescription>Your latest calculations and analyses</CardDescription>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-1">0</div>
-                  <div className="text-sm text-muted-foreground">Saved Calculations</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-1">0</div>
-                  <div className="text-sm text-muted-foreground">Term Sheets Analyzed</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary mb-1">8</div>
-                  <div className="text-sm text-muted-foreground">Tools Available</div>
-                </div>
+              <CardContent>
+                <Tabs defaultValue="all" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 mb-6">
+                    <TabsTrigger value="all">All ({totalActivity})</TabsTrigger>
+                    <TabsTrigger value="calculations">Calculations ({savedCalculations.length})</TabsTrigger>
+                    <TabsTrigger value="analyses">Analyses ({termSheetAnalyses.length})</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="all" className="space-y-4">
+                    {totalActivity === 0 ? (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                        <p>No activity yet. Start using the tools to see your work here.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {[...savedCalculations, ...termSheetAnalyses]
+                          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                          .slice(0, 10)
+                          .map((item) => {
+                            const isCalculation = 'tool_type' in item;
+                            const toolInfo = isCalculation ? getToolInfo(item.tool_type) : { name: 'Term Sheet', icon: FileCheck, path: '/tools/term-sheet' };
+                            const Icon = toolInfo.icon;
+                            
+                            return (
+                              <div
+                                key={item.id}
+                                className="flex items-center justify-between p-4 rounded-lg border hover:border-primary/50 transition-colors bg-card/50"
+                              >
+                                <div className="flex items-center gap-4 flex-1">
+                                  <div className="p-2 rounded-lg bg-primary/10">
+                                    <Icon className="w-5 h-5 text-primary" />
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="font-medium">
+                                      {isCalculation ? item.title : 'Term Sheet Analysis'}
+                                    </div>
+                                    <div className="flex items-center gap-3 mt-1">
+                                      <Badge variant="secondary" className="text-xs">
+                                        {toolInfo.name}
+                                      </Badge>
+                                      <span className="text-xs text-muted-foreground">
+                                        {new Date(item.created_at).toLocaleDateString()} at {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => navigate(toolInfo.path)}
+                                    className="gap-2"
+                                  >
+                                    <ExternalLink className="w-4 h-4" />
+                                    Open
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => isCalculation ? handleDeleteCalculation(item.id) : handleDeleteAnalysis(item.id)}
+                                    className="text-destructive hover:text-destructive"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="calculations" className="space-y-4">
+                    {savedCalculations.length === 0 ? (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <Calculator className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                        <p>No saved calculations yet.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {savedCalculations.map((calc) => {
+                          const toolInfo = getToolInfo(calc.tool_type);
+                          const Icon = toolInfo.icon;
+                          
+                          return (
+                            <div
+                              key={calc.id}
+                              className="flex items-center justify-between p-4 rounded-lg border hover:border-primary/50 transition-colors bg-card/50"
+                            >
+                              <div className="flex items-center gap-4 flex-1">
+                                <div className="p-2 rounded-lg bg-primary/10">
+                                  <Icon className="w-5 h-5 text-primary" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-medium">{calc.title}</div>
+                                  <div className="flex items-center gap-3 mt-1">
+                                    <Badge variant="secondary" className="text-xs">
+                                      {toolInfo.name}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">
+                                      {new Date(calc.created_at).toLocaleDateString()} at {new Date(calc.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => navigate(toolInfo.path)}
+                                  className="gap-2"
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                  Open
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteCalculation(calc.id)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="analyses" className="space-y-4">
+                    {termSheetAnalyses.length === 0 ? (
+                      <div className="text-center py-12 text-muted-foreground">
+                        <FileCheck className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                        <p>No term sheet analyses yet.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {termSheetAnalyses.map((analysis) => (
+                          <div
+                            key={analysis.id}
+                            className="flex items-center justify-between p-4 rounded-lg border hover:border-primary/50 transition-colors bg-card/50"
+                          >
+                            <div className="flex items-center gap-4 flex-1">
+                              <div className="p-2 rounded-lg bg-primary/10">
+                                <FileCheck className="w-5 h-5 text-primary" />
+                              </div>
+                              <div className="flex-1">
+                                <div className="font-medium">Term Sheet Analysis</div>
+                                <div className="flex items-center gap-3 mt-1">
+                                  <Badge variant="secondary" className="text-xs">
+                                    Score: {analysis.analysis_result?.overall_score || 'N/A'}/10
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">
+                                    {new Date(analysis.created_at).toLocaleDateString()} at {new Date(analysis.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => navigate('/tools/term-sheet')}
+                                className="gap-2"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                                Open
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteAnalysis(analysis.id)}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
