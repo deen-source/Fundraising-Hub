@@ -152,6 +152,8 @@ const PitchDeckAnalyzer = () => {
     toast.success('Loaded past analysis');
   };
 
+
+  // Helper function to determine score color
   const getScoreColor = (score: number) => {
     if (score >= 8) return 'hsl(var(--success))';
     if (score >= 6) return 'hsl(var(--warning))';
