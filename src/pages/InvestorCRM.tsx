@@ -39,8 +39,7 @@ import {
   TrendingUp,
   Clock,
   Star,
-  ChevronDown,
-  Download
+  ChevronDown
 } from "lucide-react";
 import { InvestorDialog } from "@/components/investor/InvestorDialog";
 import { BulkImportDialog } from "@/components/investor/BulkImportDialog";
@@ -48,7 +47,6 @@ import { BulkActionsToolbar } from "@/components/investor/BulkActionsToolbar";
 import { OutreachCampaignDialog } from "@/components/investor/OutreachCampaignDialog";
 import { BulkUpdateDialog } from "@/components/investor/BulkUpdateDialog";
 import { MultiSelectFilter } from "@/components/investor/MultiSelectFilter";
-import { importInvestorDataToDatabase } from "@/utils/importInvestorData";
 
 interface Investor {
   id: string;
@@ -129,7 +127,21 @@ const InvestorCRM = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setInvestors(data || []);
+      
+      // If user has no investors, preload the default list
+      if (!data || data.length === 0) {
+        await preloadDefaultInvestors();
+        // Reload after preloading
+        const { data: newData, error: newError } = await supabase
+          .from("investors")
+          .select("*")
+          .order("created_at", { ascending: false });
+        
+        if (newError) throw newError;
+        setInvestors(newData || []);
+      } else {
+        setInvestors(data || []);
+      }
     } catch (error: any) {
       toast({
         title: "Error loading investors",
@@ -138,6 +150,79 @@ const InvestorCRM = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const preloadDefaultInvestors = async () => {
+    const defaultInvestors = [
+      { name: "1V", firm_name: "1V", website: "https://one-ventures.com.au/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "77 Partners", firm_name: "77 Partners", website: "www.77partners.vc", geographies: ["Brisbane"], pipeline_stage: "research", priority: "medium" },
+      { name: "808 Ventures", firm_name: "808 Ventures", website: "https://www.808ventures.vc", geographies: ["Perth"], pipeline_stage: "research", priority: "medium" },
+      { name: "1835i", firm_name: "1835i", website: "www.1835i.com", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "Acorn Capital", firm_name: "Acorn Capital", website: "https://acorncapital.com.au", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "Adams Street", firm_name: "Adams Street", website: "https://www.adamsstreetpartners.com/", geographies: ["Chicago"], pipeline_stage: "research", priority: "medium" },
+      { name: "AfterWork Ventures", firm_name: "AfterWork Ventures", website: "afterwork.vc", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Agnition Ventures", firm_name: "Agnition Ventures", website: "https://agnition.ventures/", geographies: ["Christchurch"], pipeline_stage: "research", priority: "medium" },
+      { name: "AgriZeroNZ", firm_name: "AgriZeroNZ", website: "AgriZero.nz", geographies: ["Auckland"], pipeline_stage: "research", priority: "medium" },
+      { name: "Airtree", firm_name: "Airtree", website: "https://airtree.vc/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Alabaster", firm_name: "Alabaster", website: "https://www.alabaster.com/", geographies: ["San Francisco"], pipeline_stage: "research", priority: "medium" },
+      { name: "Alberts Impact Ventures", firm_name: "Alberts Impact Ventures", website: "alberts.co", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Alchemy Ventures", firm_name: "Alchemy Ventures", website: "http://www.alchemventures.com.au", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "ALIAVIA Ventures", firm_name: "ALIAVIA Ventures", website: "https://www.aliavia.vc/", geographies: ["California"], pipeline_stage: "research", priority: "medium" },
+      { name: "Alium Capital", firm_name: "Alium Capital", website: "https://aliumcap.com/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Altered Capital", firm_name: "Altered Capital", website: "alteredcapital.com", geographies: ["Auckland"], pipeline_stage: "research", priority: "medium" },
+      { name: "Antler Fund LP", firm_name: "Antler Fund LP", website: "antler.co", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "ANU Connect Ventures", firm_name: "ANU Connect Ventures", website: "anuconnectventures.com.au", geographies: ["Canberra"], pipeline_stage: "research", priority: "medium" },
+      { name: "ANZi Ventures", firm_name: "ANZi Ventures", website: "anz.com", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Apex Capital Partners", firm_name: "Apex Capital Partners", website: "apexcapital.com.au", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "AraCapital", firm_name: "AraCapital", website: "aracapital.com.au", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Arbor Capital", firm_name: "Arbor Capital", website: "arborcapital.co", geographies: ["Brisbane"], pipeline_stage: "research", priority: "medium" },
+      { name: "Arcanys Ventures", firm_name: "Arcanys Ventures", website: "ventures.arcanys.com", geographies: [], pipeline_stage: "research", priority: "medium" },
+      { name: "Archangel Ventures", firm_name: "Archangel Ventures", website: "archangel.vc", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "Arowana Partners", firm_name: "Arowana Partners", website: "arowanaco.com/venture-capital", geographies: ["London"], pipeline_stage: "research", priority: "medium" },
+      { name: "Artesian Capital Management", firm_name: "Artesian Capital Management", website: "artesianinvest.com", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "AS1 Growth Partners", firm_name: "AS1 Growth Partners", website: "as1growthpartners.com", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Athletic Ventures", firm_name: "Athletic Ventures", website: "athletic.vc", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Aura Ventures", firm_name: "Aura Ventures", website: "aura.vc", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Australian Unity Future of Healthcare Fund", firm_name: "Australian Unity Future of Healthcare Fund", website: "australianunity.com.au", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Backit Ventures", firm_name: "Backit Ventures", website: "backit.ventures", geographies: ["Brisbane"], pipeline_stage: "research", priority: "medium" },
+      { name: "Bailador Technology Investments", firm_name: "Bailador Technology Investments", website: "www.bailador.com.au", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Bain Capital", firm_name: "Bain Capital", website: "https://www.baincapitalprivateequity.com/", geographies: ["Boston"], pipeline_stage: "research", priority: "medium" },
+      { name: "Beachhead Venture Capital", firm_name: "Beachhead Venture Capital", website: "beachhead.vc", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Black Sheep Capital", firm_name: "Black Sheep Capital", website: "https://blacksheepcapital.com.au/", geographies: ["Brisbane"], pipeline_stage: "research", priority: "medium" },
+      { name: "Blackbird Ventures", firm_name: "Blackbird Ventures", website: "https://blackbird.vc/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Bombora Investment Management", firm_name: "Bombora Investment Management", website: "https://www.bomboragroup.com.au/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Boson Ventures", firm_name: "Boson Ventures", website: "https://www.boson.vc/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Braddon Capital", firm_name: "Braddon Capital", website: "www.braddoncapital.com", geographies: [], pipeline_stage: "research", priority: "medium" },
+      { name: "Brandon Capital Partners", firm_name: "Brandon Capital Partners", website: "https://www.brandoncapital.com.au/", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "Breakthrough Victoria", firm_name: "Breakthrough Victoria", website: "https://breakthroughvictoria.com/", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "Breyer Capital", firm_name: "Breyer Capital", website: "https://breyercapital.com/", geographies: ["Austin"], pipeline_stage: "research", priority: "medium" },
+      { name: "BridgeLane Group", firm_name: "BridgeLane Group", website: "https://bridgelane.com.au/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Cardinia Ventures", firm_name: "Cardinia Ventures", website: "https://www.cardiniaventures.com", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "Carthona Capital", firm_name: "Carthona Capital", website: "https://www.carthonacapital.com/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Clean Energy Finance Corporation (CEFC)", firm_name: "Clean Energy Finance Corporation (CEFC)", website: "https://www.cefc.com.au/where-we-invest/sustainable-economy/innovation-fund/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Climate Tech Partners", firm_name: "Climate Tech Partners", website: "https://climatetech.partners/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Clinton Capital Partners", firm_name: "Clinton Capital Partners", website: "https://www.clintoncapitalpartners.com.au/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "CMB Capital", firm_name: "CMB Capital", website: "https://www.cmbcapital.com.au", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+      { name: "Common Sense Ventures", firm_name: "Common Sense Ventures", website: "www.commonsense.vc", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "Cove Capital", firm_name: "Cove Capital", website: "https://covecapital.com.au/", geographies: ["Melbourne"], pipeline_stage: "research", priority: "medium" },
+      { name: "CP Ventures", firm_name: "CP Ventures", website: "https://cp.ventures/", geographies: ["Sydney"], pipeline_stage: "research", priority: "medium" },
+    ];
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const investorsWithUserId = defaultInvestors.map(inv => ({
+      ...inv,
+      user_id: user.id
+    }));
+
+    const { error } = await supabase
+      .from("investors")
+      .insert(investorsWithUserId);
+
+    if (error) {
+      console.error("Error preloading investors:", error);
     }
   };
 
@@ -272,31 +357,6 @@ const InvestorCRM = () => {
     setSelectedInvestorIds([]);
   };
 
-  const handleQuickImport = async () => {
-    try {
-      setLoading(true);
-      const result = await importInvestorDataToDatabase();
-      
-      if (result.success) {
-        toast({
-          title: "Import successful",
-          description: `Imported ${result.count} investors from the list`,
-        });
-        loadInvestors();
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (error: any) {
-      toast({
-        title: "Import failed",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Get unique values for filters
   const uniqueLocations = Array.from(new Set(
     investors.flatMap(inv => inv.geographies || [])
@@ -338,13 +398,9 @@ const InvestorCRM = () => {
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleQuickImport} variant="secondary">
-                <Download className="h-4 w-4 mr-2" />
-                Quick Import Sample Data
-              </Button>
               <Button onClick={() => setIsImportDialogOpen(true)} variant="outline">
                 <Upload className="h-4 w-4 mr-2" />
-                Bulk Import CSV
+                Bulk Import
               </Button>
               <Button onClick={handleAddInvestor}>
                 <Plus className="h-4 w-4 mr-2" />
