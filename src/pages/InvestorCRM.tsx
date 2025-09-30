@@ -40,6 +40,7 @@ import { BulkImportDialog } from "@/components/investor/BulkImportDialog";
 import { BulkActionsToolbar } from "@/components/investor/BulkActionsToolbar";
 import { OutreachCampaignDialog } from "@/components/investor/OutreachCampaignDialog";
 import { BulkUpdateDialog } from "@/components/investor/BulkUpdateDialog";
+import { MultiSelectFilter } from "@/components/investor/MultiSelectFilter";
 
 interface Investor {
   id: string;
@@ -440,8 +441,24 @@ const InvestorCRM = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  
-                  <div className="flex gap-2">
+
+                  <MultiSelectFilter
+                    options={uniqueTags}
+                    selectedValues={tagsFilter}
+                    onChange={setTagsFilter}
+                    placeholder="Tags"
+                  />
+
+                  <MultiSelectFilter
+                    options={uniqueIndustries}
+                    selectedValues={industriesFilter}
+                    onChange={setIndustriesFilter}
+                    placeholder="Industries"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex gap-2 md:col-span-2">
                     <Input
                       type="number"
                       placeholder="Min check ($M)"
@@ -458,7 +475,7 @@ const InvestorCRM = () => {
 
                   <Input
                     type="number"
-                    placeholder="Min fit score"
+                    placeholder="Min fit score (0-100)"
                     value={fitScoreMin}
                     onChange={(e) => setFitScoreMin(e.target.value)}
                     min="0"
@@ -466,43 +483,18 @@ const InvestorCRM = () => {
                   />
                 </div>
 
-                {(uniqueTags.length > 0 || uniqueIndustries.length > 0) && (
-                  <div className="pt-4 border-t">
-                    <p className="text-sm font-medium mb-2">Filter by:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {uniqueTags.slice(0, 10).map(tag => (
-                        <Badge
-                          key={tag}
-                          variant={tagsFilter.includes(tag) ? "default" : "outline"}
-                          className="cursor-pointer"
-                          onClick={() => {
-                            setTagsFilter(prev =>
-                              prev.includes(tag)
-                                ? prev.filter(t => t !== tag)
-                                : [...prev, tag]
-                            );
-                          }}
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                      {uniqueIndustries.slice(0, 10).map(industry => (
-                        <Badge
-                          key={industry}
-                          variant={industriesFilter.includes(industry) ? "default" : "outline"}
-                          className="cursor-pointer"
-                          onClick={() => {
-                            setIndustriesFilter(prev =>
-                              prev.includes(industry)
-                                ? prev.filter(i => i !== industry)
-                                : [...prev, industry]
-                            );
-                          }}
-                        >
-                          {industry}
-                        </Badge>
-                      ))}
-                    </div>
+                {(tagsFilter.length > 0 || industriesFilter.length > 0) && (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {tagsFilter.map(tag => (
+                      <Badge key={tag} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {industriesFilter.map(industry => (
+                      <Badge key={industry} variant="secondary">
+                        {industry}
+                      </Badge>
+                    ))}
                   </div>
                 )}
               </div>
