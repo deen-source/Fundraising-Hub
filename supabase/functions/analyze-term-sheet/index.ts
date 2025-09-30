@@ -18,7 +18,7 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
-    console.log('Analyzing term sheet...');
+    console.log('Starting comprehensive term sheet analysis...');
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -31,25 +31,115 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert venture capital analyst. Analyze term sheets and provide detailed insights on:
-            - Key terms and their implications
-            - Red flags or concerning clauses
-            - Comparison to market standards
-            - Overall fairness assessment
-            - Specific recommendations for negotiation
-            
-            Provide your analysis in JSON format with these fields:
-            - overall_score (1-10)
-            - key_terms (array of {term, value, assessment})
-            - red_flags (array of concerns)
-            - recommendations (array of actionable advice)
-            - summary (brief overall assessment)`
+            content: `You are a senior venture capital lawyer and term sheet negotiation expert with 20+ years of experience. Analyze term sheets with extreme detail and provide actionable insights.
+
+Your analysis must include:
+
+1. **Overall Assessment** (1-10 score)
+   - Investor-friendliness vs founder-friendliness
+   - Market standard comparison
+   - Deal structure quality
+
+2. **Critical Terms Analysis** - For EACH key term found:
+   - Term name and exact value
+   - Risk level (Low/Medium/High/Critical)
+   - Market standard comparison
+   - Impact on founder control and economics
+   - Specific negotiation advice
+   
+   Key terms to analyze:
+   - Valuation (pre-money/post-money)
+   - Option pool (before/after money)
+   - Liquidation preference (1x, participating, capped participating)
+   - Dividends (cumulative/non-cumulative)
+   - Anti-dilution (broad-based weighted average, narrow-based, full ratchet)
+   - Protective provisions
+   - Board composition
+   - Drag-along rights
+   - Right of first refusal
+   - Pay-to-play provisions
+   - Vesting (founder shares)
+   - No-shop clause
+   - Exclusivity period
+
+3. **Red Flags** - Identify concerning clauses:
+   - Severity level (Minor/Moderate/Severe/Deal-breaker)
+   - Why it's problematic
+   - Potential consequences
+   - How to negotiate
+
+4. **Negotiation Strategy**
+   - Priority order (what to negotiate first)
+   - Suggested counter-terms
+   - Trade-offs to consider
+   - Market precedents to reference
+
+5. **Comparable Analysis**
+   - How this compares to typical Seed/Series A/Series B terms
+   - What top-tier VCs typically offer
+   - Industry-specific norms
+
+6. **Financial Impact Modeling**
+   - Exit scenarios (3x, 5x, 10x returns)
+   - Founder dilution projections
+   - Liquidation waterfall examples
+
+Return your analysis as valid JSON with this structure:
+{
+  "overall_score": number (1-10),
+  "deal_type": "seed" | "series-a" | "series-b" | "unknown",
+  "investor_friendliness": number (1-10, where 10 is very investor-friendly),
+  "summary": "2-3 sentence executive summary",
+  "critical_terms": [
+    {
+      "term": "Term name",
+      "value": "Actual value from term sheet",
+      "risk_level": "Low" | "Medium" | "High" | "Critical",
+      "market_standard": "What is typical in the market",
+      "analysis": "Detailed explanation of impact",
+      "negotiation_advice": "Specific counter-proposal"
+    }
+  ],
+  "red_flags": [
+    {
+      "clause": "Specific clause name",
+      "severity": "Minor" | "Moderate" | "Severe" | "Deal-breaker",
+      "issue": "What's wrong with it",
+      "consequence": "What could happen",
+      "solution": "How to fix/negotiate"
+    }
+  ],
+  "green_flags": [
+    "Positive aspects of the deal"
+  ],
+  "negotiation_priorities": [
+    {
+      "priority": number (1-5, where 1 is highest),
+      "item": "What to negotiate",
+      "rationale": "Why this matters",
+      "suggested_approach": "How to negotiate"
+    }
+  ],
+  "financial_scenarios": {
+    "exit_3x": {
+      "company_exit_value": number,
+      "investor_return": number,
+      "founder_return": number,
+      "founder_percentage": number
+    },
+    "exit_5x": { /* same structure */ },
+    "exit_10x": { /* same structure */ }
+  },
+  "comparable_deals": "How this stacks up against market standards",
+  "final_recommendation": "Take deal, negotiate first, or walk away - with reasoning"
+}`
           },
           {
             role: 'user',
-            content: `Analyze this term sheet:\n\n${termSheetText}`
+            content: `Analyze this term sheet in extreme detail:\n\n${termSheetText}`
           }
         ],
+        temperature: 0.3,
       }),
     });
 
@@ -74,14 +164,26 @@ serve(async (req) => {
 
     let analysis;
     try {
-      analysis = JSON.parse(analysisText);
-    } catch {
+      // Extract JSON from markdown code blocks if present
+      const jsonMatch = analysisText.match(/```json\n([\s\S]*?)\n```/) || 
+                       analysisText.match(/```\n([\s\S]*?)\n```/);
+      const jsonText = jsonMatch ? jsonMatch[1] : analysisText;
+      analysis = JSON.parse(jsonText);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      // Fallback structure
       analysis = {
         overall_score: 7,
-        key_terms: [],
+        deal_type: 'unknown',
+        investor_friendliness: 7,
+        summary: analysisText.substring(0, 500),
+        critical_terms: [],
         red_flags: [],
-        recommendations: [],
-        summary: analysisText
+        green_flags: [],
+        negotiation_priorities: [],
+        financial_scenarios: null,
+        comparable_deals: 'Unable to parse full analysis',
+        final_recommendation: 'Please review the full analysis text'
       };
     }
 
