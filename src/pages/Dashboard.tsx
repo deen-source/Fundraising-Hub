@@ -21,6 +21,7 @@ import {
   Users,
   FolderOpen,
   FileStack,
+  Mic,
 } from 'lucide-react';
 
 const toolsByStage = {
@@ -56,6 +57,14 @@ const toolsByStage = {
       icon: FileStack,
       path: '/tools/document-templates',
       dataKey: 'hasTemplates',
+    },
+    {
+      id: 'practice-pitching',
+      title: 'Practice Pitching',
+      description: 'Practice your pitch with AI investor',
+      icon: Mic,
+      path: '/tools/practice-pitching',
+      dataKey: 'hasPractice',
     },
   ],
   structuring: [
@@ -190,6 +199,7 @@ const Dashboard = () => {
     hasDilution: savedCalculations.some(c => c.tool_type === 'dilution'),
     hasSafe: savedCalculations.some(c => c.tool_type === 'safe'),
     hasTermSheet: termSheetAnalyses.length > 0,
+    hasPractice: savedCalculations.some(c => c.tool_type === 'practice_pitching'),
   };
 
   const stageCompletion = {

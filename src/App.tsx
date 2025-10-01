@@ -16,6 +16,7 @@ import DilutionCalculator from "./pages/tools/DilutionCalculator";
 import DataRoom from "./pages/tools/DataRoom";
 import InvestorDataRoom from "./pages/InvestorDataRoom";
 import DocumentTemplates from "./pages/tools/DocumentTemplates";
+import PracticePitching from "./pages/tools/PracticePitching";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/tools/data-room" element={<DataRoom />} />
           <Route path="/investor/:token" element={<InvestorDataRoom />} />
           <Route path="/tools/document-templates" element={<DocumentTemplates />} />
+          <Route path="/tools/practice-pitching" element={<PracticePitching />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
