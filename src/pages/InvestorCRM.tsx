@@ -40,9 +40,12 @@ import {
   TrendingUp,
   Clock,
   Star,
-  ChevronDown
+  ChevronDown,
+  LayoutGrid,
+  Table as TableIcon
 } from "lucide-react";
 import { InvestorDialog } from "@/components/investor/InvestorDialog";
+import { InvestorKanban } from "@/components/investor/InvestorKanban";
 import { BulkImportDialog } from "@/components/investor/BulkImportDialog";
 import { BulkActionsToolbar } from "@/components/investor/BulkActionsToolbar";
 import { OutreachCampaignDialog } from "@/components/investor/OutreachCampaignDialog";
@@ -98,6 +101,7 @@ const InvestorCRM = () => {
   const [isBulkUpdateDialogOpen, setIsBulkUpdateDialogOpen] = useState(false);
   const [bulkUpdateType, setBulkUpdateType] = useState<"pipeline" | "priority" | "tags">("pipeline");
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"table" | "kanban">("kanban");
 
   const pipelineStages = [
     { value: "research", label: "Research", color: "bg-slate-500" },
@@ -346,6 +350,24 @@ const InvestorCRM = () => {
               </div>
             </div>
             <div className="flex gap-2">
+              <div className="flex border rounded-lg p-1">
+                <Button 
+                  variant={viewMode === "kanban" ? "default" : "ghost"} 
+                  size="sm"
+                  onClick={() => setViewMode("kanban")}
+                >
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Kanban
+                </Button>
+                <Button 
+                  variant={viewMode === "table" ? "default" : "ghost"} 
+                  size="sm"
+                  onClick={() => setViewMode("table")}
+                >
+                  <TableIcon className="h-4 w-4 mr-2" />
+                  Table
+                </Button>
+              </div>
               <Button onClick={() => setIsImportDialogOpen(true)} variant="outline">
                 <Upload className="h-4 w-4 mr-2" />
                 Bulk Import
@@ -557,15 +579,40 @@ const InvestorCRM = () => {
             </Card>
           </Collapsible>
 
-          {/* Investors Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Investors ({filteredInvestors.length})</CardTitle>
-              <CardDescription>
-                Click on an investor to view details and track interactions
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          {/* Investors Table or Kanban */}
+          {viewMode === "kanban" ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Pipeline ({filteredInvestors.length} investors)</CardTitle>
+                <CardDescription>
+                  Drag and drop investors between stages to track your fundraising progress
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="text-center py-8">Loading investors...</div>
+                ) : filteredInvestors.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No investors found. Add your first investor or import a database.
+                  </div>
+                ) : (
+                  <InvestorKanban 
+                    investors={filteredInvestors}
+                    onInvestorClick={handleEditInvestor}
+                    onRefresh={loadInvestors}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Investors ({filteredInvestors.length})</CardTitle>
+                <CardDescription>
+                  Click on an investor to view details and track interactions
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
               {loading ? (
                 <div className="text-center py-8">Loading investors...</div>
               ) : filteredInvestors.length === 0 ? (
@@ -691,6 +738,7 @@ const InvestorCRM = () => {
               )}
             </CardContent>
           </Card>
+          )}
         </div>
       </div>
 
