@@ -36,46 +36,52 @@ const FOLDERS = [
     description: 'View all uploaded documents'
   },
   { 
-    value: 'Corporate Documents', 
-    label: 'Corporate Documents', 
+    value: 'Corporate & Organizational', 
+    label: 'Corporate & Organizational', 
     icon: FileText,
-    description: 'Articles of incorporation, bylaws, cap table, board minutes'
+    description: 'Certificate of incorporation, bylaws, amendments, Cap Table (fully diluted), shareholder agreements, board & shareholder meeting minutes, organizational chart'
   },
   { 
-    value: 'Financial Documents', 
-    label: 'Financial Documents', 
+    value: 'Securities & Financing', 
+    label: 'Securities & Financing', 
     icon: FileText,
-    description: 'Financial statements, revenue metrics, projections, budgets'
+    description: 'Stock purchase agreements, SAFEs, convertible notes, equity incentive plans, option pool documents, vesting schedules, warrants, side letters, debt agreements'
   },
   { 
-    value: 'Legal Documents', 
-    label: 'Legal Documents', 
+    value: 'Material Contracts', 
+    label: 'Material Contracts', 
     icon: File,
-    description: 'Contracts, agreements, legal opinions, compliance docs'
+    description: 'Top customer and vendor agreements, key partnerships, distribution/reseller/licensing deals, loan agreements, credit facilities, NDAs, non-competes'
+  },
+  { 
+    value: 'Employment & HR', 
+    label: 'Employment & HR', 
+    icon: FileText,
+    description: 'Executive employment agreements, offer letters, independent contractor agreements, equity grant agreements, benefits and compensation policies, immigration/work visa documentation'
   },
   { 
     value: 'Intellectual Property', 
     label: 'Intellectual Property', 
     icon: FileText,
-    description: 'Patents, trademarks, copyright registrations, licenses'
+    description: 'IP assignments from founders/employees/contractors, patents, trademarks, copyrights, key licenses (inbound/outbound), open-source software policy & compliance'
   },
   { 
-    value: 'Product & Technology', 
-    label: 'Product & Technology', 
+    value: 'Litigation & Legal Compliance', 
+    label: 'Litigation & Legal Compliance', 
     icon: FileText,
-    description: 'Product specs, tech stack, architecture, roadmap'
+    description: 'Summary of pending/threatened litigation, regulatory approvals or licenses, settlement agreements, disputes with employees/customers'
   },
   { 
-    value: 'Customer & Market', 
-    label: 'Customer & Market', 
+    value: 'Financial & Tax', 
+    label: 'Financial & Tax', 
     icon: FileText,
-    description: 'Customer contracts, market research, competitive analysis'
+    description: 'Historical financial statements, latest management accounts, KPIs and forecasts, tax filings, outstanding tax liabilities'
   },
   { 
-    value: 'Team', 
-    label: 'Team', 
+    value: 'Insurance', 
+    label: 'Insurance', 
     icon: FileText,
-    description: 'Employee contracts, org chart, team bios, compensation'
+    description: 'D&O, E&O, general liability, cyber coverage, claims history'
   },
 ];
 
