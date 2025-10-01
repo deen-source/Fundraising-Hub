@@ -170,19 +170,19 @@ const SafeCalculator = () => {
             {/* Input Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl text-white flex items-center gap-2">
-                  <Target className="w-5 h-5 text-cyan-400" />
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Target className="w-5 h-5 text-primary" />
                   SAFE Parameters
                 </CardTitle>
-                <CardDescription className="text-white/60">
+                <CardDescription>
                   Enter your SAFE terms and financing round details
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Label className="text-white/80">SAFE Type</Label>
+                  <Label className="text-base font-medium">SAFE Type</Label>
                   <Select value={safeType} onValueChange={setSafeType}>
-                    <SelectTrigger className="mt-2 bg-white/5 border-white/10 text-white">
+                    <SelectTrigger className="mt-2 h-12">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -190,70 +190,90 @@ const SafeCalculator = () => {
                       <SelectItem value="discount-only">Discount Only</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-white/50 mt-1">
+                  <p className="text-sm text-muted-foreground mt-2">
                     {safeType === 'valuation-cap' 
                       ? 'Most investor-friendly: converts at lower of cap or discounted price'
                       : 'Converts at a discount to the next round price'}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label className="text-white/80">Investment Amount ($)</Label>
-                    <Input
-                      type="number"
-                      placeholder="100,000"
-                      value={investmentAmount}
-                      onChange={(e) => setInvestmentAmount(e.target.value)}
-                      className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-white/30"
-                    />
+                    <Label className="text-base font-medium">Investment Amount</Label>
+                    <div className="relative mt-2">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
+                      <Input
+                        type="number"
+                        placeholder="100,000"
+                        value={investmentAmount}
+                        onChange={(e) => setInvestmentAmount(e.target.value)}
+                        className="pl-8 h-12 text-base"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">Your SAFE investment amount</p>
                   </div>
 
                   {safeType === 'valuation-cap' && (
                     <div>
-                      <Label className="text-white/80">Valuation Cap ($)</Label>
-                      <Input
-                        type="number"
-                        placeholder="5,000,000"
-                        value={valuationCap}
-                        onChange={(e) => setValuationCap(e.target.value)}
-                        className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-white/30"
-                      />
+                      <Label className="text-base font-medium">Valuation Cap</Label>
+                      <div className="relative mt-2">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
+                        <Input
+                          type="number"
+                          placeholder="5,000,000"
+                          value={valuationCap}
+                          onChange={(e) => setValuationCap(e.target.value)}
+                          className="pl-8 h-12 text-base"
+                        />
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-2">Maximum conversion valuation</p>
                     </div>
                   )}
 
                   <div>
-                    <Label className="text-white/80">Discount Rate (%)</Label>
-                    <Input
-                      type="number"
-                      placeholder="20"
-                      value={discount}
-                      onChange={(e) => setDiscount(e.target.value)}
-                      className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-white/30"
-                    />
+                    <Label className="text-base font-medium">Discount Rate</Label>
+                    <div className="relative mt-2">
+                      <Input
+                        type="number"
+                        placeholder="20"
+                        value={discount}
+                        onChange={(e) => setDiscount(e.target.value)}
+                        className="pr-8 h-12 text-base"
+                      />
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">%</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">Discount on Series A price</p>
                   </div>
 
                   <div>
-                    <Label className="text-white/80">Series A Price per Share ($)</Label>
-                    <Input
-                      type="number"
-                      placeholder="2.00"
-                      step="0.01"
-                      value={pricePerShare}
-                      onChange={(e) => setPricePerShare(e.target.value)}
-                      className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-white/30"
-                    />
+                    <Label className="text-base font-medium">Series A Price per Share</Label>
+                    <div className="relative mt-2">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
+                      <Input
+                        type="number"
+                        placeholder="2.00"
+                        step="0.01"
+                        value={pricePerShare}
+                        onChange={(e) => setPricePerShare(e.target.value)}
+                        className="pl-8 h-12 text-base"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">Next round share price</p>
                   </div>
 
                   <div className="md:col-span-2">
-                    <Label className="text-white/80">Series A Pre-Money Valuation ($)</Label>
-                    <Input
-                      type="number"
-                      placeholder="10,000,000"
-                      value={preMoneyValuation}
-                      onChange={(e) => setPreMoneyValuation(e.target.value)}
-                      className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-white/30"
-                    />
+                    <Label className="text-base font-medium">Series A Pre-Money Valuation</Label>
+                    <div className="relative mt-2">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
+                      <Input
+                        type="number"
+                        placeholder="10,000,000"
+                        value={preMoneyValuation}
+                        onChange={(e) => setPreMoneyValuation(e.target.value)}
+                        className="pl-8 h-12 text-base"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">Next round pre-money valuation</p>
                   </div>
                 </div>
               </CardContent>
@@ -264,114 +284,114 @@ const SafeCalculator = () => {
                 {/* Results Overview */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl text-white flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-green-400" />
+                    <CardTitle className="text-2xl flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-primary" />
                       Conversion Results
                     </CardTitle>
                     <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="outline" className="border-cyan-500/30 text-cyan-400 bg-cyan-500/10">
+                      <Badge variant="outline" className="border-primary/30">
                         Trigger: {result.triggerUsed === 'cap' ? 'Valuation Cap' : 'Discount Rate'}
                       </Badge>
-                      <Badge variant="outline" className="border-white/20 text-white/70 bg-white/5">
+                      <Badge variant="outline">
                         {result.effectiveDiscount.toFixed(1)}% Effective Discount
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20">
-                        <div className="flex items-center gap-2 mb-2">
-                          <DollarSign className="w-4 h-4 text-cyan-400" />
-                          <div className="text-sm text-cyan-100/60">Conversion Price</div>
+                      <div className="p-6 rounded-lg bg-primary/5 border border-primary/10">
+                        <div className="flex items-center gap-2 mb-3">
+                          <DollarSign className="w-4 h-4 text-primary" />
+                          <div className="text-sm text-muted-foreground">Conversion Price</div>
                         </div>
-                        <div className="text-2xl font-bold text-white">${result.conversionPrice.toFixed(2)}</div>
-                        <div className="text-xs text-cyan-100/50 mt-1">per share</div>
+                        <div className="text-3xl font-bold">${result.conversionPrice.toFixed(2)}</div>
+                        <div className="text-xs text-muted-foreground mt-2">per share</div>
                         <Progress 
                           value={((parseFloat(pricePerShare) - result.conversionPrice) / parseFloat(pricePerShare)) * 100} 
-                          className="mt-2 h-1 bg-white/10"
+                          className="mt-3 h-1"
                         />
                       </div>
 
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Target className="w-4 h-4 text-purple-400" />
-                          <div className="text-sm text-purple-100/60">Shares Received</div>
+                      <div className="p-6 rounded-lg bg-muted border">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Target className="w-4 h-4 text-primary" />
+                          <div className="text-sm text-muted-foreground">Shares Received</div>
                         </div>
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-3xl font-bold">
                           {result.sharesReceived.toLocaleString()}
                         </div>
-                        <div className="text-xs text-purple-100/50 mt-1">common shares</div>
+                        <div className="text-xs text-muted-foreground mt-2">common shares</div>
                       </div>
 
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Percent className="w-4 h-4 text-green-400" />
-                          <div className="text-sm text-green-100/60">Your Ownership</div>
+                      <div className="p-6 rounded-lg bg-primary/10 border border-primary/20">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Percent className="w-4 h-4 text-primary" />
+                          <div className="text-sm text-muted-foreground">Your Ownership</div>
                         </div>
-                        <div className="text-2xl font-bold text-white">{result.ownershipPercentage.toFixed(2)}%</div>
-                        <div className="text-xs text-green-100/50 mt-1">fully diluted</div>
+                        <div className="text-3xl font-bold text-primary">{result.ownershipPercentage.toFixed(2)}%</div>
+                        <div className="text-xs text-muted-foreground mt-2">fully diluted</div>
                         <Progress 
                           value={Math.min(result.ownershipPercentage, 100)} 
-                          className="mt-2 h-1 bg-white/10"
+                          className="mt-3 h-1"
                         />
                       </div>
 
-                      <div className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-500/20">
-                        <div className="flex items-center gap-2 mb-2">
-                          <TrendingUp className="w-4 h-4 text-orange-400" />
-                          <div className="text-sm text-orange-100/60">Effective Valuation</div>
+                      <div className="p-6 rounded-lg bg-muted border">
+                        <div className="flex items-center gap-2 mb-3">
+                          <TrendingUp className="w-4 h-4 text-primary" />
+                          <div className="text-sm text-muted-foreground">Effective Valuation</div>
                         </div>
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-3xl font-bold">
                           ${(result.effectiveValuation / 1000000).toFixed(1)}M
                         </div>
-                        <div className="text-xs text-orange-100/50 mt-1">post-money</div>
+                        <div className="text-xs text-muted-foreground mt-2">post-money</div>
                       </div>
                     </div>
 
                     {/* Key Insights */}
-                    <div className="p-6 rounded-xl bg-white/5 border border-white/10">
-                      <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
-                        <Info className="w-4 h-4 text-cyan-400" />
+                    <div className="p-6 rounded-lg bg-muted">
+                      <h4 className="font-semibold mb-4 flex items-center gap-2">
+                        <Info className="w-4 h-4 text-primary" />
                         Key Insights
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex items-start gap-3">
-                          <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-white/90 text-sm">
-                              Your SAFE converts at <span className="font-semibold text-cyan-400">${result.conversionPrice.toFixed(2)}</span> per share, 
+                            <p className="text-sm">
+                              Your SAFE converts at <span className="font-semibold text-primary">${result.conversionPrice.toFixed(2)}</span> per share, 
                               compared to Series A at <span className="font-semibold">${pricePerShare}</span>
                             </p>
                           </div>
                         </div>
                         
                         <div className="flex items-start gap-3">
-                          <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-white/90 text-sm">
-                              You receive a <span className="font-semibold text-green-400">{result.effectiveDiscount.toFixed(1)}%</span> discount 
+                            <p className="text-sm">
+                              You receive a <span className="font-semibold text-primary">{result.effectiveDiscount.toFixed(1)}%</span> discount 
                               compared to Series A investors
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-start gap-3">
-                          <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-white/90 text-sm">
-                              Effective valuation of <span className="font-semibold text-orange-400">${(result.effectiveValuation / 1000000).toFixed(1)}M</span> is{' '}
+                            <p className="text-sm">
+                              Effective valuation of <span className="font-semibold text-primary">${(result.effectiveValuation / 1000000).toFixed(1)}M</span> is{' '}
                               {result.effectiveValuation < parseFloat(preMoneyValuation) ? 
-                                <span className="text-green-400">lower (better)</span> : 
-                                <span className="text-orange-400">higher</span>
+                                <span className="text-primary">lower (better)</span> : 
+                                <span className="text-muted-foreground">higher</span>
                               } than Series A pre-money
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-start gap-3">
-                          <AlertCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                          <AlertCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-white/90 text-sm">
+                            <p className="text-sm">
                               The {result.triggerUsed === 'cap' ? 'valuation cap' : 'discount rate'} determined 
                               your conversion price
                             </p>
@@ -384,23 +404,23 @@ const SafeCalculator = () => {
 
                 {/* Detailed Analysis Tabs */}
                 <Tabs defaultValue="comparison" className="space-y-6">
-                  <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10">
-                    <TabsTrigger value="comparison" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="comparison">
                       Scenario Comparison
                     </TabsTrigger>
-                    <TabsTrigger value="education" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+                    <TabsTrigger value="education">
                       SAFE Education
                     </TabsTrigger>
-                    <TabsTrigger value="tips" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">
+                    <TabsTrigger value="tips">
                       Negotiation Tips
                     </TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="comparison" className="space-y-4">
-                    <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+                    <Card>
                       <CardHeader>
-                        <CardTitle className="text-xl text-white">Compare SAFE Scenarios</CardTitle>
-                        <CardDescription className="text-white/60">
+                        <CardTitle className="text-xl">Compare SAFE Scenarios</CardTitle>
+                        <CardDescription>
                           See how different SAFE terms affect your ownership
                         </CardDescription>
                       </CardHeader>
@@ -410,39 +430,39 @@ const SafeCalculator = () => {
                             {comparisons.map((comp, idx) => (
                               <div 
                                 key={idx}
-                                className={`p-4 rounded-xl border transition-all ${
+                                className={`p-5 rounded-lg border transition-all ${
                                   comp.type === bestDeal.type
-                                    ? 'bg-green-500/10 border-green-500/30'
-                                    : 'bg-white/5 border-white/10'
+                                    ? 'bg-primary/10 border-primary/30'
+                                    : 'bg-muted border'
                                 }`}
                               >
-                                <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center justify-between mb-4">
                                   <div className="flex items-center gap-3">
-                                    <h4 className="font-semibold text-white">{comp.type}</h4>
+                                    <h4 className="font-semibold">{comp.type}</h4>
                                     {comp.type === bestDeal.type && (
-                                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                                      <Badge className="bg-primary/20 border-primary/30">
                                         Best Deal
                                       </Badge>
                                     )}
                                   </div>
                                   <div className="text-right">
-                                    <div className="text-2xl font-bold text-cyan-400">{comp.ownership.toFixed(2)}%</div>
-                                    <div className="text-xs text-white/50">ownership</div>
+                                    <div className="text-2xl font-bold text-primary">{comp.ownership.toFixed(2)}%</div>
+                                    <div className="text-xs text-muted-foreground">ownership</div>
                                   </div>
                                 </div>
                                 
                                 <div className="grid grid-cols-3 gap-4 text-sm">
                                   <div>
-                                    <div className="text-white/50 text-xs">Conversion Price</div>
-                                    <div className="text-white font-medium">${comp.conversionPrice.toFixed(2)}</div>
+                                    <div className="text-muted-foreground text-xs mb-1">Conversion Price</div>
+                                    <div className="font-medium">${comp.conversionPrice.toFixed(2)}</div>
                                   </div>
                                   <div>
-                                    <div className="text-white/50 text-xs">Shares</div>
-                                    <div className="text-white font-medium">{comp.shares.toLocaleString()}</div>
+                                    <div className="text-muted-foreground text-xs mb-1">Shares</div>
+                                    <div className="font-medium">{comp.shares.toLocaleString()}</div>
                                   </div>
                                   <div>
-                                    <div className="text-white/50 text-xs">Discount</div>
-                                    <div className="text-white font-medium">{comp.discount.toFixed(1)}%</div>
+                                    <div className="text-muted-foreground text-xs mb-1">Discount</div>
+                                    <div className="font-medium">{comp.discount.toFixed(1)}%</div>
                                   </div>
                                 </div>
                               </div>
@@ -450,12 +470,12 @@ const SafeCalculator = () => {
                           </div>
                         )}
 
-                        <div className="mt-6 p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+                        <div className="mt-6 p-4 rounded-lg bg-primary/5 border border-primary/10">
                           <div className="flex items-start gap-3">
-                            <Info className="w-5 h-5 text-cyan-400 mt-0.5 flex-shrink-0" />
-                            <div className="text-sm text-white/80">
-                              <p className="font-semibold text-white mb-1">Understanding the Comparison</p>
-                              <p>The "Cap + Discount" scenario provides the best protection for investors, automatically converting at whichever gives you more ownership. 
+                            <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                            <div className="text-sm">
+                              <p className="font-semibold mb-2">Understanding the Comparison</p>
+                              <p className="text-muted-foreground">The "Cap + Discount" scenario provides the best protection for investors, automatically converting at whichever gives you more ownership. 
                               "Discount Only" is simpler but may give less ownership if the company valuation increases significantly.</p>
                             </div>
                           </div>
@@ -465,20 +485,20 @@ const SafeCalculator = () => {
                   </TabsContent>
 
                   <TabsContent value="education" className="space-y-4">
-                    <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+                    <Card>
                       <CardHeader>
-                        <CardTitle className="text-xl text-white">Understanding SAFE Notes</CardTitle>
-                        <CardDescription className="text-white/60">
+                        <CardTitle className="text-xl">Understanding SAFE Notes</CardTitle>
+                        <CardDescription>
                           Learn about Simple Agreements for Future Equity
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <Accordion type="single" collapsible className="space-y-2">
-                          <AccordionItem value="what-is-safe" className="border-white/10 bg-white/5 rounded-xl px-4">
-                            <AccordionTrigger className="text-white hover:text-cyan-400 hover:no-underline">
+                        <Accordion type="single" collapsible className="space-y-3">
+                          <AccordionItem value="what-is-safe" className="bg-muted rounded-lg px-4 border">
+                            <AccordionTrigger className="hover:text-primary hover:no-underline">
                               What is a SAFE?
                             </AccordionTrigger>
-                            <AccordionContent className="text-white/70 space-y-2">
+                            <AccordionContent className="text-muted-foreground space-y-3">
                               <p>
                                 A SAFE (Simple Agreement for Future Equity) is an investment instrument created by Y Combinator 
                                 that allows investors to convert their investment into equity at a future date, typically during 
@@ -561,24 +581,24 @@ const SafeCalculator = () => {
                   </TabsContent>
 
                   <TabsContent value="tips" className="space-y-4">
-                    <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+                    <Card>
                       <CardHeader>
-                        <CardTitle className="text-xl text-white flex items-center gap-2">
-                          <Shield className="w-5 h-5 text-cyan-400" />
+                        <CardTitle className="text-xl flex items-center gap-2">
+                          <Shield className="w-5 h-5 text-primary" />
                           Negotiation Best Practices
                         </CardTitle>
-                        <CardDescription className="text-white/60">
+                        <CardDescription>
                           Key points to consider when negotiating SAFE terms
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="space-y-4">
-                          <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20">
+                          <div className="p-5 rounded-lg bg-primary/5 border border-primary/10">
                             <div className="flex items-start gap-3">
-                              <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                              <CheckCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                               <div>
-                                <h4 className="font-semibold text-white mb-1">For Investors</h4>
-                                <ul className="text-sm text-white/70 space-y-2">
+                                <h4 className="font-semibold mb-2">For Investors</h4>
+                                <ul className="text-sm text-muted-foreground space-y-2">
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Request both a valuation cap AND discount for maximum protection</li>
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Negotiate for pro-rata rights to participate in future rounds</li>
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Typical discount rates range from 15-25% (20% is standard)</li>
@@ -589,12 +609,12 @@ const SafeCalculator = () => {
                             </div>
                           </div>
 
-                          <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                          <div className="p-5 rounded-lg bg-muted border">
                             <div className="flex items-start gap-3">
-                              <Shield className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+                              <Shield className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                               <div>
-                                <h4 className="font-semibold text-white mb-1">For Founders</h4>
-                                <ul className="text-sm text-white/70 space-y-2">
+                                <h4 className="font-semibold mb-2">For Founders</h4>
+                                <ul className="text-sm text-muted-foreground space-y-2">
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Higher valuation caps protect your ownership but may deter investors</li>
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Consider offering post-money SAFEs for clarity on dilution</li>
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Discount-only SAFEs are more founder-friendly but harder to raise</li>
@@ -605,12 +625,12 @@ const SafeCalculator = () => {
                             </div>
                           </div>
 
-                          <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20">
+                          <div className="p-5 rounded-lg bg-primary/5 border border-primary/10">
                             <div className="flex items-start gap-3">
-                              <AlertCircle className="w-5 h-5 text-orange-400 mt-0.5 flex-shrink-0" />
+                              <AlertCircle className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                               <div>
-                                <h4 className="font-semibold text-white mb-1">Common Pitfalls to Avoid</h4>
-                                <ul className="text-sm text-white/70 space-y-2">
+                                <h4 className="font-semibold mb-2">Common Pitfalls to Avoid</h4>
+                                <ul className="text-sm text-muted-foreground space-y-2">
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Not understanding which trigger (cap vs. discount) determines conversion</li>
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Raising too much on SAFEs, leading to excessive dilution</li>
                                   <li><ArrowRight className="w-3 h-3 inline mr-2" />Failing to model various exit scenarios before agreeing to terms</li>
@@ -621,28 +641,28 @@ const SafeCalculator = () => {
                             </div>
                           </div>
 
-                          <div className="p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                          <div className="p-5 rounded-lg bg-muted border">
                             <div className="flex items-start gap-3">
-                              <Info className="w-5 h-5 text-purple-400 mt-0.5 flex-shrink-0" />
+                              <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                               <div>
-                                <h4 className="font-semibold text-white mb-1">Market Standards (2025)</h4>
-                                <div className="text-sm text-white/70 space-y-2">
+                                <h4 className="font-semibold mb-2">Market Standards (2025)</h4>
+                                <div className="text-sm space-y-2">
                                   <div className="grid grid-cols-2 gap-4 mt-2">
                                     <div>
-                                      <p className="text-white/50 text-xs">Valuation Cap</p>
-                                      <p className="text-white font-medium">$4M - $10M (seed)</p>
+                                      <p className="text-muted-foreground text-xs mb-1">Valuation Cap</p>
+                                      <p className="font-medium">$4M - $10M (seed)</p>
                                     </div>
                                     <div>
-                                      <p className="text-white/50 text-xs">Discount Rate</p>
-                                      <p className="text-white font-medium">15% - 25%</p>
+                                      <p className="text-muted-foreground text-xs mb-1">Discount Rate</p>
+                                      <p className="font-medium">15% - 25%</p>
                                     </div>
                                     <div>
-                                      <p className="text-white/50 text-xs">Pro-Rata Rights</p>
-                                      <p className="text-white font-medium">Common for $100K+</p>
+                                      <p className="text-muted-foreground text-xs mb-1">Pro-Rata Rights</p>
+                                      <p className="font-medium">Common for $100K+</p>
                                     </div>
                                     <div>
-                                      <p className="text-white/50 text-xs">MFN Clause</p>
-                                      <p className="text-white font-medium">Increasingly standard</p>
+                                      <p className="text-muted-foreground text-xs mb-1">MFN Clause</p>
+                                      <p className="font-medium">Increasingly standard</p>
                                     </div>
                                   </div>
                                 </div>
@@ -658,10 +678,10 @@ const SafeCalculator = () => {
             )}
 
             {!result && (
-              <Card className="bg-white/5 backdrop-blur-sm border-white/10">
+              <Card>
                 <CardContent className="py-12">
-                  <div className="text-center text-white/60">
-                    <Calculator className="w-12 h-12 mx-auto mb-4 text-cyan-400/50" />
+                  <div className="text-center text-muted-foreground">
+                    <Calculator className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p>Enter your SAFE parameters above to see conversion results and analysis</p>
                   </div>
                 </CardContent>
