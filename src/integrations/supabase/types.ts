@@ -65,6 +65,45 @@ export type Database = {
         }
         Relationships: []
       }
+      data_room_shares: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          last_accessed_at: string | null
+          password_hash: string | null
+          share_token: string
+          title: string
+          updated_at: string | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          password_hash?: string | null
+          share_token: string
+          title?: string
+          updated_at?: string | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          password_hash?: string | null
+          share_token?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       document_templates: {
         Row: {
           category: string
@@ -492,7 +531,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_share_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
