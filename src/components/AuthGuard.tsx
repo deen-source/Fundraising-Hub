@@ -17,7 +17,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session) {
-        navigate('/auth');
+        navigate('/');
         return;
       }
 
@@ -29,7 +29,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        navigate('/auth');
+        navigate('/');
       } else {
         setUser(session.user);
         setLoading(false);
