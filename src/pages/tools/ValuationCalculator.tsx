@@ -221,59 +221,59 @@ const ValuationCalculator = () => {
 
           {/* Executive Summary Banner */}
           {(revenueResult || dcfResult || comparableResult || vcResult) && (
-            <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
+            <Card className="mb-6 border-primary/20">
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-cyan-500/20 rounded-lg">
-                    <MethodIcon className="w-6 h-6 text-cyan-400" />
+                  <div className="p-3 bg-primary/10 rounded-lg">
+                    <MethodIcon className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-white mb-2">Valuation Summary</h3>
+                    <h3 className="text-xl font-semibold mb-2">Valuation Summary</h3>
                     {revenueResult && (
                       <div className="space-y-2">
-                        <div className="text-3xl font-bold text-cyan-400">
+                        <div className="text-3xl font-bold text-primary">
                           ${parseFloat(revenueResult.mid).toLocaleString()}
                         </div>
-                        <p className="text-sm text-gray-300">
+                        <p className="text-sm text-muted-foreground">
                           Base case valuation using {revenueResult.multiple}x revenue multiple
                         </p>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           Range: ${parseFloat(revenueResult.low).toLocaleString()} - ${parseFloat(revenueResult.high).toLocaleString()}
                         </div>
                       </div>
                     )}
                     {dcfResult && (
                       <div className="space-y-2">
-                        <div className="text-3xl font-bold text-cyan-400">
+                        <div className="text-3xl font-bold text-primary">
                           ${parseFloat(dcfResult.enterpriseValue).toLocaleString()}
                         </div>
-                        <p className="text-sm text-gray-300">
+                        <p className="text-sm text-muted-foreground">
                           Enterprise value based on discounted cash flow analysis
                         </p>
                       </div>
                     )}
                     {comparableResult && (
                       <div className="space-y-2">
-                        <div className="text-3xl font-bold text-cyan-400">
+                        <div className="text-3xl font-bold text-primary">
                           ${parseFloat(comparableResult.valuation).toLocaleString()}
                         </div>
-                        <p className="text-sm text-gray-300">
+                        <p className="text-sm text-muted-foreground">
                           Valuation using {comparableResult.impliedMultiple}x comparable multiple
                         </p>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           Range: ${parseFloat(comparableResult.low).toLocaleString()} - ${parseFloat(comparableResult.high).toLocaleString()}
                         </div>
                       </div>
                     )}
                     {vcResult && (
                       <div className="space-y-2">
-                        <div className="text-3xl font-bold text-cyan-400">
+                        <div className="text-3xl font-bold text-primary">
                           ${parseFloat(vcResult.preMoneyValuation).toLocaleString()}
                         </div>
-                        <p className="text-sm text-gray-300">
+                        <p className="text-sm text-muted-foreground">
                           Pre-money valuation (Post-money: ${parseFloat(vcResult.postMoneyValuation).toLocaleString()})
                         </p>
-                        <div className="text-xs text-gray-400">
+                        <div className="text-xs text-muted-foreground">
                           Required ownership: {vcResult.requiredOwnership}% | IRR: {vcResult.irr}%
                         </div>
                       </div>
@@ -297,34 +297,34 @@ const ValuationCalculator = () => {
               <TabsContent value="calculator" className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-white">Select Valuation Method</CardTitle>
-                    <CardDescription className="text-gray-400">
+                    <CardTitle>Select Valuation Method</CardTitle>
+                    <CardDescription>
                       Choose the most appropriate method for your stage and data availability
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Tabs value={method} onValueChange={setMethod}>
-                      <TabsList className="grid w-full grid-cols-4 bg-white/5">
+                      <TabsList className="grid w-full grid-cols-4">
                         <TabsTrigger value="revenue-multiple">Revenue Multiple</TabsTrigger>
                         <TabsTrigger value="dcf">DCF</TabsTrigger>
                         <TabsTrigger value="comparable">Comparables</TabsTrigger>
                         <TabsTrigger value="vc">VC Method</TabsTrigger>
                       </TabsList>
 
-                      <TabsContent value="revenue-multiple" className="space-y-4 mt-6">
-                        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-4">
+                      <TabsContent value="revenue-multiple" className="space-y-6 mt-6">
+                        <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
                           <div className="flex gap-2 items-start">
-                            <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-gray-300">
+                            <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
                               Most common for early-stage startups. Based on industry benchmarks and revenue growth.
                             </p>
                           </div>
                         </div>
 
                         <div>
-                          <Label className="text-white">Industry</Label>
+                          <Label className="text-base font-medium">Industry</Label>
                           <Select value={industry} onValueChange={setIndustry}>
-                            <SelectTrigger className="mt-2 bg-white/5 border-white/10 text-white">
+                            <SelectTrigger className="mt-2 h-12">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -337,68 +337,68 @@ const ValuationCalculator = () => {
                           </Select>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div>
-                            <Label className="text-white">Annual Revenue</Label>
+                            <Label className="text-base font-medium">Annual Revenue</Label>
                             <div className="relative mt-2">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
                               <Input
                                 type="number"
                                 placeholder="1,000,000"
                                 value={revenue}
                                 onChange={(e) => setRevenue(e.target.value)}
-                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pl-8 h-12 text-base"
                               />
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Your annual recurring revenue</p>
+                            <p className="text-sm text-muted-foreground mt-2">Your annual recurring revenue</p>
                           </div>
                           <div>
-                            <Label className="text-white">YoY Growth Rate</Label>
+                            <Label className="text-base font-medium">YoY Growth Rate</Label>
                             <div className="relative mt-2">
                               <Input
                                 type="number"
                                 placeholder="100"
                                 value={growthRate}
                                 onChange={(e) => setGrowthRate(e.target.value)}
-                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pr-8 h-12 text-base"
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">%</span>
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Year-over-year growth percentage</p>
+                            <p className="text-sm text-muted-foreground mt-2">Year-over-year growth percentage</p>
                           </div>
                           <div>
-                            <Label className="text-white">Profit Margin <span className="text-gray-400 text-xs">Optional</span></Label>
+                            <Label className="text-base font-medium">Profit Margin <span className="text-muted-foreground text-sm">Optional</span></Label>
                             <div className="relative mt-2">
                               <Input
                                 type="number"
                                 placeholder="20"
                                 value={profitMargin}
                                 onChange={(e) => setProfitMargin(e.target.value)}
-                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pr-8 h-12 text-base"
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">%</span>
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Net profit margin if profitable</p>
+                            <p className="text-sm text-muted-foreground mt-2">Net profit margin if profitable</p>
                           </div>
                         </div>
                       </TabsContent>
 
-                      <TabsContent value="dcf" className="space-y-4 mt-6">
-                        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-4">
+                      <TabsContent value="dcf" className="space-y-6 mt-6">
+                        <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
                           <div className="flex gap-2 items-start">
-                            <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-gray-300">
+                            <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
                               Best for mature startups with predictable cash flows. Based on present value of future cash flows.
                             </p>
                           </div>
                         </div>
 
                         <div>
-                          <Label className="text-white">Projected Annual Revenue (Next 5 Years)</Label>
-                          <div className="grid grid-cols-1 gap-2 mt-2">
+                          <Label className="text-base font-medium">Projected Annual Revenue (Next 5 Years)</Label>
+                          <div className="grid grid-cols-1 gap-3 mt-2">
                             {[0, 1, 2, 3, 4].map((i) => (
                               <div key={i} className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">$</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg z-10">$</span>
                                 <Input
                                   type="number"
                                   placeholder={`Year ${i + 1} Revenue`}
@@ -408,178 +408,178 @@ const ValuationCalculator = () => {
                                     newRevenues[i] = e.target.value;
                                     setProjectedRevenue(newRevenues);
                                   }}
-                                  className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                  className="pl-8 h-12 text-base"
                                 />
                               </div>
                             ))}
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div>
-                            <Label className="text-white">EBITDA Margin</Label>
+                            <Label className="text-base font-medium">EBITDA Margin</Label>
                             <div className="relative mt-2">
                               <Input
                                 type="number"
                                 placeholder="20"
                                 value={ebitdaMargin}
                                 onChange={(e) => setEbitdaMargin(e.target.value)}
-                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pr-8 h-12 text-base"
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">%</span>
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Expected profit margin</p>
+                            <p className="text-sm text-muted-foreground mt-2">Expected profit margin</p>
                           </div>
                           <div>
-                            <Label className="text-white">Discount Rate</Label>
+                            <Label className="text-base font-medium">Discount Rate</Label>
                             <div className="relative mt-2">
                               <Input
                                 type="number"
                                 placeholder="15"
                                 value={discountRate}
                                 onChange={(e) => setDiscountRate(e.target.value)}
-                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pr-8 h-12 text-base"
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">%</span>
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">10-20% for startups</p>
+                            <p className="text-sm text-muted-foreground mt-2">10-20% for startups</p>
                           </div>
                           <div>
-                            <Label className="text-white">Terminal Growth Rate</Label>
+                            <Label className="text-base font-medium">Terminal Growth Rate</Label>
                             <div className="relative mt-2">
                               <Input
                                 type="number"
                                 placeholder="3"
                                 value={terminalGrowthRate}
                                 onChange={(e) => setTerminalGrowthRate(e.target.value)}
-                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pr-8 h-12 text-base"
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">%</span>
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Usually 2-5%</p>
+                            <p className="text-sm text-muted-foreground mt-2">Usually 2-5%</p>
                           </div>
                         </div>
                       </TabsContent>
 
-                      <TabsContent value="comparable" className="space-y-4 mt-6">
-                        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-4">
+                      <TabsContent value="comparable" className="space-y-6 mt-6">
+                        <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
                           <div className="flex gap-2 items-start">
-                            <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-gray-300">
+                            <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
                               Values your company based on similar companies. Most accurate with multiple comparable companies.
                             </p>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           <div>
-                            <Label className="text-white">Comparable Company Valuation</Label>
+                            <Label className="text-base font-medium">Comparable Company Valuation</Label>
                             <div className="relative mt-2">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
                               <Input
                                 type="number"
                                 placeholder="50,000,000"
                                 value={comparableValuations}
                                 onChange={(e) => setComparableValuations(e.target.value)}
-                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pl-8 h-12 text-base"
                               />
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Recent funding round valuation</p>
+                            <p className="text-sm text-muted-foreground mt-2">Recent funding round valuation</p>
                           </div>
                           <div>
-                            <Label className="text-white">Their Annual Revenue</Label>
+                            <Label className="text-base font-medium">Their Annual Revenue</Label>
                             <div className="relative mt-2">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
                               <Input
                                 type="number"
                                 placeholder="10,000,000"
                                 value={comparableRevenue}
                                 onChange={(e) => setComparableRevenue(e.target.value)}
-                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pl-8 h-12 text-base"
                               />
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Comparable company's ARR</p>
+                            <p className="text-sm text-muted-foreground mt-2">Comparable company's ARR</p>
                           </div>
                           <div>
-                            <Label className="text-white">Your Annual Revenue</Label>
+                            <Label className="text-base font-medium">Your Annual Revenue</Label>
                             <div className="relative mt-2">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
                               <Input
                                 type="number"
                                 placeholder="5,000,000"
                                 value={yourRevenue}
                                 onChange={(e) => setYourRevenue(e.target.value)}
-                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pl-8 h-12 text-base"
                               />
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Your current ARR</p>
+                            <p className="text-sm text-muted-foreground mt-2">Your current ARR</p>
                           </div>
                         </div>
                       </TabsContent>
 
-                      <TabsContent value="vc" className="space-y-4 mt-6">
-                        <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-4">
+                      <TabsContent value="vc" className="space-y-6 mt-6">
+                        <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
                           <div className="flex gap-2 items-start">
-                            <Info className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-sm text-gray-300">
+                            <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
                               Investor perspective: works backward from expected exit value and target returns.
                             </p>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
-                            <Label className="text-white">Expected Exit Valuation</Label>
+                            <Label className="text-base font-medium">Expected Exit Valuation</Label>
                             <div className="relative mt-2">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
                               <Input
                                 type="number"
                                 placeholder="100,000,000"
                                 value={exitValuation}
                                 onChange={(e) => setExitValuation(e.target.value)}
-                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pl-8 h-12 text-base"
                               />
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Projected acquisition/IPO value</p>
+                            <p className="text-sm text-muted-foreground mt-2">Projected acquisition/IPO value</p>
                           </div>
                           <div>
-                            <Label className="text-white">Years to Exit</Label>
+                            <Label className="text-base font-medium">Years to Exit</Label>
                             <Input
                               type="number"
                               placeholder="5"
                               value={yearsToExit}
                               onChange={(e) => setYearsToExit(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              className="mt-2 h-12 text-base"
                             />
-                            <p className="text-xs text-gray-400 mt-1">Time horizon for exit event</p>
+                            <p className="text-sm text-muted-foreground mt-2">Time horizon for exit event</p>
                           </div>
                           <div>
-                            <Label className="text-white">Target Return Multiple</Label>
+                            <Label className="text-base font-medium">Target Return Multiple</Label>
                             <div className="relative mt-2">
                               <Input
                                 type="number"
                                 placeholder="10"
                                 value={targetReturn}
                                 onChange={(e) => setTargetReturn(e.target.value)}
-                                className="pr-6 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pr-8 h-12 text-base"
                               />
-                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">x</span>
+                              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">x</span>
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">5-10x typical for VCs</p>
+                            <p className="text-sm text-muted-foreground mt-2">5-10x typical for VCs</p>
                           </div>
                           <div>
-                            <Label className="text-white">Investment Amount</Label>
+                            <Label className="text-base font-medium">Investment Amount</Label>
                             <div className="relative mt-2">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">$</span>
                               <Input
                                 type="number"
                                 placeholder="2,000,000"
                                 value={investmentAmount}
                                 onChange={(e) => setInvestmentAmount(e.target.value)}
-                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                className="pl-8 h-12 text-base"
                               />
                             </div>
-                            <p className="text-xs text-gray-400 mt-1">Proposed investment size</p>
+                            <p className="text-sm text-muted-foreground mt-2">Proposed investment size</p>
                           </div>
                         </div>
                       </TabsContent>
@@ -588,47 +588,47 @@ const ValuationCalculator = () => {
                 </Card>
 
                 {revenueResult && (
-                  <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                  <Card>
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-cyan-400" />
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-primary" />
                         Valuation Range
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">Conservative</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">Conservative</div>
+                          <div className="text-3xl font-bold">
                             ${parseFloat(revenueResult.low).toLocaleString()}
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-                          <div className="text-sm text-gray-400 mb-1">Base Case</div>
-                          <div className="text-2xl font-bold text-cyan-400">
+                        <div className="p-6 rounded-lg bg-primary/10 border border-primary/20">
+                          <div className="text-sm text-muted-foreground mb-2">Base Case</div>
+                          <div className="text-3xl font-bold text-primary">
                             ${parseFloat(revenueResult.mid).toLocaleString()}
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">Optimistic</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">Optimistic</div>
+                          <div className="text-3xl font-bold">
                             ${parseFloat(revenueResult.high).toLocaleString()}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                        <p className="text-sm text-gray-300 mb-3">
-                          <strong className="text-white">Methodology:</strong> Based on a {revenueResult.multiple}x revenue multiple 
+                      <div className="p-4 rounded-lg bg-muted">
+                        <p className="text-sm text-muted-foreground mb-3">
+                          <strong className="text-foreground">Methodology:</strong> Based on a {revenueResult.multiple}x revenue multiple 
                           for {industry} companies with {growthRate}% growth rate
                         </p>
                         
                         <div className="space-y-2">
-                          <p className="text-xs text-gray-400 font-semibold">Key Insights:</p>
+                          <p className="text-xs text-muted-foreground font-semibold">Key Insights:</p>
                           {revenueResult.insights.map((insight, idx) => (
                             <div key={idx} className="flex gap-2 items-start">
-                              <div className="w-1 h-1 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
-                              <p className="text-xs text-gray-300">{insight}</p>
+                              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                              <p className="text-sm">{insight}</p>
                             </div>
                           ))}
                         </div>
@@ -638,50 +638,50 @@ const ValuationCalculator = () => {
                 )}
 
                 {dcfResult && (
-                  <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                  <Card>
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Calculator className="w-5 h-5 text-cyan-400" />
+                      <CardTitle className="flex items-center gap-2">
+                        <Calculator className="w-5 h-5 text-primary" />
                         DCF Valuation
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">PV of Cash Flows</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">PV of Cash Flows</div>
+                          <div className="text-3xl font-bold">
                             ${parseFloat(dcfResult.pvCashFlows).toLocaleString()}
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">PV Terminal Value</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">PV Terminal Value</div>
+                          <div className="text-3xl font-bold">
                             ${parseFloat(dcfResult.pvTerminal).toLocaleString()}
                           </div>
-                          <div className="text-xs text-gray-400 mt-1">
+                          <div className="text-xs text-muted-foreground mt-2">
                             {dcfResult.terminalValuePercent}% of total
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-                          <div className="text-sm text-gray-400 mb-1">Enterprise Value</div>
-                          <div className="text-2xl font-bold text-cyan-400">
+                        <div className="p-6 rounded-lg bg-primary/10 border border-primary/20">
+                          <div className="text-sm text-muted-foreground mb-2">Enterprise Value</div>
+                          <div className="text-3xl font-bold text-primary">
                             ${parseFloat(dcfResult.enterpriseValue).toLocaleString()}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                        <p className="text-sm text-gray-300 mb-3">
-                          <strong className="text-white">Methodology:</strong> Present value of projected EBITDA 
+                      <div className="p-4 rounded-lg bg-muted">
+                        <p className="text-sm text-muted-foreground mb-3">
+                          <strong className="text-foreground">Methodology:</strong> Present value of projected EBITDA 
                           using {discountRate}% discount rate and {terminalGrowthRate}% terminal growth
                         </p>
                         
                         <div className="space-y-2">
-                          <p className="text-xs text-gray-400 font-semibold">Key Insights:</p>
+                          <p className="text-xs text-muted-foreground font-semibold">Key Insights:</p>
                           {dcfResult.insights.map((insight, idx) => (
                             <div key={idx} className="flex gap-2 items-start">
-                              <div className="w-1 h-1 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
-                              <p className="text-xs text-gray-300">{insight}</p>
+                              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                              <p className="text-sm">{insight}</p>
                             </div>
                           ))}
                         </div>
@@ -691,51 +691,51 @@ const ValuationCalculator = () => {
                 )}
 
                 {comparableResult && (
-                  <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                  <Card>
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Building2 className="w-5 h-5 text-cyan-400" />
+                      <CardTitle className="flex items-center gap-2">
+                        <Building2 className="w-5 h-5 text-primary" />
                         Comparable Valuation
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">Implied Multiple</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">Implied Multiple</div>
+                          <div className="text-3xl font-bold">
                             {comparableResult.impliedMultiple}x
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-                          <div className="text-sm text-gray-400 mb-1">Your Valuation</div>
-                          <div className="text-2xl font-bold text-cyan-400">
+                        <div className="p-6 rounded-lg bg-primary/10 border border-primary/20">
+                          <div className="text-sm text-muted-foreground mb-2">Your Valuation</div>
+                          <div className="text-3xl font-bold text-primary">
                             ${parseFloat(comparableResult.valuation).toLocaleString()}
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">Range</div>
-                          <div className="text-sm font-semibold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">Range</div>
+                          <div className="text-base font-semibold">
                             ${parseFloat(comparableResult.low).toLocaleString()}
                           </div>
-                          <div className="text-sm text-gray-400">to</div>
-                          <div className="text-sm font-semibold text-white">
+                          <div className="text-sm text-muted-foreground">to</div>
+                          <div className="text-base font-semibold">
                             ${parseFloat(comparableResult.high).toLocaleString()}
                           </div>
                         </div>
                       </div>
                       
-                      <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                        <p className="text-sm text-gray-300 mb-3">
-                          <strong className="text-white">Methodology:</strong> Applying {comparableResult.impliedMultiple}x 
+                      <div className="p-4 rounded-lg bg-muted">
+                        <p className="text-sm text-muted-foreground mb-3">
+                          <strong className="text-foreground">Methodology:</strong> Applying {comparableResult.impliedMultiple}x 
                           multiple from comparable company to your revenue
                         </p>
                         
                         <div className="space-y-2">
-                          <p className="text-xs text-gray-400 font-semibold">Key Insights:</p>
+                          <p className="text-xs text-muted-foreground font-semibold">Key Insights:</p>
                           {comparableResult.insights.map((insight, idx) => (
                             <div key={idx} className="flex gap-2 items-start">
-                              <div className="w-1 h-1 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
-                              <p className="text-xs text-gray-300">{insight}</p>
+                              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                              <p className="text-sm">{insight}</p>
                             </div>
                           ))}
                         </div>
@@ -745,53 +745,53 @@ const ValuationCalculator = () => {
                 )}
 
                 {vcResult && (
-                  <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                  <Card>
                     <CardHeader>
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <Target className="w-5 h-5 text-cyan-400" />
+                      <CardTitle className="flex items-center gap-2">
+                        <Target className="w-5 h-5 text-primary" />
                         VC Method Valuation
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30">
-                          <div className="text-sm text-gray-400 mb-1">Pre-Money Valuation</div>
-                          <div className="text-2xl font-bold text-cyan-400">
+                        <div className="p-6 rounded-lg bg-primary/10 border border-primary/20">
+                          <div className="text-sm text-muted-foreground mb-2">Pre-Money Valuation</div>
+                          <div className="text-3xl font-bold text-primary">
                             ${parseFloat(vcResult.preMoneyValuation).toLocaleString()}
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">Post-Money Valuation</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">Post-Money Valuation</div>
+                          <div className="text-3xl font-bold">
                             ${parseFloat(vcResult.postMoneyValuation).toLocaleString()}
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">Required Ownership</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">Required Ownership</div>
+                          <div className="text-3xl font-bold">
                             {vcResult.requiredOwnership}%
                           </div>
                         </div>
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                          <div className="text-sm text-gray-400 mb-1">Implied IRR</div>
-                          <div className="text-2xl font-bold text-white">
+                        <div className="p-6 rounded-lg bg-muted border">
+                          <div className="text-sm text-muted-foreground mb-2">Implied IRR</div>
+                          <div className="text-3xl font-bold">
                             {vcResult.irr}%
                           </div>
                         </div>
                       </div>
                       
-                      <div className="p-4 rounded-lg bg-white/5 border border-white/10">
-                        <p className="text-sm text-gray-300 mb-3">
-                          <strong className="text-white">Methodology:</strong> Working backward from ${parseFloat(exitValuation).toLocaleString()} 
+                      <div className="p-4 rounded-lg bg-muted">
+                        <p className="text-sm text-muted-foreground mb-3">
+                          <strong className="text-foreground">Methodology:</strong> Working backward from ${parseFloat(exitValuation).toLocaleString()} 
                           exit in {yearsToExit} years with {targetReturn}x target return
                         </p>
                         
                         <div className="space-y-2">
-                          <p className="text-xs text-gray-400 font-semibold">Key Insights:</p>
+                          <p className="text-xs text-muted-foreground font-semibold">Key Insights:</p>
                           {vcResult.insights.map((insight, idx) => (
                             <div key={idx} className="flex gap-2 items-start">
-                              <div className="w-1 h-1 rounded-full bg-cyan-400 mt-1.5 flex-shrink-0" />
-                              <p className="text-xs text-gray-300">{insight}</p>
+                              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                              <p className="text-sm">{insight}</p>
                             </div>
                           ))}
                         </div>
@@ -802,37 +802,37 @@ const ValuationCalculator = () => {
               </TabsContent>
 
               {/* Benchmarks Tab */}
-              <TabsContent value="benchmarks" className="space-y-4">
-                <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+              <TabsContent value="benchmarks" className="space-y-6">
+                <Card>
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <BarChart3 className="w-5 h-5 text-cyan-400" />
+                    <CardTitle className="flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5 text-primary" />
                       Industry Valuation Benchmarks
                     </CardTitle>
-                    <CardDescription className="text-gray-400">
+                    <CardDescription>
                       Reference data to inform your valuation assumptions
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-8">
                     {/* Revenue Multiples by Industry */}
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Revenue Multiples by Industry</h3>
+                      <h3 className="text-lg font-semibold mb-4">Revenue Multiples by Industry</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {Object.entries(industryMultiples).map(([industry, multiples]) => (
-                          <div key={industry} className="p-4 rounded-lg bg-white/5 border border-white/10">
-                            <h4 className="font-semibold text-white mb-2">{industry}</h4>
-                            <div className="space-y-1 text-sm">
+                          <div key={industry} className="p-4 rounded-lg bg-muted border">
+                            <h4 className="font-semibold mb-3">{industry}</h4>
+                            <div className="space-y-2 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-400">Low:</span>
-                                <span className="text-white">{multiples.low}x</span>
+                                <span className="text-muted-foreground">Low:</span>
+                                <span className="font-medium">{multiples.low}x</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-400">Typical:</span>
-                                <span className="text-cyan-400 font-semibold">{multiples.mid}x</span>
+                                <span className="text-muted-foreground">Typical:</span>
+                                <span className="text-primary font-semibold">{multiples.mid}x</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-400">High:</span>
-                                <span className="text-white">{multiples.high}x</span>
+                                <span className="text-muted-foreground">High:</span>
+                                <span className="font-medium">{multiples.high}x</span>
                               </div>
                             </div>
                           </div>
@@ -842,114 +842,114 @@ const ValuationCalculator = () => {
 
                     {/* Growth Stage Benchmarks */}
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Typical Metrics by Stage</h3>
-                      <div className="space-y-3">
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                      <h3 className="text-lg font-semibold mb-4">Typical Metrics by Stage</h3>
+                      <div className="space-y-4">
+                        <div className="p-4 rounded-lg bg-muted border">
                           <div className="flex items-start gap-3">
-                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                            <div className="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-semibold">
                               Seed
                             </div>
                             <div className="flex-1 space-y-2 text-sm">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <div>
-                                  <span className="text-gray-400 block">Valuation:</span>
-                                  <span className="text-white">$2M-$10M</span>
+                                  <span className="text-muted-foreground block">Valuation:</span>
+                                  <span className="font-medium">$2M-$10M</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Revenue:</span>
-                                  <span className="text-white">$0-$1M</span>
+                                  <span className="text-muted-foreground block">Revenue:</span>
+                                  <span className="font-medium">$0-$1M</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Growth:</span>
-                                  <span className="text-white">100%+</span>
+                                  <span className="text-muted-foreground block">Growth:</span>
+                                  <span className="font-medium">100%+</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Typical Multiple:</span>
-                                  <span className="text-white">N/A (pre-revenue)</span>
+                                  <span className="text-muted-foreground block">Typical Multiple:</span>
+                                  <span className="font-medium">N/A (pre-revenue)</span>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                        <div className="p-4 rounded-lg bg-muted border">
                           <div className="flex items-start gap-3">
-                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                            <div className="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-semibold">
                               Series A
                             </div>
                             <div className="flex-1 space-y-2 text-sm">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <div>
-                                  <span className="text-gray-400 block">Valuation:</span>
-                                  <span className="text-white">$10M-$30M</span>
+                                  <span className="text-muted-foreground block">Valuation:</span>
+                                  <span className="font-medium">$10M-$30M</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Revenue:</span>
-                                  <span className="text-white">$1M-$5M</span>
+                                  <span className="text-muted-foreground block">Revenue:</span>
+                                  <span className="font-medium">$1M-$5M</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Growth:</span>
-                                  <span className="text-white">200%+</span>
+                                  <span className="text-muted-foreground block">Growth:</span>
+                                  <span className="font-medium">200%+</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Typical Multiple:</span>
-                                  <span className="text-white">10-15x ARR</span>
+                                  <span className="text-muted-foreground block">Typical Multiple:</span>
+                                  <span className="font-medium">10-15x ARR</span>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                        <div className="p-4 rounded-lg bg-muted border">
                           <div className="flex items-start gap-3">
-                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                            <div className="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-semibold">
                               Series B
                             </div>
                             <div className="flex-1 space-y-2 text-sm">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <div>
-                                  <span className="text-gray-400 block">Valuation:</span>
-                                  <span className="text-white">$30M-$100M</span>
+                                  <span className="text-muted-foreground block">Valuation:</span>
+                                  <span className="font-medium">$30M-$100M</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Revenue:</span>
-                                  <span className="text-white">$5M-$20M</span>
+                                  <span className="text-muted-foreground block">Revenue:</span>
+                                  <span className="font-medium">$5M-$20M</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Growth:</span>
-                                  <span className="text-white">100-150%</span>
+                                  <span className="text-muted-foreground block">Growth:</span>
+                                  <span className="font-medium">100-150%</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Typical Multiple:</span>
-                                  <span className="text-white">8-12x ARR</span>
+                                  <span className="text-muted-foreground block">Typical Multiple:</span>
+                                  <span className="font-medium">8-12x ARR</span>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                        <div className="p-4 rounded-lg bg-muted border">
                           <div className="flex items-start gap-3">
-                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                            <div className="px-3 py-1 rounded-full bg-primary/20 text-primary text-sm font-semibold">
                               Series C+
                             </div>
                             <div className="flex-1 space-y-2 text-sm">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <div>
-                                  <span className="text-gray-400 block">Valuation:</span>
-                                  <span className="text-white">$100M+</span>
+                                  <span className="text-muted-foreground block">Valuation:</span>
+                                  <span className="font-medium">$100M+</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Revenue:</span>
-                                  <span className="text-white">$20M+</span>
+                                  <span className="text-muted-foreground block">Revenue:</span>
+                                  <span className="font-medium">$20M+</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Growth:</span>
-                                  <span className="text-white">50-100%</span>
+                                  <span className="text-muted-foreground block">Growth:</span>
+                                  <span className="font-medium">50-100%</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400 block">Typical Multiple:</span>
-                                  <span className="text-white">6-10x ARR</span>
+                                  <span className="text-muted-foreground block">Typical Multiple:</span>
+                                  <span className="font-medium">6-10x ARR</span>
                                 </div>
                               </div>
                             </div>
@@ -960,92 +960,92 @@ const ValuationCalculator = () => {
 
                     {/* Key Metrics Reference */}
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Key Valuation Metrics</h3>
+                      <h3 className="text-lg font-semibold mb-4">Key Valuation Metrics</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                          <h4 className="font-semibold text-white mb-2">Discount Rates</h4>
-                          <div className="space-y-1 text-sm">
+                        <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
+                          <h4 className="font-semibold mb-3">Discount Rates</h4>
+                          <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Seed Stage:</span>
-                              <span className="text-white">40-60%</span>
+                              <span className="text-muted-foreground">Seed Stage:</span>
+                              <span className="font-medium">40-60%</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Early Stage (A/B):</span>
-                              <span className="text-white">25-40%</span>
+                              <span className="text-muted-foreground">Early Stage (A/B):</span>
+                              <span className="font-medium">25-40%</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Growth Stage (C+):</span>
-                              <span className="text-white">15-25%</span>
+                              <span className="text-muted-foreground">Growth Stage (C+):</span>
+                              <span className="font-medium">15-25%</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Mature/Public:</span>
-                              <span className="text-white">8-15%</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
-                          <h4 className="font-semibold text-white mb-2">Investor Target Returns</h4>
-                          <div className="space-y-1 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-gray-300">Seed:</span>
-                              <span className="text-white">10-20x</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-300">Series A:</span>
-                              <span className="text-white">5-10x</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-300">Series B:</span>
-                              <span className="text-white">3-5x</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-300">Series C+:</span>
-                              <span className="text-white">2-3x</span>
+                              <span className="text-muted-foreground">Mature/Public:</span>
+                              <span className="font-medium">8-15%</span>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                          <h4 className="font-semibold text-white mb-2">SaaS Benchmarks</h4>
-                          <div className="space-y-1 text-sm">
+                        <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
+                          <h4 className="font-semibold mb-3">Investor Target Returns</h4>
+                          <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Magic Number:</span>
-                              <span className="text-white">&gt;0.75 (good)</span>
+                              <span className="text-muted-foreground">Seed:</span>
+                              <span className="font-medium">10-20x</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">CAC Payback:</span>
-                              <span className="text-white">&lt;12 months</span>
+                              <span className="text-muted-foreground">Series A:</span>
+                              <span className="font-medium">5-10x</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">LTV/CAC Ratio:</span>
-                              <span className="text-white">&gt;3:1</span>
+                              <span className="text-muted-foreground">Series B:</span>
+                              <span className="font-medium">3-5x</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Net Revenue Retention:</span>
-                              <span className="text-white">&gt;100%</span>
+                              <span className="text-muted-foreground">Series C+:</span>
+                              <span className="font-medium">2-3x</span>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
-                          <h4 className="font-semibold text-white mb-2">Growth Benchmarks</h4>
-                          <div className="space-y-1 text-sm">
+                        <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
+                          <h4 className="font-semibold mb-3">SaaS Benchmarks</h4>
+                          <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Seed → Series A:</span>
-                              <span className="text-white">200%+ YoY</span>
+                              <span className="text-muted-foreground">Magic Number:</span>
+                              <span className="font-medium">&gt;0.75 (good)</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Series A → B:</span>
-                              <span className="text-white">150%+ YoY</span>
+                              <span className="text-muted-foreground">CAC Payback:</span>
+                              <span className="font-medium">&lt;12 months</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Series B → C:</span>
-                              <span className="text-white">100%+ YoY</span>
+                              <span className="text-muted-foreground">LTV/CAC Ratio:</span>
+                              <span className="font-medium">&gt;3:1</span>
                             </div>
                             <div className="flex justify-between">
-                              <span className="text-gray-300">Growth Stage:</span>
-                              <span className="text-white">50-100% YoY</span>
+                              <span className="text-muted-foreground">Net Revenue Retention:</span>
+                              <span className="font-medium">&gt;100%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
+                          <h4 className="font-semibold mb-3">Growth Benchmarks</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Seed → Series A:</span>
+                              <span className="font-medium">200%+ YoY</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Series A → B:</span>
+                              <span className="font-medium">150%+ YoY</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Series B → C:</span>
+                              <span className="font-medium">100%+ YoY</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Growth Stage:</span>
+                              <span className="font-medium">50-100% YoY</span>
                             </div>
                           </div>
                         </div>
@@ -1053,12 +1053,12 @@ const ValuationCalculator = () => {
                     </div>
 
                     {/* Note about benchmarks */}
-                    <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
                       <div className="flex gap-2 items-start">
-                        <Info className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
-                        <div className="text-sm text-gray-300">
-                          <p className="font-semibold text-yellow-400 mb-1">Note on Benchmarks</p>
-                          <p>
+                        <Info className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                        <div className="text-sm">
+                          <p className="font-semibold mb-2">Note on Benchmarks</p>
+                          <p className="text-muted-foreground">
                             These are general benchmarks and can vary significantly based on market conditions, 
                             sector trends, team quality, and competitive dynamics. Use them as reference points, 
                             not absolute targets. Upload your own benchmark reports for industry-specific data.
@@ -1072,35 +1072,35 @@ const ValuationCalculator = () => {
 
               {/* Education Tab */}
               <TabsContent value="education" className="space-y-4">
-                <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                <Card>
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <BookOpen className="w-5 h-5 text-cyan-400" />
+                    <CardTitle className="flex items-center gap-2">
+                      <BookOpen className="w-5 h-5 text-primary" />
                       Understanding Valuation Methods
                     </CardTitle>
-                    <CardDescription className="text-gray-400">
+                    <CardDescription>
                       Learn when and how to use each valuation approach
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value="revenue-multiple" className="border-white/10">
-                        <AccordionTrigger className="text-white hover:text-cyan-400">
+                      <AccordionItem value="revenue-multiple">
+                        <AccordionTrigger className="hover:text-primary">
                           <div className="flex items-center gap-2">
                             <TrendingUp className="w-4 h-4" />
                             Revenue Multiple Method
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-300 space-y-3">
+                        <AccordionContent className="text-muted-foreground space-y-3">
                           <div>
-                            <h4 className="font-semibold text-white mb-2">What it is:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">What it is:</h4>
                             <p className="text-sm">
                               Values your company as a multiple of annual recurring revenue (ARR) or revenue run rate, 
                               based on industry benchmarks and growth rates.
                             </p>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">When to use:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">When to use:</h4>
                             <ul className="text-sm space-y-1 list-disc list-inside">
                               <li>Early-stage startups (Seed to Series A)</li>
                               <li>High-growth companies without profitability</li>
@@ -1109,10 +1109,10 @@ const ValuationCalculator = () => {
                             </ul>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">Pros & Cons:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">Pros & Cons:</h4>
                             <div className="grid grid-cols-2 gap-4 text-sm">
                               <div>
-                                <p className="text-green-400 font-semibold mb-1">Pros:</p>
+                                <p className="text-primary font-semibold mb-1">Pros:</p>
                                 <ul className="space-y-1">
                                   <li>• Simple and quick</li>
                                   <li>• Market-based</li>
@@ -1120,7 +1120,7 @@ const ValuationCalculator = () => {
                                 </ul>
                               </div>
                               <div>
-                                <p className="text-red-400 font-semibold mb-1">Cons:</p>
+                                <p className="text-destructive font-semibold mb-1">Cons:</p>
                                 <ul className="space-y-1">
                                   <li>• Ignores profitability</li>
                                   <li>• Multiples vary widely</li>
