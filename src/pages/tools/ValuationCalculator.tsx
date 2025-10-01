@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
-import { ArrowLeft, DollarSign, TrendingUp, Calculator, Building2, Target, Info, BookOpen, Lightbulb, AlertCircle } from 'lucide-react';
+import { ArrowLeft, DollarSign, TrendingUp, Calculator, Building2, Target, Info, BookOpen, Lightbulb, AlertCircle, BarChart3 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -286,8 +286,9 @@ const ValuationCalculator = () => {
 
           <div className="max-w-6xl mx-auto">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="calculator">Calculator</TabsTrigger>
+                <TabsTrigger value="benchmarks">Benchmarks</TabsTrigger>
                 <TabsTrigger value="education">Valuation Methods</TabsTrigger>
                 <TabsTrigger value="tips">Best Practices</TabsTrigger>
               </TabsList>
@@ -338,34 +339,46 @@ const ValuationCalculator = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
-                            <Label className="text-white">Annual Revenue ($)</Label>
-                            <Input
-                              type="number"
-                              placeholder="1,000,000"
-                              value={revenue}
-                              onChange={(e) => setRevenue(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Annual Revenue</Label>
+                            <div className="relative mt-2">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <Input
+                                type="number"
+                                placeholder="1,000,000"
+                                value={revenue}
+                                onChange={(e) => setRevenue(e.target.value)}
+                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Your annual recurring revenue</p>
                           </div>
                           <div>
-                            <Label className="text-white">YoY Growth Rate (%)</Label>
-                            <Input
-                              type="number"
-                              placeholder="100"
-                              value={growthRate}
-                              onChange={(e) => setGrowthRate(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">YoY Growth Rate</Label>
+                            <div className="relative mt-2">
+                              <Input
+                                type="number"
+                                placeholder="100"
+                                value={growthRate}
+                                onChange={(e) => setGrowthRate(e.target.value)}
+                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Year-over-year growth percentage</p>
                           </div>
                           <div>
-                            <Label className="text-white">Profit Margin (%) <span className="text-gray-400 text-xs">Optional</span></Label>
-                            <Input
-                              type="number"
-                              placeholder="20"
-                              value={profitMargin}
-                              onChange={(e) => setProfitMargin(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Profit Margin <span className="text-gray-400 text-xs">Optional</span></Label>
+                            <div className="relative mt-2">
+                              <Input
+                                type="number"
+                                placeholder="20"
+                                value={profitMargin}
+                                onChange={(e) => setProfitMargin(e.target.value)}
+                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Net profit margin if profitable</p>
                           </div>
                         </div>
                       </TabsContent>
@@ -384,53 +397,65 @@ const ValuationCalculator = () => {
                           <Label className="text-white">Projected Annual Revenue (Next 5 Years)</Label>
                           <div className="grid grid-cols-1 gap-2 mt-2">
                             {[0, 1, 2, 3, 4].map((i) => (
-                              <Input
-                                key={i}
-                                type="number"
-                                placeholder={`Year ${i + 1} Revenue ($)`}
-                                value={projectedRevenue[i]}
-                                onChange={(e) => {
-                                  const newRevenues = [...projectedRevenue];
-                                  newRevenues[i] = e.target.value;
-                                  setProjectedRevenue(newRevenues);
-                                }}
-                                className="bg-white/5 border-white/10 text-white"
-                              />
+                              <div key={i} className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10">$</span>
+                                <Input
+                                  type="number"
+                                  placeholder={`Year ${i + 1} Revenue`}
+                                  value={projectedRevenue[i]}
+                                  onChange={(e) => {
+                                    const newRevenues = [...projectedRevenue];
+                                    newRevenues[i] = e.target.value;
+                                    setProjectedRevenue(newRevenues);
+                                  }}
+                                  className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                                />
+                              </div>
                             ))}
                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
-                            <Label className="text-white">EBITDA Margin (%)</Label>
-                            <Input
-                              type="number"
-                              placeholder="20"
-                              value={ebitdaMargin}
-                              onChange={(e) => setEbitdaMargin(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">EBITDA Margin</Label>
+                            <div className="relative mt-2">
+                              <Input
+                                type="number"
+                                placeholder="20"
+                                value={ebitdaMargin}
+                                onChange={(e) => setEbitdaMargin(e.target.value)}
+                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Expected profit margin</p>
                           </div>
                           <div>
-                            <Label className="text-white">Discount Rate (%)</Label>
-                            <Input
-                              type="number"
-                              placeholder="15"
-                              value={discountRate}
-                              onChange={(e) => setDiscountRate(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Discount Rate</Label>
+                            <div className="relative mt-2">
+                              <Input
+                                type="number"
+                                placeholder="15"
+                                value={discountRate}
+                                onChange={(e) => setDiscountRate(e.target.value)}
+                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                            </div>
                             <p className="text-xs text-gray-400 mt-1">10-20% for startups</p>
                           </div>
                           <div>
-                            <Label className="text-white">Terminal Growth Rate (%)</Label>
-                            <Input
-                              type="number"
-                              placeholder="3"
-                              value={terminalGrowthRate}
-                              onChange={(e) => setTerminalGrowthRate(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Terminal Growth Rate</Label>
+                            <div className="relative mt-2">
+                              <Input
+                                type="number"
+                                placeholder="3"
+                                value={terminalGrowthRate}
+                                onChange={(e) => setTerminalGrowthRate(e.target.value)}
+                                className="pr-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">%</span>
+                            </div>
                             <p className="text-xs text-gray-400 mt-1">Usually 2-5%</p>
                           </div>
                         </div>
@@ -448,34 +473,46 @@ const ValuationCalculator = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
-                            <Label className="text-white">Comparable Company Valuation ($)</Label>
-                            <Input
-                              type="number"
-                              placeholder="50,000,000"
-                              value={comparableValuations}
-                              onChange={(e) => setComparableValuations(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Comparable Company Valuation</Label>
+                            <div className="relative mt-2">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <Input
+                                type="number"
+                                placeholder="50,000,000"
+                                value={comparableValuations}
+                                onChange={(e) => setComparableValuations(e.target.value)}
+                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Recent funding round valuation</p>
                           </div>
                           <div>
-                            <Label className="text-white">Their Annual Revenue ($)</Label>
-                            <Input
-                              type="number"
-                              placeholder="10,000,000"
-                              value={comparableRevenue}
-                              onChange={(e) => setComparableRevenue(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Their Annual Revenue</Label>
+                            <div className="relative mt-2">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <Input
+                                type="number"
+                                placeholder="10,000,000"
+                                value={comparableRevenue}
+                                onChange={(e) => setComparableRevenue(e.target.value)}
+                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Comparable company's ARR</p>
                           </div>
                           <div>
-                            <Label className="text-white">Your Annual Revenue ($)</Label>
-                            <Input
-                              type="number"
-                              placeholder="5,000,000"
-                              value={yourRevenue}
-                              onChange={(e) => setYourRevenue(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Your Annual Revenue</Label>
+                            <div className="relative mt-2">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <Input
+                                type="number"
+                                placeholder="5,000,000"
+                                value={yourRevenue}
+                                onChange={(e) => setYourRevenue(e.target.value)}
+                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Your current ARR</p>
                           </div>
                         </div>
                       </TabsContent>
@@ -492,14 +529,18 @@ const ValuationCalculator = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                            <Label className="text-white">Expected Exit Valuation ($)</Label>
-                            <Input
-                              type="number"
-                              placeholder="100,000,000"
-                              value={exitValuation}
-                              onChange={(e) => setExitValuation(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Expected Exit Valuation</Label>
+                            <div className="relative mt-2">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <Input
+                                type="number"
+                                placeholder="100,000,000"
+                                value={exitValuation}
+                                onChange={(e) => setExitValuation(e.target.value)}
+                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Projected acquisition/IPO value</p>
                           </div>
                           <div>
                             <Label className="text-white">Years to Exit</Label>
@@ -508,29 +549,37 @@ const ValuationCalculator = () => {
                               placeholder="5"
                               value={yearsToExit}
                               onChange={(e) => setYearsToExit(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
+                              className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                             />
+                            <p className="text-xs text-gray-400 mt-1">Time horizon for exit event</p>
                           </div>
                           <div>
                             <Label className="text-white">Target Return Multiple</Label>
-                            <Input
-                              type="number"
-                              placeholder="10"
-                              value={targetReturn}
-                              onChange={(e) => setTargetReturn(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <div className="relative mt-2">
+                              <Input
+                                type="number"
+                                placeholder="10"
+                                value={targetReturn}
+                                onChange={(e) => setTargetReturn(e.target.value)}
+                                className="pr-6 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">x</span>
+                            </div>
                             <p className="text-xs text-gray-400 mt-1">5-10x typical for VCs</p>
                           </div>
                           <div>
-                            <Label className="text-white">Investment Amount ($)</Label>
-                            <Input
-                              type="number"
-                              placeholder="2,000,000"
-                              value={investmentAmount}
-                              onChange={(e) => setInvestmentAmount(e.target.value)}
-                              className="mt-2 bg-white/5 border-white/10 text-white"
-                            />
+                            <Label className="text-white">Investment Amount</Label>
+                            <div className="relative mt-2">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">$</span>
+                              <Input
+                                type="number"
+                                placeholder="2,000,000"
+                                value={investmentAmount}
+                                onChange={(e) => setInvestmentAmount(e.target.value)}
+                                className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                              />
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">Proposed investment size</p>
                           </div>
                         </div>
                       </TabsContent>
@@ -750,6 +799,275 @@ const ValuationCalculator = () => {
                     </CardContent>
                   </Card>
                 )}
+              </TabsContent>
+
+              {/* Benchmarks Tab */}
+              <TabsContent value="benchmarks" className="space-y-4">
+                <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                  <CardHeader>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <BarChart3 className="w-5 h-5 text-cyan-400" />
+                      Industry Valuation Benchmarks
+                    </CardTitle>
+                    <CardDescription className="text-gray-400">
+                      Reference data to inform your valuation assumptions
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Revenue Multiples by Industry */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4">Revenue Multiples by Industry</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {Object.entries(industryMultiples).map(([industry, multiples]) => (
+                          <div key={industry} className="p-4 rounded-lg bg-white/5 border border-white/10">
+                            <h4 className="font-semibold text-white mb-2">{industry}</h4>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Low:</span>
+                                <span className="text-white">{multiples.low}x</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Typical:</span>
+                                <span className="text-cyan-400 font-semibold">{multiples.mid}x</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">High:</span>
+                                <span className="text-white">{multiples.high}x</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Growth Stage Benchmarks */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4">Typical Metrics by Stage</h3>
+                      <div className="space-y-3">
+                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                          <div className="flex items-start gap-3">
+                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                              Seed
+                            </div>
+                            <div className="flex-1 space-y-2 text-sm">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div>
+                                  <span className="text-gray-400 block">Valuation:</span>
+                                  <span className="text-white">$2M-$10M</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Revenue:</span>
+                                  <span className="text-white">$0-$1M</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Growth:</span>
+                                  <span className="text-white">100%+</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Typical Multiple:</span>
+                                  <span className="text-white">N/A (pre-revenue)</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                          <div className="flex items-start gap-3">
+                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                              Series A
+                            </div>
+                            <div className="flex-1 space-y-2 text-sm">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div>
+                                  <span className="text-gray-400 block">Valuation:</span>
+                                  <span className="text-white">$10M-$30M</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Revenue:</span>
+                                  <span className="text-white">$1M-$5M</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Growth:</span>
+                                  <span className="text-white">200%+</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Typical Multiple:</span>
+                                  <span className="text-white">10-15x ARR</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                          <div className="flex items-start gap-3">
+                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                              Series B
+                            </div>
+                            <div className="flex-1 space-y-2 text-sm">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div>
+                                  <span className="text-gray-400 block">Valuation:</span>
+                                  <span className="text-white">$30M-$100M</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Revenue:</span>
+                                  <span className="text-white">$5M-$20M</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Growth:</span>
+                                  <span className="text-white">100-150%</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Typical Multiple:</span>
+                                  <span className="text-white">8-12x ARR</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                          <div className="flex items-start gap-3">
+                            <div className="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-semibold">
+                              Series C+
+                            </div>
+                            <div className="flex-1 space-y-2 text-sm">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div>
+                                  <span className="text-gray-400 block">Valuation:</span>
+                                  <span className="text-white">$100M+</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Revenue:</span>
+                                  <span className="text-white">$20M+</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Growth:</span>
+                                  <span className="text-white">50-100%</span>
+                                </div>
+                                <div>
+                                  <span className="text-gray-400 block">Typical Multiple:</span>
+                                  <span className="text-white">6-10x ARR</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Key Metrics Reference */}
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4">Key Valuation Metrics</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                          <h4 className="font-semibold text-white mb-2">Discount Rates</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Seed Stage:</span>
+                              <span className="text-white">40-60%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Early Stage (A/B):</span>
+                              <span className="text-white">25-40%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Growth Stage (C+):</span>
+                              <span className="text-white">15-25%</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Mature/Public:</span>
+                              <span className="text-white">8-15%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                          <h4 className="font-semibold text-white mb-2">Investor Target Returns</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Seed:</span>
+                              <span className="text-white">10-20x</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Series A:</span>
+                              <span className="text-white">5-10x</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Series B:</span>
+                              <span className="text-white">3-5x</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Series C+:</span>
+                              <span className="text-white">2-3x</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                          <h4 className="font-semibold text-white mb-2">SaaS Benchmarks</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Magic Number:</span>
+                              <span className="text-white">&gt;0.75 (good)</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">CAC Payback:</span>
+                              <span className="text-white">&lt;12 months</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">LTV/CAC Ratio:</span>
+                              <span className="text-white">&gt;3:1</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Net Revenue Retention:</span>
+                              <span className="text-white">&gt;100%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                          <h4 className="font-semibold text-white mb-2">Growth Benchmarks</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Seed → Series A:</span>
+                              <span className="text-white">200%+ YoY</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Series A → B:</span>
+                              <span className="text-white">150%+ YoY</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Series B → C:</span>
+                              <span className="text-white">100%+ YoY</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-300">Growth Stage:</span>
+                              <span className="text-white">50-100% YoY</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Note about benchmarks */}
+                    <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                      <div className="flex gap-2 items-start">
+                        <Info className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                        <div className="text-sm text-gray-300">
+                          <p className="font-semibold text-yellow-400 mb-1">Note on Benchmarks</p>
+                          <p>
+                            These are general benchmarks and can vary significantly based on market conditions, 
+                            sector trends, team quality, and competitive dynamics. Use them as reference points, 
+                            not absolute targets. Upload your own benchmark reports for industry-specific data.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               {/* Education Tab */}
