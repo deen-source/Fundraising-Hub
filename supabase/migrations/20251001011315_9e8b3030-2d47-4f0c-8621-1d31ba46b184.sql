@@ -1,0 +1,13 @@
+-- Add startup information fields to profiles table
+ALTER TABLE public.profiles
+ADD COLUMN IF NOT EXISTS business_description TEXT,
+ADD COLUMN IF NOT EXISTS industry TEXT,
+ADD COLUMN IF NOT EXISTS website TEXT,
+ADD COLUMN IF NOT EXISTS address TEXT,
+ADD COLUMN IF NOT EXISTS city TEXT,
+ADD COLUMN IF NOT EXISTS state TEXT,
+ADD COLUMN IF NOT EXISTS zip_code TEXT,
+ADD COLUMN IF NOT EXISTS country TEXT DEFAULT 'United States',
+ADD COLUMN IF NOT EXISTS phone TEXT,
+ADD COLUMN IF NOT EXISTS incorporation_date DATE,
+ADD COLUMN IF NOT EXISTS ein TEXT;

@@ -10,7 +10,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, FileText, Download, Copy, Check, HelpCircle, Sparkles } from 'lucide-react';
+import { ArrowLeft, FileText, Download, Copy, Check, HelpCircle, Sparkles, Settings } from 'lucide-react';
+import { StartupProfileForm } from '@/components/StartupProfileForm';
 
 interface Template {
   id: string;
@@ -29,12 +30,69 @@ const DocumentTemplates = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
     loadTemplates();
+    loadProfile();
   }, []);
+
+  const loadProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setProfile(data);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  };
+
+  const populateTemplate = (content: string): string => {
+    if (!content || !profile) return content;
+
+    const today = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+
+    const replacements: Record<string, string> = {
+      '{{COMPANY_NAME}}': profile.company_name || '[Company Name]',
+      '{{FOUNDER_NAME}}': profile.full_name || '[Founder Name]',
+      '{{FOUNDER_EMAIL}}': profile.email || '[Email]',
+      '{{COMPANY_INDUSTRY}}': profile.industry || '[Industry]',
+      '{{COMPANY_WEBSITE}}': profile.website || '[Website]',
+      '{{COMPANY_DESCRIPTION}}': profile.business_description || '[Business Description]',
+      '{{COMPANY_ADDRESS}}': profile.address || '[Address]',
+      '{{COMPANY_CITY}}': profile.city || '[City]',
+      '{{COMPANY_STATE}}': profile.state || '[State]',
+      '{{COMPANY_ZIP}}': profile.zip_code || '[ZIP Code]',
+      '{{COMPANY_COUNTRY}}': profile.country || '[Country]',
+      '{{COMPANY_PHONE}}': profile.phone || '[Phone]',
+      '{{INCORPORATION_DATE}}': profile.incorporation_date ? new Date(profile.incorporation_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '[Incorporation Date]',
+      '{{EIN}}': profile.ein || '[EIN]',
+      '{{CURRENT_DATE}}': today,
+      '{{CURRENT_YEAR}}': new Date().getFullYear().toString(),
+    };
+
+    let populatedContent = content;
+    Object.entries(replacements).forEach(([placeholder, value]) => {
+      populatedContent = populatedContent.replace(new RegExp(placeholder, 'g'), value);
+    });
+
+    return populatedContent;
+  };
 
   const loadTemplates = async () => {
     try {
@@ -58,7 +116,11 @@ const DocumentTemplates = () => {
   };
 
   const handleViewTemplate = (template: Template) => {
-    setSelectedTemplate(template);
+    const populatedTemplate = {
+      ...template,
+      content: template.content ? populateTemplate(template.content) : null
+    };
+    setSelectedTemplate(populatedTemplate);
     setViewDialogOpen(true);
     setCopied(false);
   };
@@ -190,6 +252,10 @@ const DocumentTemplates = () => {
               </div>
               <p className="text-muted-foreground">Pre-built templates for fundraising and legal documents</p>
             </div>
+            <Button onClick={() => setProfileDialogOpen(true)} variant="outline">
+              <Settings className="h-4 w-4 mr-2" />
+              Startup Profile
+            </Button>
           </div>
 
           {/* Info Banner */}
@@ -198,10 +264,10 @@ const DocumentTemplates = () => {
               <div className="flex items-start gap-3">
                 <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold mb-1">Professional Templates Ready to Use</p>
+                  <p className="font-semibold mb-1">Templates Auto-Populate with Your Information</p>
                   <p className="text-sm text-muted-foreground">
-                    Save time with professionally crafted templates. Click any template to preview, 
-                    then copy or download to customize for your needs.
+                    Fill out your startup profile to automatically populate templates with your company information.
+                    Click "Startup Profile" above to add your details, then templates will be ready to use.
                   </p>
                 </div>
               </div>
@@ -367,6 +433,19 @@ const DocumentTemplates = () => {
               {selectedTemplate?.content}
             </pre>
           </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Startup Profile Dialog */}
+      <Dialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Startup Profile Settings</DialogTitle>
+            <DialogDescription>
+              Update your startup information to auto-populate document templates
+            </DialogDescription>
+          </DialogHeader>
+          <StartupProfileForm />
         </DialogContent>
       </Dialog>
     </AuthGuard>
