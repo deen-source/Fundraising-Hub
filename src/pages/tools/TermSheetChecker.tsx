@@ -198,32 +198,33 @@ Best regards,
 
   return (
     <AuthGuard>
-      <div className="min-h-screen relative bg-gradient-to-b from-[#1a2947] via-[#0f1729] to-background">
-        <StarField />
-        
-        {/* Cyan Banner */}
-        <div className="relative z-10 bg-cyan-400 text-gray-900 py-4 text-center font-medium">
-          AI-Powered Term Sheet Analysis • Launched 2025
-        </div>
-
-        <div className="relative z-10 container mx-auto px-4 py-12 max-w-7xl">
+      <div className="min-h-screen relative bg-background">
+        <div className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
           <Button
             variant="ghost"
             onClick={() => navigate('/dashboard')}
-            className="mb-8 text-gray-400 hover:text-white"
+            className="mb-6 gap-2"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </Button>
 
+          {/* Header Section */}
+          <div className="mb-8 text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <Shield className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">AI-Powered Analysis</span>
+            </div>
+            <h1 className="text-5xl font-bold tracking-tight">Term Sheet Checker</h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Analyze term sheets with AI-powered insights for smarter negotiation decisions
+            </p>
+          </div>
+
           {/* Input Section */}
           <div className="mb-8">
-            <div className="text-sm text-cyan-400 mb-2 uppercase tracking-wider">Analysis Tool</div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-8 leading-tight">
-              Analyze term sheets with AI-powered insights for smarter negotiation decisions.
-            </h1>
             
-            <Card className="bg-white/5 backdrop-blur border-white/10">
+            <Card className="border-2 border-dashed border-primary/20">
               <CardContent className="p-8">
                 <div className="flex justify-between items-center mb-4">
                   <label className="text-sm font-medium text-gray-300">
@@ -286,178 +287,190 @@ Pre-Money Valuation: $20,000,000
 
           {/* Analysis Results */}
           {analysis && (
-            <div className="space-y-8 bg-white rounded-lg p-8">
+            <div className="space-y-8">
               {/* Executive Summary Card */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-                <div className="text-sm text-gray-500 mb-2 uppercase tracking-wider">Executive Summary</div>
-                <h2 className="text-4xl font-bold mb-6 text-gray-900">
-                  {analysis.summary}
-                </h2>
-                
-                <div className="flex items-center gap-3 mb-8">
-                  <Badge className="bg-cyan-400 text-gray-900 hover:bg-cyan-500 rounded-full px-4 py-1">
-                    {analysis.deal_type}
-                  </Badge>
-                  <Badge className="bg-cyan-400 text-gray-900 hover:bg-cyan-500 rounded-full px-4 py-1">
-                    Score: {analysis.overall_score}/10
-                  </Badge>
-                  <ArrowUpRight className="w-5 h-5 text-gray-400" />
-                </div>
+              <Card className="border-2 border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5">
+                <CardContent className="pt-6">
+                  <div className="text-sm text-muted-foreground mb-2 uppercase tracking-wider">Executive Summary</div>
+                  <h2 className="text-4xl font-bold mb-6">
+                    {analysis.summary}
+                  </h2>
+                  
+                  <div className="flex items-center gap-3 mb-8">
+                    <Badge className="rounded-full px-4 py-1">
+                      {analysis.deal_type}
+                    </Badge>
+                    <Badge className="rounded-full px-4 py-1">
+                      Score: {analysis.overall_score}/10
+                    </Badge>
+                  </div>
 
-                <div className="grid md:grid-cols-4 gap-6">
-                  <div className="text-center">
-                    <div className="text-5xl font-bold text-gray-900 mb-1">
-                      {analysis.overall_score}<span className="text-2xl text-gray-400">/10</span>
+                  <div className="grid md:grid-cols-4 gap-6">
+                    <div className="text-center">
+                      <div className="text-5xl font-bold mb-1">
+                        {analysis.overall_score}<span className="text-2xl text-muted-foreground">/10</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">Overall Quality</div>
                     </div>
-                    <div className="text-sm text-gray-500">Overall Quality</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-5xl font-bold text-red-500 mb-1">
-                      {analysis.red_flags?.length || 0}
+                    <div className="text-center">
+                      <div className="text-5xl font-bold text-destructive mb-1">
+                        {analysis.red_flags?.length || 0}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Critical Issues</div>
                     </div>
-                    <div className="text-sm text-gray-500">Critical Issues</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-5xl font-bold text-orange-500 mb-1">
-                      {analysis.investor_friendliness}<span className="text-2xl text-gray-400">/10</span>
+                    <div className="text-center">
+                      <div className="text-5xl font-bold text-warning mb-1">
+                        {analysis.investor_friendliness}<span className="text-2xl text-muted-foreground">/10</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">Investor Bias</div>
                     </div>
-                    <div className="text-sm text-gray-500">Investor Bias</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-5xl font-bold text-gray-900 mb-1">
-                      {analysis.critical_terms?.length || 0}
+                    <div className="text-center">
+                      <div className="text-5xl font-bold mb-1">
+                        {analysis.critical_terms?.length || 0}
+                      </div>
+                      <div className="text-sm text-muted-foreground">Terms Analyzed</div>
                     </div>
-                    <div className="text-sm text-gray-500">Terms Analyzed</div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
               {/* Critical Issues */}
               {analysis.red_flags && analysis.red_flags.length > 0 && (
-                <div className="border-2 border-dashed border-red-200 rounded-lg p-8 bg-red-50/50">
-                  <div className="flex items-center gap-3 mb-6">
-                    <AlertTriangle className="w-6 h-6 text-red-500" />
-                    <div>
-                      <div className="text-sm text-gray-500 uppercase tracking-wider">Critical Issues</div>
-                      <h2 className="text-3xl font-bold text-gray-900">
-                        {analysis.red_flags.length} item{analysis.red_flags.length !== 1 ? 's' : ''} requiring immediate attention
-                      </h2>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {analysis.red_flags.map((flag: any, index: number) => (
-                      <div key={index} className="bg-white rounded-lg p-6 border border-red-200">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white text-sm font-bold">
-                              {index + 1}
-                            </span>
-                            <h3 className="font-bold text-xl text-gray-900">{flag.clause}</h3>
-                          </div>
-                          <Badge variant="destructive" className="rounded-full">
-                            {flag.severity}
-                          </Badge>
-                        </div>
-                        
-                        <div className="ml-11 space-y-4">
-                          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                            <div className="text-xs font-semibold text-red-600 mb-2 uppercase tracking-wider">The Issue</div>
-                            <p className="text-sm text-gray-700">{flag.issue}</p>
-                          </div>
-                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                            <div className="text-xs font-semibold text-orange-600 mb-2 uppercase tracking-wider">Consequence</div>
-                            <p className="text-sm text-gray-700">{flag.consequence}</p>
-                          </div>
-                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <div className="text-xs font-semibold text-green-600 mb-2 uppercase tracking-wider">Solution</div>
-                            <p className="text-sm text-gray-700">{flag.solution}</p>
-                          </div>
-                        </div>
+                <Card className="border-2 border-destructive/20 bg-destructive/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <AlertTriangle className="w-6 h-6 text-destructive" />
+                      <div>
+                        <div className="text-sm text-muted-foreground uppercase tracking-wider">Critical Issues</div>
+                        <h2 className="text-3xl font-bold">
+                          {analysis.red_flags.length} item{analysis.red_flags.length !== 1 ? 's' : ''} requiring immediate attention
+                        </h2>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  
+                    <div className="space-y-4">
+                      {analysis.red_flags.map((flag: any, index: number) => (
+                        <Card key={index} className="border-destructive/20">
+                          <CardContent className="pt-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center gap-3">
+                                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-destructive text-destructive-foreground text-sm font-bold">
+                                  {index + 1}
+                                </span>
+                                <h3 className="font-bold text-xl">{flag.clause}</h3>
+                              </div>
+                              <Badge variant="destructive" className="rounded-full">
+                                {flag.severity}
+                              </Badge>
+                            </div>
+                            
+                            <div className="ml-11 space-y-4">
+                              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                                <div className="text-xs font-semibold text-destructive mb-2 uppercase tracking-wider">The Issue</div>
+                                <p className="text-sm">{flag.issue}</p>
+                              </div>
+                              <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
+                                <div className="text-xs font-semibold text-warning mb-2 uppercase tracking-wider">Consequence</div>
+                                <p className="text-sm">{flag.consequence}</p>
+                              </div>
+                              <div className="bg-success/10 border border-success/20 rounded-lg p-4">
+                                <div className="text-xs font-semibold text-success mb-2 uppercase tracking-wider">Solution</div>
+                                <p className="text-sm">{flag.solution}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Areas to Improve */}
               {analysis.critical_terms && analysis.critical_terms.filter((t: any) => t.risk_level === 'Medium' || t.risk_level === 'High').length > 0 && (
-                <div className="border-2 border-dashed border-yellow-200 rounded-lg p-8 bg-yellow-50/50">
-                  <div className="flex items-center gap-3 mb-6">
-                    <AlertCircle className="w-6 h-6 text-yellow-600" />
-                    <div>
-                      <div className="text-sm text-gray-500 uppercase tracking-wider">Areas to Improve</div>
-                      <h2 className="text-3xl font-bold text-gray-900">
-                        Terms that need negotiation
-                      </h2>
+                <Card className="border-2 border-warning/20 bg-warning/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <AlertCircle className="w-6 h-6 text-warning" />
+                      <div>
+                        <div className="text-sm text-muted-foreground uppercase tracking-wider">Areas to Improve</div>
+                        <h2 className="text-3xl font-bold">
+                          Terms that need negotiation
+                        </h2>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {analysis.critical_terms
-                      .filter((term: any) => term.risk_level === 'Medium' || term.risk_level === 'High')
-                      .map((term: any, index: number) => (
-                        <div key={index} className="bg-white rounded-lg p-6 border border-yellow-200">
-                          <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-bold text-xl text-gray-900">{term.term}</h3>
-                            <Badge variant={term.risk_level === 'High' ? 'destructive' : 'default'} className="rounded-full">
-                              {term.risk_level} risk
-                            </Badge>
-                          </div>
-                          
-                          <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                              <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Current Value</div>
-                              <p className="text-sm text-gray-700 mb-4">{term.value}</p>
-                              <div className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">Market Standard</div>
-                              <p className="text-sm text-gray-700">{term.market_standard}</p>
-                            </div>
-                            <div className="bg-cyan-50 border border-cyan-200 rounded-lg p-4">
-                              <div className="text-xs font-semibold text-cyan-700 mb-2 uppercase tracking-wider">Recommendation</div>
-                              <p className="text-sm text-gray-700">{term.negotiation_advice}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
+                    
+                    <div className="space-y-4">
+                      {analysis.critical_terms
+                        .filter((term: any) => term.risk_level === 'Medium' || term.risk_level === 'High')
+                        .map((term: any, index: number) => (
+                          <Card key={index}>
+                            <CardContent className="pt-6">
+                              <div className="flex items-center justify-between mb-4">
+                                <h3 className="font-bold text-xl">{term.term}</h3>
+                                <Badge variant={term.risk_level === 'High' ? 'destructive' : 'default'} className="rounded-full">
+                                  {term.risk_level} risk
+                                </Badge>
+                              </div>
+                              
+                              <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                  <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Current Value</div>
+                                  <p className="text-sm mb-4">{term.value}</p>
+                                  <div className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Market Standard</div>
+                                  <p className="text-sm">{term.market_standard}</p>
+                                </div>
+                                <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+                                  <div className="text-xs font-semibold text-primary mb-2 uppercase tracking-wider">Recommendation</div>
+                                  <p className="text-sm">{term.negotiation_advice}</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Strong Points */}
               {analysis.green_flags && analysis.green_flags.length > 0 && (
-                <div className="border-2 border-dashed border-green-200 rounded-lg p-8 bg-green-50/50">
-                  <div className="flex items-center gap-3 mb-6">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                    <div>
-                      <div className="text-sm text-gray-500 uppercase tracking-wider">Strong Points</div>
-                      <h2 className="text-3xl font-bold text-gray-900">
-                        Favorable terms in your agreement
-                      </h2>
-                    </div>
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {analysis.green_flags.map((flag: string, index: number) => (
-                      <div key={index} className="bg-white rounded-lg p-5 border border-green-200 flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <p className="text-sm text-gray-700">{flag}</p>
+                <Card className="border-2 border-success/20 bg-success/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <CheckCircle className="w-6 h-6 text-success" />
+                      <div>
+                        <div className="text-sm text-muted-foreground uppercase tracking-wider">Strong Points</div>
+                        <h2 className="text-3xl font-bold">
+                          Favorable terms in your agreement
+                        </h2>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {analysis.green_flags.map((flag: string, index: number) => (
+                        <div key={index} className="rounded-lg p-5 border border-success/20 flex items-start gap-3 bg-card">
+                          <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                          <p className="text-sm">{flag}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
 
               {/* Detailed Analysis */}
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <FileText className="w-6 h-6 text-gray-600" />
-                  <div>
-                    <div className="text-sm text-gray-500 uppercase tracking-wider">Detailed Analysis</div>
-                    <h2 className="text-3xl font-bold text-gray-900">
-                      Complete term breakdown
-                    </h2>
+              <Card className="border-2 border-primary/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <FileText className="w-6 h-6 text-primary" />
+                    <div>
+                      <div className="text-sm text-muted-foreground uppercase tracking-wider">Detailed Analysis</div>
+                      <h2 className="text-3xl font-bold">
+                        Complete term breakdown
+                      </h2>
+                    </div>
                   </div>
-                </div>
                 
                 <Accordion type="single" collapsible className="w-full">
                   {analysis.critical_terms?.map((term: any, index: number) => (
@@ -495,7 +508,8 @@ Pre-Money Valuation: $20,000,000
                     </AccordionItem>
                   ))}
                 </Accordion>
-              </div>
+              </CardContent>
+            </Card>
 
               {/* Negotiation Strategy */}
               <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 bg-blue-50/50">

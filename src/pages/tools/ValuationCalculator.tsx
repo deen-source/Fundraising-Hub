@@ -196,35 +196,32 @@ const ValuationCalculator = () => {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen relative bg-gradient-to-b from-[#0A0F1C] via-[#0D1425] to-[#0A0F1C]">
-        <StarField />
-        
+      <div className="min-h-screen relative bg-background">
         <div className="relative z-10 container mx-auto px-4 py-8">
           <Button 
-            variant="outline" 
+            variant="ghost" 
             onClick={() => navigate('/dashboard')} 
-            className="mb-6 gap-2 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+            className="mb-6 gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </Button>
 
           {/* Hero Section */}
-          <div className="mb-8 text-center">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl border border-cyan-500/30">
-                <DollarSign className="w-8 h-8 text-cyan-400" />
-              </div>
-              <h1 className="text-4xl font-bold text-white">Valuation Calculator</h1>
+          <div className="mb-8 text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <DollarSign className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Financial Analysis</span>
             </div>
-            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+            <h1 className="text-5xl font-bold tracking-tight">Valuation Calculator</h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Estimate your startup's valuation using industry-standard methods
             </p>
           </div>
 
           {/* Executive Summary Banner */}
           {(revenueResult || dcfResult || comparableResult || vcResult) && (
-            <Card className="mb-6 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-cyan-500/30">
+            <Card className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-cyan-500/20 rounded-lg">
@@ -289,7 +286,7 @@ const ValuationCalculator = () => {
 
           <div className="max-w-6xl mx-auto">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 bg-white/5">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="calculator">Calculator</TabsTrigger>
                 <TabsTrigger value="education">Valuation Methods</TabsTrigger>
                 <TabsTrigger value="tips">Best Practices</TabsTrigger>
@@ -297,7 +294,7 @@ const ValuationCalculator = () => {
 
               {/* Calculator Tab */}
               <TabsContent value="calculator" className="space-y-6">
-                <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                <Card>
                   <CardHeader>
                     <CardTitle className="text-white">Select Valuation Method</CardTitle>
                     <CardDescription className="text-gray-400">

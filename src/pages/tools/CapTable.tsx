@@ -390,15 +390,13 @@ const CapTable = () => {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen relative bg-[#0A0F1C]">
-        <StarField />
-        
+      <div className="min-h-screen relative bg-background">
         <div className="relative z-10 container mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-6">
             <Button 
-              variant="outline" 
+              variant="ghost" 
               onClick={() => navigate('/dashboard')} 
-              className="gap-2 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+              className="gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
@@ -487,6 +485,18 @@ const CapTable = () => {
                 </DialogContent>
               </Dialog>
             </div>
+          </div>
+
+          {/* Hero Section */}
+          <div className="mb-8 text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <PieChartIcon className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Equity Management</span>
+            </div>
+            <h1 className="text-5xl font-bold tracking-tight">Cap Table Manager</h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Track ownership, model funding rounds, and simulate exit scenarios
+            </p>
           </div>
 
           <div className="max-w-7xl mx-auto space-y-6">
