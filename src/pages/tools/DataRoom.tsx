@@ -9,11 +9,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Upload, FileText, Download, Trash2, FolderOpen, Eye, Clock, Share2, File, Image as ImageIcon, HelpCircle, FolderLock } from 'lucide-react';
+import { ArrowLeft, Upload, FileText, Download, Trash2, FolderOpen, Eye, Clock, Share2, File, Image as ImageIcon, HelpCircle, FolderLock, ChevronDown } from 'lucide-react';
+import { DataRoomShareDialog } from '@/components/DataRoomShareDialog';
 
 interface Document {
   id: string;
@@ -91,9 +93,11 @@ const DataRoom = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<string>('all');
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'structured'>('structured');
 
   // Upload form state
   const [uploadFile, setUploadFile] = useState<File | null>(null);
@@ -473,10 +477,16 @@ const DataRoom = () => {
                 </div>
                 <p className="text-muted-foreground">Organize and share due diligence documents</p>
               </div>
-              <Button onClick={() => setUploadDialogOpen(true)}>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Document
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShareDialogOpen(true)}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share Data Room
+                </Button>
+                <Button onClick={() => setUploadDialogOpen(true)}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Document
+                </Button>
+              </div>
             </div>
 
             {/* Search */}
@@ -530,140 +540,138 @@ const DataRoom = () => {
             </Card>
           )}
 
-          {/* Folders and Documents */}
-          <Tabs value={selectedFolder} onValueChange={setSelectedFolder} className="w-full">
-            <TabsList className="w-full justify-start overflow-x-auto flex-wrap h-auto">
-              {FOLDERS.map((folder) => {
-                const Icon = folder.icon;
-                const count = documents.filter(d => folder.value === 'all' || d.folder === folder.value).length;
-                return (
-                  <TooltipProvider key={folder.value}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value={folder.value} className="flex items-center gap-2">
-                          <Icon className="h-4 w-4" />
-                          {folder.label}
-                          <Badge variant="secondary" className="ml-1">{count}</Badge>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-sm max-w-xs">{folder.description}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                );
-              })}
-            </TabsList>
-
-            <TabsContent value={selectedFolder} className="mt-6">
-              {isLoading ? (
-                <div className="text-center py-12">Loading documents...</div>
-              ) : filteredDocuments.length === 0 ? (
-                <div className="text-center py-12">
-                  <FolderOpen className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-muted-foreground mb-4">
-                    {searchQuery ? 'No documents match your search' : 'No documents in this folder yet'}
-                  </p>
-                  {!searchQuery && (
-                    <Button onClick={() => setUploadDialogOpen(true)}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Document
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredDocuments.map((doc) => (
-                    <Card key={doc.id} className="hover:shadow-lg transition-shadow">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start gap-3">
-                          {getFileIcon(doc.file_type)}
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-sm truncate" title={doc.file_name}>{doc.file_name}</CardTitle>
-                            <CardDescription className="text-xs mt-1">
-                              {doc.folder}
-                            </CardDescription>
+          {/* Folders and Documents - Structured View */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Document Categories</CardTitle>
+              <CardDescription>
+                Organize your due diligence documents by category. Click on each folder to expand and view documents.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="multiple" className="w-full">
+                {FOLDERS.filter(f => f.value !== 'all').map((folder) => {
+                  const Icon = folder.icon;
+                  const folderDocs = documents.filter(d => d.folder === folder.value);
+                  const filteredFolderDocs = folderDocs.filter(doc => 
+                    searchQuery === '' || 
+                    doc.file_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    doc.description?.toLowerCase().includes(searchQuery.toLowerCase())
+                  );
+                  
+                  return (
+                    <AccordionItem key={folder.value} value={folder.value}>
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex items-center justify-between w-full pr-4">
+                          <div className="flex items-center gap-3">
+                            <Icon className="h-5 w-5" />
+                            <div className="text-left">
+                              <div className="font-semibold">{folder.label}</div>
+                              <div className="text-xs text-muted-foreground font-normal max-w-2xl">
+                                {folder.description}
+                              </div>
+                            </div>
                           </div>
+                          <Badge variant={folderDocs.length > 0 ? "default" : "secondary"}>
+                            {folderDocs.length} documents
+                          </Badge>
                         </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{formatFileSize(doc.file_size)}</span>
-                          <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
-                        </div>
-
-                        {doc.description && (
-                          <p className="text-xs text-muted-foreground line-clamp-2" title={doc.description}>
-                            {doc.description}
-                          </p>
-                        )}
-
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Eye className="h-3 w-3" />
-                          <span>{doc.view_count || 0} views</span>
-                          {doc.last_viewed_at && (
-                            <>
-                              <Clock className="h-3 w-3 ml-2" />
-                              <span>Last: {new Date(doc.last_viewed_at).toLocaleDateString()}</span>
-                            </>
-                          )}
-                        </div>
-
-                        <div className="flex gap-2 pt-2 border-t">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex-1"
-                            onClick={() => handleDownload(doc)}
-                          >
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </Button>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        {filteredFolderDocs.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            {searchQuery ? 'No documents match your search' : (
+                              <>
+                                <FolderOpen className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                <p className="mb-4">No documents in this category yet</p>
+                                <Button 
+                                  size="sm" 
                                   onClick={() => {
-                                    toast({
-                                      title: 'Coming Soon',
-                                      description: 'Sharing functionality will be available soon',
-                                    });
+                                    setUploadFolderSelection(folder.value);
+                                    setUploadDialogOpen(true);
                                   }}
                                 >
-                                  <Share2 className="h-4 w-4" />
+                                  <Upload className="h-4 w-4 mr-2" />
+                                  Upload Document
                                 </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Share with investors</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleDelete(doc)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Delete document</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="space-y-2 pt-2">
+                            {filteredFolderDocs.map((doc) => (
+                              <Card key={doc.id} className="hover:shadow-md transition-shadow">
+                                <CardContent className="py-4">
+                                  <div className="flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                      {getFileIcon(doc.file_type)}
+                                      <div className="flex-1 min-w-0">
+                                        <div className="font-medium truncate" title={doc.file_name}>
+                                          {doc.file_name}
+                                        </div>
+                                        {doc.description && (
+                                          <div className="text-xs text-muted-foreground line-clamp-1 mt-1">
+                                            {doc.description}
+                                          </div>
+                                        )}
+                                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                                          <span>{formatFileSize(doc.file_size)}</span>
+                                          <span>{new Date(doc.uploaded_at).toLocaleDateString()}</span>
+                                          <span className="flex items-center gap-1">
+                                            <Eye className="h-3 w-3" />
+                                            {doc.view_count || 0} views
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Button
+                                              variant="outline"
+                                              size="sm"
+                                              onClick={() => handleDownload(doc)}
+                                            >
+                                              <Download className="h-4 w-4" />
+                                            </Button>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <p>Download document</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => handleDelete(doc)}
+                                              className="text-destructive hover:text-destructive"
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <p>Delete document</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
@@ -739,6 +747,12 @@ const DataRoom = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Share Dialog */}
+      <DataRoomShareDialog 
+        open={shareDialogOpen} 
+        onOpenChange={setShareDialogOpen}
+      />
     </AuthGuard>
   );
 };
