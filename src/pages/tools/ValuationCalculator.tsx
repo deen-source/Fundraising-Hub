@@ -1132,23 +1132,23 @@ const ValuationCalculator = () => {
                         </AccordionContent>
                       </AccordionItem>
 
-                      <AccordionItem value="dcf" className="border-white/10">
-                        <AccordionTrigger className="text-white hover:text-cyan-400">
+                      <AccordionItem value="dcf">
+                        <AccordionTrigger className="hover:text-primary">
                           <div className="flex items-center gap-2">
                             <Calculator className="w-4 h-4" />
                             Discounted Cash Flow (DCF)
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-300 space-y-3">
+                        <AccordionContent className="text-muted-foreground space-y-3">
                           <div>
-                            <h4 className="font-semibold text-white mb-2">What it is:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">What it is:</h4>
                             <p className="text-sm">
                               Calculates present value of future cash flows by projecting revenue and applying 
                               a discount rate to account for risk and time value of money.
                             </p>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">When to use:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">When to use:</h4>
                             <ul className="text-sm space-y-1 list-disc list-inside">
                               <li>Mature startups with predictable cash flows</li>
                               <li>Series B+ companies</li>
@@ -1157,8 +1157,8 @@ const ValuationCalculator = () => {
                             </ul>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">Key Assumptions:</h4>
-                            <div className="text-sm space-y-2 bg-white/5 p-3 rounded-lg">
+                            <h4 className="font-semibold text-foreground mb-2">Key Assumptions:</h4>
+                            <div className="text-sm space-y-2 bg-muted/50 p-3 rounded-lg">
                               <p><strong>Discount Rate:</strong> 10-20% for startups (higher = riskier)</p>
                               <p><strong>Terminal Growth:</strong> 2-5% (long-term sustainable growth)</p>
                               <p><strong>EBITDA Margin:</strong> Expected profitability level</p>
@@ -1167,23 +1167,23 @@ const ValuationCalculator = () => {
                         </AccordionContent>
                       </AccordionItem>
 
-                      <AccordionItem value="comparable" className="border-white/10">
-                        <AccordionTrigger className="text-white hover:text-cyan-400">
+                      <AccordionItem value="comparable">
+                        <AccordionTrigger className="hover:text-primary">
                           <div className="flex items-center gap-2">
                             <Building2 className="w-4 h-4" />
                             Comparable Company Analysis
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-300 space-y-3">
+                        <AccordionContent className="text-muted-foreground space-y-3">
                           <div>
-                            <h4 className="font-semibold text-white mb-2">What it is:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">What it is:</h4>
                             <p className="text-sm">
                               Values your company based on how similar companies are valued, using metrics 
                               like revenue multiples from recent funding rounds or public markets.
                             </p>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">When to use:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">When to use:</h4>
                             <ul className="text-sm space-y-1 list-disc list-inside">
                               <li>When true comparables exist</li>
                               <li>Market-based valuation needed</li>
@@ -1192,8 +1192,8 @@ const ValuationCalculator = () => {
                             </ul>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">Best Practices:</h4>
-                            <ul className="text-sm space-y-1 bg-white/5 p-3 rounded-lg">
+                            <h4 className="font-semibold text-foreground mb-2">Best Practices:</h4>
+                            <ul className="text-sm space-y-1 bg-muted/50 p-3 rounded-lg">
                               <li>• Use 3-5 comparable companies</li>
                               <li>• Match by stage, geography, business model</li>
                               <li>• Adjust for qualitative differences</li>
@@ -1203,23 +1203,23 @@ const ValuationCalculator = () => {
                         </AccordionContent>
                       </AccordionItem>
 
-                      <AccordionItem value="vc" className="border-white/10">
-                        <AccordionTrigger className="text-white hover:text-cyan-400">
+                      <AccordionItem value="vc">
+                        <AccordionTrigger className="hover:text-primary">
                           <div className="flex items-center gap-2">
                             <Target className="w-4 h-4" />
                             Venture Capital Method
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="text-gray-300 space-y-3">
+                        <AccordionContent className="text-muted-foreground space-y-3">
                           <div>
-                            <h4 className="font-semibold text-white mb-2">What it is:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">What it is:</h4>
                             <p className="text-sm">
                               Works backward from expected exit value, calculating what ownership investors need 
                               today to achieve their target returns at exit.
                             </p>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">When to use:</h4>
+                            <h4 className="font-semibold text-foreground mb-2">When to use:</h4>
                             <ul className="text-sm space-y-1 list-disc list-inside">
                               <li>Fundraising scenarios</li>
                               <li>Understanding investor perspective</li>
@@ -1228,8 +1228,8 @@ const ValuationCalculator = () => {
                             </ul>
                           </div>
                           <div>
-                            <h4 className="font-semibold text-white mb-2">Typical Investor Returns:</h4>
-                            <div className="text-sm space-y-2 bg-white/5 p-3 rounded-lg">
+                            <h4 className="font-semibold text-foreground mb-2">Typical Investor Returns:</h4>
+                            <div className="text-sm space-y-2 bg-muted/50 p-3 rounded-lg">
                               <p><strong>Seed:</strong> 10-20x target return (5-7 years)</p>
                               <p><strong>Series A:</strong> 5-10x target return (5-7 years)</p>
                               <p><strong>Series B+:</strong> 3-5x target return (3-5 years)</p>
@@ -1244,25 +1244,25 @@ const ValuationCalculator = () => {
 
               {/* Tips Tab */}
               <TabsContent value="tips" className="space-y-4">
-                <Card className="bg-[#0D1425]/80 backdrop-blur-sm border-white/10">
+                <Card className="bg-card/50 backdrop-blur-sm border-border">
                   <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Lightbulb className="w-5 h-5 text-cyan-400" />
+                    <CardTitle className="text-foreground flex items-center gap-2">
+                      <Lightbulb className="w-5 h-5 text-primary" />
                       Valuation Best Practices
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-3">General Principles</h3>
+                      <h3 className="text-lg font-semibold text-foreground mb-3">General Principles</h3>
                       <div className="space-y-3">
-                        <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                        <div className="p-4 bg-muted/50 border border-border rounded-lg">
                           <div className="flex gap-3">
-                            <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                              <span className="text-cyan-400 font-bold">1</span>
+                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                              <span className="text-primary font-bold">1</span>
                             </div>
                             <div>
-                              <h4 className="font-semibold text-white mb-1">Use Multiple Methods</h4>
-                              <p className="text-sm text-gray-300">
+                              <h4 className="font-semibold text-foreground mb-1">Use Multiple Methods</h4>
+                              <p className="text-sm text-muted-foreground">
                                 Never rely on a single valuation method. Calculate using 2-3 different approaches 
                                 and look for convergence. This gives you a more robust valuation range.
                               </p>
@@ -1270,14 +1270,14 @@ const ValuationCalculator = () => {
                           </div>
                         </div>
 
-                        <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                        <div className="p-4 bg-muted/50 border border-border rounded-lg">
                           <div className="flex gap-3">
-                            <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                              <span className="text-cyan-400 font-bold">2</span>
+                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                              <span className="text-primary font-bold">2</span>
                             </div>
                             <div>
-                              <h4 className="font-semibold text-white mb-1">Be Conservative</h4>
-                              <p className="text-sm text-gray-300">
+                              <h4 className="font-semibold text-foreground mb-1">Be Conservative</h4>
+                              <p className="text-sm text-muted-foreground">
                                 It's better to be pleasantly surprised than disappointed. Use conservative assumptions 
                                 for growth rates, margins, and exit multiples.
                               </p>
@@ -1285,14 +1285,14 @@ const ValuationCalculator = () => {
                           </div>
                         </div>
 
-                        <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                        <div className="p-4 bg-muted/50 border border-border rounded-lg">
                           <div className="flex gap-3">
-                            <div className="w-8 h-8 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                              <span className="text-cyan-400 font-bold">3</span>
+                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                              <span className="text-primary font-bold">3</span>
                             </div>
                             <div>
-                              <h4 className="font-semibold text-white mb-1">Context Matters</h4>
-                              <p className="text-sm text-gray-300">
+                              <h4 className="font-semibold text-foreground mb-1">Context Matters</h4>
+                              <p className="text-sm text-muted-foreground">
                                 Valuation varies by market conditions, competitive landscape, team quality, 
                                 and dozens of other factors. Don't treat it as purely mathematical.
                               </p>
@@ -1303,29 +1303,29 @@ const ValuationCalculator = () => {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-3">For Founders</h3>
+                      <h3 className="text-lg font-semibold text-foreground mb-3">For Founders</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <span className="text-green-400">✓</span>
+                        <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <span className="text-success">✓</span>
                             Focus on building value, not just valuation
                           </p>
                         </div>
-                        <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <span className="text-green-400">✓</span>
+                        <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <span className="text-success">✓</span>
                             Know your metrics and be ready to defend them
                           </p>
                         </div>
-                        <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <span className="text-green-400">✓</span>
+                        <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <span className="text-success">✓</span>
                             Understand investor perspectives and returns
                           </p>
                         </div>
-                        <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <span className="text-green-400">✓</span>
+                        <div className="p-3 bg-success/10 border border-success/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <span className="text-success">✓</span>
                             Be flexible but know your walk-away point
                           </p>
                         </div>
@@ -1333,38 +1333,38 @@ const ValuationCalculator = () => {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-semibold text-white mb-3">Common Mistakes</h3>
+                      <h3 className="text-lg font-semibold text-foreground mb-3">Common Mistakes</h3>
                       <div className="space-y-2">
-                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                            <span><strong className="text-white">Over-optimistic projections:</strong> Be realistic about growth and timelines</span>
+                        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                            <span><strong className="text-foreground">Over-optimistic projections:</strong> Be realistic about growth and timelines</span>
                           </p>
                         </div>
-                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                            <span><strong className="text-white">Ignoring dilution:</strong> Account for future funding rounds</span>
+                        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                            <span><strong className="text-foreground">Ignoring dilution:</strong> Account for future funding rounds</span>
                           </p>
                         </div>
-                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                            <span><strong className="text-white">Wrong comparables:</strong> Match stage, model, and market carefully</span>
+                        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                            <span><strong className="text-foreground">Wrong comparables:</strong> Match stage, model, and market carefully</span>
                           </p>
                         </div>
-                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                          <p className="text-sm text-gray-300 flex gap-2">
-                            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                            <span><strong className="text-white">Forgetting the human element:</strong> Team and execution matter as much as numbers</span>
+                        <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                          <p className="text-sm text-muted-foreground flex gap-2">
+                            <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0 mt-0.5" />
+                            <span><strong className="text-foreground">Forgetting the human element:</strong> Team and execution matter as much as numbers</span>
                           </p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/20 rounded-lg">
-                      <h3 className="text-white font-semibold mb-2">Remember:</h3>
-                      <p className="text-sm text-gray-300">
+                    <div className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-lg">
+                      <h3 className="text-foreground font-semibold mb-2">Remember:</h3>
+                      <p className="text-sm text-muted-foreground">
                         Valuation is ultimately about finding a fair price that works for both founders and investors. 
                         It's part art, part science. Focus on building a great company, and the valuation will follow.
                       </p>
