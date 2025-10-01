@@ -13,7 +13,6 @@ import CapTable from "./pages/tools/CapTable";
 import ValuationCalculator from "./pages/tools/ValuationCalculator";
 import PitchDeckAnalyzer from "./pages/tools/PitchDeckAnalyzer";
 import DilutionCalculator from "./pages/tools/DilutionCalculator";
-import FundraisingTimeline from "./pages/tools/FundraisingTimeline";
 import DataRoom from "./pages/tools/DataRoom";
 import InvestorDataRoom from "./pages/InvestorDataRoom";
 import DocumentTemplates from "./pages/tools/DocumentTemplates";
@@ -38,7 +37,6 @@ const App = () => (
           <Route path="/tools/valuation" element={<ValuationCalculator />} />
           <Route path="/tools/pitch-deck" element={<PitchDeckAnalyzer />} />
           <Route path="/tools/dilution" element={<DilutionCalculator />} />
-          <Route path="/tools/timeline" element={<FundraisingTimeline />} />
           <Route path="/tools/data-room" element={<DataRoom />} />
           <Route path="/investor/:token" element={<InvestorDataRoom />} />
           <Route path="/tools/document-templates" element={<DocumentTemplates />} />

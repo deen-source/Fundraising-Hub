@@ -50,14 +50,6 @@ const toolsByStage = {
       dataKey: 'hasPitchDeck',
     },
     {
-      id: 'timeline',
-      title: 'Fundraising Timeline',
-      description: 'Plan your fundraising journey',
-      icon: Calendar,
-      path: '/tools/timeline',
-      dataKey: 'hasTimeline',
-    },
-    {
       id: 'document-templates',
       title: 'Document Templates',
       description: 'Legal & fundraising templates',
@@ -194,7 +186,6 @@ const Dashboard = () => {
     hasPitchDeck: termSheetAnalyses.length > 0,
     hasValuation: savedCalculations.some(c => c.tool_type === 'valuation'),
     hasBenchmarks: savedCalculations.some(c => c.tool_type === 'benchmarks'),
-    hasTimeline: savedCalculations.some(c => c.tool_type === 'timeline'),
     hasCapTable: savedCalculations.some(c => c.tool_type === 'cap_table'),
     hasDilution: savedCalculations.some(c => c.tool_type === 'dilution'),
     hasSafe: savedCalculations.some(c => c.tool_type === 'safe'),
