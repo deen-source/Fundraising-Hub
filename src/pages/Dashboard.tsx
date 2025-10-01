@@ -26,38 +26,6 @@ import {
 const toolsByStage = {
   preparation: [
     {
-      id: 'investor-crm',
-      title: 'Investor CRM & Pipeline',
-      description: 'Manage investors with kanban pipeline',
-      icon: Users,
-      path: '/investor-crm',
-      dataKey: 'hasInvestors',
-    },
-    {
-      id: 'data-room',
-      title: 'Data Room',
-      description: 'Organize due diligence docs',
-      icon: FolderOpen,
-      path: '/tools/data-room',
-      dataKey: 'hasDataRoom',
-    },
-    {
-      id: 'document-templates',
-      title: 'Document Templates',
-      description: 'Legal & fundraising templates',
-      icon: FileStack,
-      path: '/tools/document-templates',
-      dataKey: 'hasTemplates',
-    },
-    {
-      id: 'pitch-deck',
-      title: 'Pitch Deck Analyzer',
-      description: 'Get AI feedback on your pitch deck',
-      icon: FileText,
-      path: '/tools/pitch-deck',
-      dataKey: 'hasPitchDeck',
-    },
-    {
       id: 'valuation',
       title: 'Valuation Calculator',
       description: 'Determine your startup valuation',
@@ -68,10 +36,18 @@ const toolsByStage = {
     {
       id: 'benchmarks',
       title: 'Metric Benchmarks',
-      description: 'Compare your metrics against industry standards',
+      description: 'Compare against industry standards',
       icon: TrendingUp,
       path: '/tools/benchmarks',
       dataKey: 'hasBenchmarks',
+    },
+    {
+      id: 'pitch-deck',
+      title: 'Pitch Deck Analyzer',
+      description: 'Get AI feedback on your pitch deck',
+      icon: FileText,
+      path: '/tools/pitch-deck',
+      dataKey: 'hasPitchDeck',
     },
     {
       id: 'timeline',
@@ -81,24 +57,16 @@ const toolsByStage = {
       path: '/tools/timeline',
       dataKey: 'hasTimeline',
     },
+    {
+      id: 'document-templates',
+      title: 'Document Templates',
+      description: 'Legal & fundraising templates',
+      icon: FileStack,
+      path: '/tools/document-templates',
+      dataKey: 'hasTemplates',
+    },
   ],
   structuring: [
-    {
-      id: 'cap-table',
-      title: 'Cap Table Manager',
-      description: 'Visualize ownership and dilution scenarios',
-      icon: PieChart,
-      path: '/tools/cap-table',
-      dataKey: 'hasCapTable',
-    },
-    {
-      id: 'dilution',
-      title: 'Dilution Calculator',
-      description: 'Calculate ownership dilution across rounds',
-      icon: BarChart3,
-      path: '/tools/dilution',
-      dataKey: 'hasDilution',
-    },
     {
       id: 'safe-calculator',
       title: 'SAFE Calculator',
@@ -107,31 +75,55 @@ const toolsByStage = {
       path: '/tools/safe-calculator',
       dataKey: 'hasSafe',
     },
-  ],
-  active: [
+    {
+      id: 'cap-table',
+      title: 'Cap Table Manager',
+      description: 'Visualize ownership and dilution',
+      icon: PieChart,
+      path: '/tools/cap-table',
+      dataKey: 'hasCapTable',
+    },
+    {
+      id: 'dilution',
+      title: 'Dilution Calculator',
+      description: 'Calculate ownership across rounds',
+      icon: BarChart3,
+      path: '/tools/dilution',
+      dataKey: 'hasDilution',
+    },
     {
       id: 'term-sheet',
       title: 'Term Sheet Checker',
-      description: 'AI-powered analysis of investment terms',
+      description: 'AI-powered analysis of terms',
       icon: FileCheck,
       path: '/tools/term-sheet',
       dataKey: 'hasTermSheet',
     },
+  ],
+  active: [
     {
-      id: 'cap-table',
-      title: 'Cap Table Manager',
-      description: 'Update ownership post-investment',
-      icon: PieChart,
-      path: '/tools/cap-table',
-      dataKey: 'hasCapTable',
+      id: 'investor-crm',
+      title: 'Investor CRM & Pipeline',
+      description: 'Manage investors with kanban',
+      icon: Users,
+      path: '/investor-crm',
+      dataKey: 'hasInvestors',
+    },
+    {
+      id: 'data-room',
+      title: 'Data Room',
+      description: 'Share due diligence documents',
+      icon: FolderOpen,
+      path: '/tools/data-room',
+      dataKey: 'hasDataRoom',
     },
   ],
 };
 
 const stages = [
-  { id: 'preparation', name: 'Preparation & Planning', color: 'from-blue-500 to-cyan-500' },
-  { id: 'structuring', name: 'Deal Structuring', color: 'from-purple-500 to-pink-500' },
-  { id: 'active', name: 'Active Fundraising', color: 'from-green-500 to-emerald-500' },
+  { id: 'preparation', name: 'Foundation & Planning', color: 'from-blue-500 to-cyan-500' },
+  { id: 'structuring', name: 'Deal Terms & Structure', color: 'from-purple-500 to-pink-500' },
+  { id: 'active', name: 'Active Outreach', color: 'from-green-500 to-emerald-500' },
 ];
 
 const Dashboard = () => {
