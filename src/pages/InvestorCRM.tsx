@@ -379,60 +379,6 @@ const InvestorCRM = () => {
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Investors
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{investors.length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Active Pipeline
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {investors.filter(inv => 
-                    ["outreach", "engaged", "meeting", "due_diligence"].includes(inv.pipeline_stage)
-                  ).length}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  High Priority
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {investors.filter(inv => inv.priority === "high").length}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Follow-ups Due
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {investors.filter(inv => 
-                    inv.next_follow_up_date && new Date(inv.next_follow_up_date) <= new Date()
-                  ).length}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
           {/* Filters */}
           <Collapsible open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
             <Card className="mb-6">
