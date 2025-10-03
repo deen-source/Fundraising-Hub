@@ -236,25 +236,31 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          downvotes: number
           id: string
           topic_id: string
           updated_at: string
+          upvotes: number
           user_id: string
         }
         Insert: {
           content: string
           created_at?: string
+          downvotes?: number
           id?: string
           topic_id: string
           updated_at?: string
+          upvotes?: number
           user_id: string
         }
         Update: {
           content?: string
           created_at?: string
+          downvotes?: number
           id?: string
           topic_id?: string
           updated_at?: string
+          upvotes?: number
           user_id?: string
         }
         Relationships: [
@@ -272,36 +278,84 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
+          downvotes: number
           id: string
           last_activity_at: string
           reply_count: number
           title: string
           updated_at: string
+          upvotes: number
           user_id: string
         }
         Insert: {
           category?: string
           created_at?: string
           description?: string | null
+          downvotes?: number
           id?: string
           last_activity_at?: string
           reply_count?: number
           title: string
           updated_at?: string
+          upvotes?: number
           user_id: string
         }
         Update: {
           category?: string
           created_at?: string
           description?: string | null
+          downvotes?: number
           id?: string
           last_activity_at?: string
           reply_count?: number
           title?: string
           updated_at?: string
+          upvotes?: number
           user_id?: string
         }
         Relationships: []
+      }
+      forum_votes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string | null
+          topic_id: string | null
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          topic_id?: string | null
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string | null
+          topic_id?: string | null
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_votes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_votes_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       investor_data_imports: {
         Row: {
