@@ -9,9 +9,20 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, MessageSquare, Plus, Clock } from 'lucide-react';
+import { ArrowLeft, MessageSquare, Plus, Clock, TrendingUp, Lightbulb, Users, Rocket, DollarSign, Code } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+
+const CATEGORIES = [
+  { value: 'fundraising', label: 'Fundraising & Investment', icon: DollarSign, color: 'bg-green-500/10 text-green-500' },
+  { value: 'product', label: 'Product Development', icon: Rocket, color: 'bg-blue-500/10 text-blue-500' },
+  { value: 'team', label: 'Team & Hiring', icon: Users, color: 'bg-purple-500/10 text-purple-500' },
+  { value: 'marketing', label: 'Marketing & Growth', icon: TrendingUp, color: 'bg-orange-500/10 text-orange-500' },
+  { value: 'technical', label: 'Technical & Engineering', icon: Code, color: 'bg-cyan-500/10 text-cyan-500' },
+  { value: 'general', label: 'General Discussion', icon: Lightbulb, color: 'bg-gray-500/10 text-gray-500' },
+];
 
 export default function Forum() {
   return (
@@ -27,15 +38,22 @@ function ForumContent() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('general');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: topics, refetch } = useQuery({
-    queryKey: ['forum-topics'],
+    queryKey: ['forum-topics', filterCategory],
     queryFn: async () => {
-      const { data: topicsData, error } = await supabase
+      let query = supabase
         .from('forum_topics')
-        .select('*')
-        .order('last_activity_at', { ascending: false });
+        .select('*');
+      
+      if (filterCategory !== 'all') {
+        query = query.eq('category', filterCategory);
+      }
+      
+      const { data: topicsData, error } = await query.order('last_activity_at', { ascending: false });
 
       if (error) throw error;
 
@@ -76,6 +94,7 @@ function ForumContent() {
           user_id: user.id,
           title: title.trim(),
           description: description.trim() || null,
+          category: category,
         });
 
       if (error) throw error;
@@ -87,6 +106,7 @@ function ForumContent() {
 
       setTitle('');
       setDescription('');
+      setCategory('general');
       setIsCreateDialogOpen(false);
       refetch();
     } catch (error: any) {
@@ -156,6 +176,27 @@ function ForumContent() {
                     rows={4}
                   />
                 </div>
+                <div>
+                  <Label htmlFor="category">Category</Label>
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((cat) => {
+                        const Icon = cat.icon;
+                        return (
+                          <SelectItem key={cat.value} value={cat.value}>
+                            <div className="flex items-center gap-2">
+                              <Icon className="h-4 w-4" />
+                              {cat.label}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <DialogFooter>
                 <Button
@@ -170,6 +211,31 @@ function ForumContent() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </div>
+
+        {/* Category Filter */}
+        <div className="flex gap-2 flex-wrap mb-6">
+          <Button
+            variant={filterCategory === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilterCategory('all')}
+          >
+            All Topics
+          </Button>
+          {CATEGORIES.map((cat) => {
+            const Icon = cat.icon;
+            return (
+              <Button
+                key={cat.value}
+                variant={filterCategory === cat.value ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilterCategory(cat.value)}
+              >
+                <Icon className="h-4 w-4 mr-2" />
+                {cat.label}
+              </Button>
+            );
+          })}
         </div>
 
         <div className="space-y-4">
@@ -193,7 +259,12 @@ function ForumContent() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-xl mb-2">{topic.title}</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <CardTitle className="text-xl">{topic.title}</CardTitle>
+                      <Badge className={CATEGORIES.find(c => c.value === topic.category)?.color}>
+                        {CATEGORIES.find(c => c.value === topic.category)?.label || topic.category}
+                      </Badge>
+                    </div>
                     {topic.description && (
                       <CardDescription className="line-clamp-2">
                         {topic.description}

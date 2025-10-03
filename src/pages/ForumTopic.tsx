@@ -6,9 +6,19 @@ import { AuthGuard } from '@/components/AuthGuard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, Send, Clock } from 'lucide-react';
+import { ArrowLeft, Send, Clock, TrendingUp, Lightbulb, Users, Rocket, DollarSign, Code } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+
+const CATEGORIES = [
+  { value: 'fundraising', label: 'Fundraising & Investment', icon: DollarSign, color: 'bg-green-500/10 text-green-500' },
+  { value: 'product', label: 'Product Development', icon: Rocket, color: 'bg-blue-500/10 text-blue-500' },
+  { value: 'team', label: 'Team & Hiring', icon: Users, color: 'bg-purple-500/10 text-purple-500' },
+  { value: 'marketing', label: 'Marketing & Growth', icon: TrendingUp, color: 'bg-orange-500/10 text-orange-500' },
+  { value: 'technical', label: 'Technical & Engineering', icon: Code, color: 'bg-cyan-500/10 text-cyan-500' },
+  { value: 'general', label: 'General Discussion', icon: Lightbulb, color: 'bg-gray-500/10 text-gray-500' },
+];
 
 export default function ForumTopic() {
   return (
@@ -141,7 +151,12 @@ function ForumTopicContent() {
 
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl">{topic.title}</CardTitle>
+            <div className="flex items-center gap-3 mb-2">
+              <CardTitle className="text-2xl">{topic.title}</CardTitle>
+              <Badge className={CATEGORIES.find(c => c.value === topic.category)?.color}>
+                {CATEGORIES.find(c => c.value === topic.category)?.label || topic.category}
+              </Badge>
+            </div>
             {topic.description && (
               <CardDescription className="text-base mt-2">
                 {topic.description}
