@@ -7,22 +7,23 @@ import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
 import { Badge } from '@/components/ui/badge';
 import {
-  FileCheck,
   TrendingUp,
   Calculator,
-  PieChart,
-  DollarSign,
   FileText,
-  BarChart3,
-  Calendar,
-  LogOut,
-  CheckCircle2,
   Target,
+  BarChart3,
   Users,
   FolderOpen,
-  FileStack,
+  FileCheck,
+  DollarSign,
+  Presentation,
+  Percent,
+  PieChart,
   Mic,
-} from 'lucide-react';
+  LogOut,
+  MessageSquare,
+  FileStack,
+} from "lucide-react";
 
 const toolsByStage = {
   preparation: [
@@ -118,6 +119,14 @@ const toolsByStage = {
       path: '/tools/data-room',
       dataKey: 'hasDataRoom',
     },
+    {
+      id: 'forum',
+      title: 'Founder Forum',
+      description: 'Connect with fellow founders',
+      icon: MessageSquare,
+      path: '/forum',
+      dataKey: 'hasForum',
+    },
   ],
 };
 
@@ -200,6 +209,7 @@ const Dashboard = () => {
     hasSafe: savedCalculations.some(c => c.tool_type === 'safe'),
     hasTermSheet: termSheetAnalyses.length > 0,
     hasPractice: savedCalculations.some(c => c.tool_type === 'practice_pitching'),
+    hasForum: true, // Forum is always available
   };
 
   const stageCompletion = {

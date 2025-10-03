@@ -18,6 +18,8 @@ import InvestorDataRoom from "./pages/InvestorDataRoom";
 import DocumentTemplates from "./pages/tools/DocumentTemplates";
 import PracticePitching from "./pages/tools/PracticePitching";
 import NotFound from "./pages/NotFound";
+import Forum from "./pages/Forum";
+import ForumTopic from "./pages/ForumTopic";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +44,8 @@ const App = () => (
           <Route path="/investor/:token" element={<InvestorDataRoom />} />
           <Route path="/tools/document-templates" element={<DocumentTemplates />} />
           <Route path="/tools/practice-pitching" element={<PracticePitching />} />
+          <Route path="/forum" element={<Forum />} />
+          <Route path="/forum/:topicId" element={<ForumTopic />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
