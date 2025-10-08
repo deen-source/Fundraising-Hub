@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import InvestorCRM from "./pages/InvestorCRM";
 import TermSheetChecker from "./pages/tools/TermSheetChecker";
 import MetricBenchmarks from "./pages/tools/MetricBenchmarks";
-import SafeCalculator from "./pages/tools/SafeCalculator";
+import SafeCalculator from "./pages/tools/SafeCalculatorNew";
 import CapTable from "./pages/tools/CapTable";
 import ValuationCalculator from "./pages/tools/ValuationCalculator";
 import PitchDeckAnalyzer from "./pages/tools/PitchDeckAnalyzer";
