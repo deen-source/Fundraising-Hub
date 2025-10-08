@@ -46,14 +46,12 @@ export const scenarioA: CalculatorInputs = {
   pricedRound: {
     newMoneyTotal: 5_000_000,
     leadAmount: 3_500_000,
-    otherAmount: 1_500_000,
     preMoneyValuation: 20_000_000,
     poolTargetPct: 0.10,
     qualifiedThreshold: 2_000_000,
   },
   liquidityEvent: {
     purchasePrice: 0, // Not used in equity mode
-    includePromisedInProceeds: false,
   },
 };
 
@@ -85,14 +83,12 @@ export const scenarioB: CalculatorInputs = {
   pricedRound: {
     newMoneyTotal: 750_000,
     leadAmount: 750_000,
-    otherAmount: 0,
     preMoneyValuation: 15_000_000,
     poolTargetPct: 0.12,
     qualifiedThreshold: 1_000_000, // NOT QUALIFIED
   },
   liquidityEvent: {
     purchasePrice: 0,
-    includePromisedInProceeds: false,
   },
 };
 
@@ -143,14 +139,12 @@ export const scenarioC: CalculatorInputs = {
   pricedRound: {
     newMoneyTotal: 0, // Not used in liquidity mode
     leadAmount: 0,
-    otherAmount: 0,
     preMoneyValuation: 0,
     poolTargetPct: 0,
     qualifiedThreshold: 0,
   },
   liquidityEvent: {
     purchasePrice: 35_000_000,
-    includePromisedInProceeds: false, // Can toggle to true to see impact
   },
 };
 

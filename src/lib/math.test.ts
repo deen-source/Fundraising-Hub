@@ -113,7 +113,6 @@ describe('SAFE Calculator - Fixture Tests', () => {
         ...scenarioB,
         liquidityEvent: {
           purchasePrice: 20_000_000,
-          includePromisedInProceeds: false,
         },
       });
 
@@ -192,12 +191,11 @@ describe('SAFE Calculator - Edge Cases', () => {
         pricedRound: {
           newMoneyTotal: 3_000_000,
           leadAmount: 3_000_000,
-          otherAmount: 0,
           preMoneyValuation: 25_000_000,
           poolTargetPct: 0.10,
           qualifiedThreshold: 1_000_000,
         },
-        liquidityEvent: { purchasePrice: 0, includePromisedInProceeds: false },
+        liquidityEvent: { purchasePrice: 0 },
       };
 
       const result = equityPath(testInputs);
@@ -242,7 +240,6 @@ describe('SAFE Calculator - Edge Cases', () => {
       const pricedRound = {
         newMoneyTotal: 3_000_000,
         leadAmount: 3_000_000,
-        otherAmount: 0,
         preMoneyValuation: 25_000_000,
         poolTargetPct: 0.10,
         qualifiedThreshold: 1_000_000,
@@ -276,14 +273,13 @@ describe('SAFE Calculator - Edge Cases', () => {
   });
 
   describe('Validation Rules', () => {
-    it('should validate leadAmount + otherAmount = newMoneyTotal', () => {
+    it('should validate leadAmount cannot exceed newMoneyTotal', () => {
       const invalidInputs: CalculatorInputs = {
         ...scenarioA,
         pricedRound: {
           ...scenarioA.pricedRound,
-          leadAmount: 1_000_000,
-          otherAmount: 1_000_000,
-          newMoneyTotal: 5_000_000, // Mismatch!
+          leadAmount: 6_000_000,
+          newMoneyTotal: 5_000_000, // Lead exceeds total!
         },
       };
 
@@ -292,7 +288,7 @@ describe('SAFE Calculator - Edge Cases', () => {
       expect(result.success).toBe(false);
       if (result.success) return;
 
-      expect(result.message).toContain('must equal total new money');
+      expect(result.message).toContain('cannot exceed total new money');
     });
   });
 
@@ -393,12 +389,11 @@ describe('SAFE Calculator - Discount vs Cap', () => {
       pricedRound: {
         newMoneyTotal: 5_000_000,
         leadAmount: 5_000_000,
-        otherAmount: 0,
         preMoneyValuation: 20_000_000,
         poolTargetPct: 0.10,
         qualifiedThreshold: 2_000_000,
       },
-      liquidityEvent: { purchasePrice: 0, includePromisedInProceeds: false },
+      liquidityEvent: { purchasePrice: 0 },
     };
 
     const result = equityPath(testInputs);

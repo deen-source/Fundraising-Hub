@@ -39,19 +39,18 @@ const SafeCalculatorNew = () => {
   const [pricedRound, setPricedRound] = useState({
     newMoneyTotal: 5_000_000,
     leadAmount: 3_500_000,
-    otherAmount: 1_500_000,
     preMoneyValuation: 20_000_000,
     poolTargetPct: 0.10,
     qualifiedThreshold: 2_000_000,
   });
   const [liquidityEvent, setLiquidityEvent] = useState({
     purchasePrice: 0,
-    includePromisedInProceeds: false,
   });
 
   // Results state
   const [results, setResults] = useState<{ equity: any; liquidity: any } | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState('inputs');
 
   // Helper functions for formatting inputs with thousand separators
   const formatNumberInput = (value: number): string => {
@@ -70,8 +69,8 @@ const SafeCalculatorNew = () => {
     // Validation
     const errors: string[] = [];
 
-    if (Math.abs(pricedRound.leadAmount + pricedRound.otherAmount - pricedRound.newMoneyTotal) > 0.01) {
-      errors.push('Lead amount + Other amount must equal total new money');
+    if (pricedRound.leadAmount > pricedRound.newMoneyTotal) {
+      errors.push('Lead amount cannot exceed total new money');
     }
 
     if (safes.length === 0) {
@@ -99,6 +98,15 @@ const SafeCalculatorNew = () => {
 
     const output = calculate(inputs);
     setResults(output);
+
+    // Auto-navigate to results tab
+    // If equity calculation succeeds or fails with "Not a qualified financing", show equity tab
+    // If liquidity event has a purchase price, show liquidity tab
+    if (liquidityEvent.purchasePrice > 0 && output.liquidity.success) {
+      setActiveTab('liquidity');
+    } else {
+      setActiveTab('equity');
+    }
   };
 
   // Add SAFE
@@ -175,7 +183,7 @@ const SafeCalculatorNew = () => {
             </Alert>
           )}
 
-          <Tabs defaultValue="inputs" className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="inputs">Inputs</TabsTrigger>
               <TabsTrigger value="equity" disabled={!showEquityResults}>Equity Results</TabsTrigger>
@@ -374,15 +382,6 @@ const SafeCalculatorNew = () => {
                     />
                   </div>
                   <div>
-                    <Label>Other Amount (AUD)</Label>
-                    <Input
-                      type="text"
-                      value={formatNumberInput(pricedRound.otherAmount)}
-                      onChange={(e) => setPricedRound({ ...pricedRound, otherAmount: parseNumberInput(e.target.value) })}
-                      className="mt-2"
-                    />
-                  </div>
-                  <div>
                     <Label>Pre-Money Valuation (AUD)</Label>
                     <Input
                       type="text"
@@ -422,23 +421,17 @@ const SafeCalculatorNew = () => {
                   <CardDescription>Acquisition before priced round</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label>Purchase Price (AUD)</Label>
-                      <Input
-                        type="text"
-                        value={formatNumberInput(liquidityEvent.purchasePrice)}
-                        onChange={(e) => setLiquidityEvent({ ...liquidityEvent, purchasePrice: parseNumberInput(e.target.value) })}
-                        className="mt-2"
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2 mt-8">
-                      <Switch
-                        checked={liquidityEvent.includePromisedInProceeds || false}
-                        onCheckedChange={(checked) => setLiquidityEvent({ ...liquidityEvent, includePromisedInProceeds: checked })}
-                      />
-                      <Label>Include Promised Options in Proceeds</Label>
-                    </div>
+                  <div>
+                    <Label>Purchase Price (AUD)</Label>
+                    <Input
+                      type="text"
+                      value={formatNumberInput(liquidityEvent.purchasePrice)}
+                      onChange={(e) => setLiquidityEvent({ ...liquidityEvent, purchasePrice: parseNumberInput(e.target.value) })}
+                      className="mt-2"
+                    />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Promised options are included in exit proceeds by default.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -471,7 +464,7 @@ const SafeCalculatorNew = () => {
                               Conversion Summary
                             </CardTitle>
                           </CardHeader>
-                          <CardContent>
+                          <CardContent className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                               <div className="p-4 rounded-lg bg-primary/5 border">
                                 <div className="text-sm text-muted-foreground mb-1">Round Price</div>
@@ -490,6 +483,26 @@ const SafeCalculatorNew = () => {
                               <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
                                 <div className="text-sm text-muted-foreground mb-1">Status</div>
                                 <Badge className="text-sm">Qualified Financing</Badge>
+                              </div>
+                            </div>
+
+                            <div className="border-t pt-4">
+                              <h4 className="font-medium mb-3">New Money Allocation</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                                  <span className="text-sm text-muted-foreground">Lead Investor</span>
+                                  <div className="text-right">
+                                    <div className="font-medium">{formatAUD(equity.leadAmount)}</div>
+                                    <div className="text-xs text-muted-foreground">{formatShares(equity.leadShares)} shares</div>
+                                  </div>
+                                </div>
+                                <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                                  <span className="text-sm text-muted-foreground">Other Investors (derived)</span>
+                                  <div className="text-right">
+                                    <div className="font-medium">{formatAUD(equity.otherAmount)}</div>
+                                    <div className="text-xs text-muted-foreground">{formatShares(equity.otherShares)} shares</div>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </CardContent>

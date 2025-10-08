@@ -40,8 +40,6 @@ export interface PricedRound {
   newMoneyTotal: number;
   /** Lead investor amount in AUD */
   leadAmount: number;
-  /** Other investors amount in AUD */
-  otherAmount: number;
   /** Pre-money valuation in AUD */
   preMoneyValuation: number;
   /** Target option pool % post-round (0..1, e.g. 0.10 = 10%) */
@@ -53,8 +51,6 @@ export interface PricedRound {
 export interface LiquidityEvent {
   /** Total acquisition price in AUD */
   purchasePrice: number;
-  /** Include promised options in proceeds (default: false) */
-  includePromisedInProceeds?: boolean;
 }
 
 export interface CalculatorInputs {
@@ -130,6 +126,14 @@ export interface EquityPathResult {
   companyCap: number;
   /** Base shares pre-SAFE conversion (S_out + Opt_out + Promised + Pool_unissued) - for transparency */
   basePreConversion: number;
+  /** Lead investor amount (AUD) */
+  leadAmount: number;
+  /** Lead investor shares */
+  leadShares: number;
+  /** Derived other investors amount (AUD) */
+  otherAmount: number;
+  /** Derived other investors shares */
+  otherShares: number;
   /** Per-SAFE conversion details */
   safeConversions: SAFEConversion[];
   /** Post-round cap table by class */

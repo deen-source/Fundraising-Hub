@@ -114,15 +114,11 @@ export function computeMFNTerms(
 export function equityPath(inputs: CalculatorInputs): EquityPathOutput {
   const { capTable, safes, pricedRound } = inputs;
 
-  // Validate: leadAmount + otherAmount must equal newMoneyTotal
-  if (
-    Math.abs(
-      pricedRound.leadAmount + pricedRound.otherAmount - pricedRound.newMoneyTotal
-    ) > 0.01
-  ) {
+  // Validate: leadAmount must not exceed newMoneyTotal
+  if (pricedRound.leadAmount > pricedRound.newMoneyTotal) {
     return {
       success: false,
-      message: 'Lead amount + Other amount must equal total new money',
+      message: 'Lead amount cannot exceed total new money',
     };
   }
 
@@ -312,11 +308,31 @@ export function equityPath(inputs: CalculatorInputs): EquityPathOutput {
       return {
         ...conv,
         proRataShares,
+        proRataDollars,
       };
     });
 
-    // Step 11: Calculate new investor shares
-    const newInvestorShares = N.div(roundPrice);
+    // Step 11: Derive other investors amount and shares
+    const totalProRataDollars = safeConversionsWithProRata.reduce(
+      (sum, conv) => sum.plus(conv.proRataDollars),
+      new Decimal(0)
+    );
+
+    const leadAmount = new Decimal(pricedRound.leadAmount);
+    const otherDollars = decimalMax(
+      new Decimal(0),
+      N.minus(leadAmount).minus(totalProRataDollars)
+    );
+
+    // Validation: Check if lead + pro-rata exceeds total
+    let validationWarning = '';
+    if (leadAmount.plus(totalProRataDollars).gt(N)) {
+      validationWarning = 'Pro-rata rights plus lead amount exceed total new money - other investors set to zero';
+    }
+
+    const leadShares = leadAmount.div(roundPrice);
+    const otherShares = otherDollars.div(roundPrice);
+    const newInvestorShares = leadShares.plus(otherShares);
 
     // Step 12: Calculate total shares post-round
     const totalSafeShares = safeConversionsWithProRata.reduce(
@@ -403,6 +419,10 @@ export function equityPath(inputs: CalculatorInputs): EquityPathOutput {
       newMoney: pricedRound.newMoneyTotal,
       companyCap: roundShares(companyCap),
       basePreConversion: roundShares(Base),
+      leadAmount: pricedRound.leadAmount,
+      leadShares: roundShares(leadShares),
+      otherAmount: otherDollars.toNumber(),
+      otherShares: roundShares(otherShares),
       safeConversions: safeConversionOutput,
       capTableByClass,
       totalSharesPostRound: roundShares(totalSharesPostRound),
@@ -428,12 +448,10 @@ export function liquidityPath(inputs: CalculatorInputs): LiquidityPathOutput {
   const { capTable, safes, liquidityEvent } = inputs;
 
   try {
-    // Step 1: Calculate base stockholder shares
+    // Step 1: Calculate base stockholder shares (always include Promised)
     const stockholderShares = new Decimal(capTable.S_out)
       .plus(capTable.Opt_out)
-      .plus(
-        liquidityEvent.includePromisedInProceeds ? capTable.Promised : 0
-      );
+      .plus(capTable.Promised);
 
     const purchasePrice = new Decimal(liquidityEvent.purchasePrice);
 
