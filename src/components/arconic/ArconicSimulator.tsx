@@ -1,20 +1,37 @@
-import { useState, useEffect } from 'react';
-import { AppState, Scenario } from '@/types/arconic-simulator';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AppState, Scenario, SessionFeedback } from '@/types/arconic-simulator';
 import { SCENARIOS, AVATARS } from '@/data/arconic-data';
 import { analytics } from '@/lib/arconic-analytics';
+import { generateSessionFeedbackWithDelay } from '@/lib/feedback-service';
 import { Hero } from './Hero';
 import { ScenariosGrid } from './ScenariosGrid';
 import { SceneIntro } from './SceneIntro';
-import { ElevenLabsVoiceWidget } from './ElevenLabsVoiceWidget';
+import { ElevenLabsVoiceWidget, ElevenLabsVoiceWidgetRef, ConversationMessage } from './ElevenLabsVoiceWidget';
 import { SessionBar } from './SessionBar';
+import { ActiveSessionView } from './ActiveSessionView';
+import { AnalyzingLoader } from './AnalyzingLoader';
+import { FeedbackPanel } from './FeedbackPanel';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 export const ArconicSimulator = () => {
+  const navigate = useNavigate();
   const [appState, setAppState] = useState<AppState>('hero');
   const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
   const [isIntroOpen, setIsIntroOpen] = useState(false);
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<number>(0);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Voice session state
+  const [transcript, setTranscript] = useState<ConversationMessage[]>([]);
+  const [voiceStatus, setVoiceStatus] = useState({ isConnected: false, isSpeaking: false, isMuted: false });
+  const [elapsed, setElapsed] = useState(0);
+  const voiceWidgetRef = useRef<ElevenLabsVoiceWidgetRef>(null);
+
+  // Feedback state
+  const [sessionFeedback, setSessionFeedback] = useState<SessionFeedback | null>(null);
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -26,6 +43,50 @@ export const ArconicSimulator = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Session elapsed timer
+  useEffect(() => {
+    if (!isSessionActive) return;
+
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - sessionStartTime) / 1000));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isSessionActive, sessionStartTime]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key.toLowerCase()) {
+        case 'm':
+          // Mute/unmute
+          if (isSessionActive && voiceWidgetRef.current) {
+            e.preventDefault();
+            voiceWidgetRef.current.toggleMute();
+          }
+          break;
+        case 'escape':
+          // End session (with confirmation if active)
+          if (isSessionActive) {
+            e.preventDefault();
+            const confirmed = window.confirm('Are you sure you want to end this session?');
+            if (confirmed) {
+              handleSessionEnd();
+            }
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isSessionActive]);
 
   // Get selected scenario
   const selectedScenario = selectedScenarioId
@@ -55,6 +116,8 @@ export const ArconicSimulator = () => {
     setIsIntroOpen(false);
     setIsSessionActive(true);
     setSessionStartTime(Date.now());
+    setElapsed(0);
+    setTranscript([]);
     setAppState('session');
 
     // Analytics
@@ -65,36 +128,100 @@ export const ArconicSimulator = () => {
     announceToScreenReader('Session started. You are now in a live practice session.');
   };
 
-  // Handle session end (with optional transcript from ElevenLabs)
-  const handleSessionEnd = (transcript?: any[]) => {
+  // Handle session end - generate AI feedback
+  const handleSessionEnd = async (transcriptFromWidget?: any[]) => {
     if (!selectedScenarioId) return;
 
     const duration = Math.floor((Date.now() - sessionStartTime) / 1000);
     setIsSessionActive(false);
-    setSelectedScenarioId(null);
-    setAppState('scenarios');
+
+    // Use transcript from state (which is updated in real-time)
+    const currentTranscript = transcript.length > 0 ? transcript : transcriptFromWidget || [];
+
+    // Log transcript for debugging
+    if (currentTranscript.length > 0) {
+      console.log('[Arconic] Conversation transcript:', currentTranscript);
+    }
 
     // Analytics
     analytics.sessionEnded(selectedScenarioId, duration, 100);
 
-    // Log transcript if available
-    if (transcript && transcript.length > 0) {
-      console.log('[Arconic] Conversation transcript:', transcript);
-    }
-
     // Announce to screen readers
-    announceToScreenReader('Session complete. Thank you for practicing.');
+    announceToScreenReader('Session complete. Analysing your pitch...');
 
-    // Scroll back to scenarios
-    setTimeout(() => {
-      document.getElementById('scenarios-section')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    // Show analyzing loader
+    setAppState('analyzing');
+
+    try {
+      // Generate AI feedback with minimum 2-second delay for UX
+      const feedback = await generateSessionFeedbackWithDelay({
+        transcript: currentTranscript,
+        scenarioId: selectedScenarioId,
+        duration,
+      }, 2000);
+
+      setSessionFeedback(feedback);
+      setAppState('feedback');
+
+      // Analytics
+      analytics.feedbackViewed();
+
+    } catch (error) {
+      console.error('[Arconic] Error generating feedback:', error);
+      announceToScreenReader('Unable to generate feedback. Please try again.');
+
+      // Fallback: return to scenarios
+      setSelectedScenarioId(null);
+      setAppState('scenarios');
+      setTimeout(() => {
+        document.getElementById('scenarios-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
   };
 
   // Close intro panel
   const handleCloseIntro = () => {
     setIsIntroOpen(false);
     setAppState('scenarios');
+  };
+
+  // Handle mute toggle
+  const handleToggleMute = () => {
+    if (voiceWidgetRef.current) {
+      voiceWidgetRef.current.toggleMute();
+    }
+  };
+
+  // Handle feedback panel actions
+  const handleFeedbackRerun = () => {
+    if (!selectedScenarioId) return;
+
+    // Analytics
+    analytics.rerunClicked();
+
+    // Reset state and restart the same scenario
+    setSessionFeedback(null);
+    setIsIntroOpen(true);
+    setAppState('intro');
+  };
+
+  const handleFeedbackSwitchScenario = () => {
+    // Analytics
+    analytics.switchScenarioClicked();
+
+    // Reset state and return to scenarios
+    setSelectedScenarioId(null);
+    setSessionFeedback(null);
+    setAppState('scenarios');
+
+    // Scroll to scenarios
+    setTimeout(() => {
+      document.getElementById('scenarios-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
+  const handleCloseFeedback = () => {
+    handleFeedbackSwitchScenario();
   };
 
   // Screen reader announcement helper
@@ -111,67 +238,77 @@ export const ArconicSimulator = () => {
     }, 1000);
   };
 
-  // Parse duration for max session time
-  const getMaxDuration = (scenario: Scenario): number | undefined => {
-    // Parse duration like "5 min" or "60–180s"
-    const match = scenario.duration.match(/(\d+)\s*min/);
-    if (match) {
-      return parseInt(match[1]) * 60; // Convert to seconds
-    }
-    const secondsMatch = scenario.duration.match(/(\d+)s/);
-    if (secondsMatch) {
-      return parseInt(secondsMatch[1]);
-    }
-    return undefined;
-  };
+  // Note: maxDuration removed - ElevenLabs agent controls session end naturally
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Session bar (only visible during active session) */}
+      {/* Back Button - Fixed top left */}
+      <Button
+        onClick={() => navigate('/dashboard')}
+        variant="ghost"
+        size="sm"
+        className="fixed top-4 left-4 z-50 gap-2"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </Button>
+
+      {/* Active Session View */}
       {isSessionActive && selectedScenario && (
-        <SessionBar
-          maxDuration={getMaxDuration(selectedScenario)}
-          onEnd={handleSessionEnd}
-          scenarioTitle={selectedScenario.title}
+        <ActiveSessionView
+          scenario={selectedScenario}
+          avatar={AVATARS.find(a => a.id === selectedScenario.avatarId) || AVATARS[0]}
+          isConnected={voiceStatus.isConnected}
+          isSpeaking={voiceStatus.isSpeaking}
+          isMuted={voiceStatus.isMuted}
+          transcript={transcript}
+          elapsed={elapsed}
+          onToggleMute={handleToggleMute}
+          onEndSession={() => handleSessionEnd()}
         />
       )}
 
-      {/* Main content */}
-      <main className={`container mx-auto px-4 ${isSessionActive ? 'pt-24' : 'py-12'}`}>
-        {/* Hero section */}
-        <Hero
-          title="Rehearse Your Pitch. Raise with Confidence."
-          subhead="Turn every investor conversation into an opportunity."
-        />
-
-        {/* Scenarios grid */}
-        <section id="scenarios-section" className="mb-12 -mx-4 px-4 py-12 bg-gray-50/50">
+      {/* Home View - hidden during active session with fade transition */}
+      <div className={isSessionActive ? 'hidden' : 'animate-in fade-in duration-400'}>
+        {/* Main content */}
+        <div className="container mx-auto px-4 py-8">
+          {/* Hero section */}
           <div className="mb-8 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-              Choose Your Scenario
-            </h2>
+            <h1 className="text-3xl font-semibold mb-2">
+              Master Your Pitch. Raise with Confidence.
+            </h1>
             <p className="text-muted-foreground">
-              Practice real-world VC scenarios with your personal AI partner.
+              Turn every investor engagement into a real opportunity.
             </p>
           </div>
 
-          <ScenariosGrid
-            scenarios={SCENARIOS}
-            selectedId={selectedScenarioId}
-            onSelect={handleScenarioSelect}
-          />
-        </section>
+          {/* Scenarios section */}
+          <div className="space-y-6">
+            <div className="text-center">
+              <p className="text-lg font-medium mb-2">
+                Pick a scenario. Test your pitch. Get instant feedback.
+              </p>
+              <h2 className="text-xl font-semibold mb-4">Choose Your Scenario</h2>
+            </div>
 
-        {/* Confidence statistic */}
-        <div className="my-12 py-6 px-6 bg-primary/5 border-2 border-primary/20 rounded-lg text-center">
-          <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
-            Confidence comes from practice.
-          </h3>
-          <p className="text-base md:text-lg text-muted-foreground">
-            95% of speakers conquer nerves by rehearsing first. Start your next raise with certainty.
-          </p>
+            <ScenariosGrid
+              scenarios={SCENARIOS}
+              selectedId={selectedScenarioId}
+              onSelect={handleScenarioSelect}
+            />
+          </div>
+
+          {/* Confidence statistic */}
+          <div className="mt-8 py-6 px-6 border rounded-lg text-center">
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Confidence is practiced.
+            </h3>
+            <p className="text-base text-muted-foreground">
+              95% of speakers conquer nerves by rehearsing first. Start your next raise with certainty.
+            </p>
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Scene intro (drawer/sheet) */}
       {selectedScenario && selectedScenario.avatarId && (
@@ -185,11 +322,13 @@ export const ArconicSimulator = () => {
         />
       )}
 
-      {/* ElevenLabs Voice widget (during session) */}
+      {/* ElevenLabs Voice widget (during session) - hidden, using custom UI */}
       {isSessionActive && selectedScenario && (
         <ElevenLabsVoiceWidget
+          ref={voiceWidgetRef}
           agentId={selectedScenario.agentId || ''}
           autoStart
+          hideWidget={true}
           onStart={() => {
             console.log('[Arconic] ElevenLabs session started');
           }}
@@ -208,6 +347,30 @@ export const ArconicSimulator = () => {
               analytics.micPermissionDenied();
             }
           }}
+          onTranscriptUpdate={(updatedTranscript) => {
+            setTranscript(updatedTranscript);
+          }}
+          onStatusChange={(status) => {
+            setVoiceStatus(status);
+          }}
+        />
+      )}
+
+      {/* Analyzing Loader */}
+      {appState === 'analyzing' && (
+        <AnalyzingLoader scenarioTitle={selectedScenario?.title} />
+      )}
+
+      {/* Feedback Panel */}
+      {appState === 'feedback' && sessionFeedback && selectedScenario && (
+        <FeedbackPanel
+          feedback={sessionFeedback}
+          scenarioTitle={selectedScenario.title}
+          isOpen={true}
+          isMobile={isMobile}
+          onRerun={handleFeedbackRerun}
+          onSwitch={handleFeedbackSwitchScenario}
+          onClose={handleCloseFeedback}
         />
       )}
 

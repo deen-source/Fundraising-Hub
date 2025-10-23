@@ -1,13 +1,17 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { useConversation } from '@elevenlabs/react';
 import { Mic, MicOff, Volume2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-interface ConversationMessage {
+export interface ConversationMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+}
+
+export interface ElevenLabsVoiceWidgetRef {
+  toggleMute: () => void;
 }
 
 interface ElevenLabsVoiceWidgetProps {
@@ -16,17 +20,26 @@ interface ElevenLabsVoiceWidgetProps {
   onEnd?: (transcript: ConversationMessage[]) => void;
   onError?: (error: string) => void;
   onPermission?: (granted: boolean) => void;
+  onTranscriptUpdate?: (transcript: ConversationMessage[]) => void;
+  onStatusChange?: (status: { isConnected: boolean; isSpeaking: boolean; isMuted: boolean }) => void;
   autoStart?: boolean;
+  hideWidget?: boolean; // Option to hide the floating widget when using custom UI
 }
 
-export const ElevenLabsVoiceWidget = ({
+export const ElevenLabsVoiceWidget = forwardRef<
+  ElevenLabsVoiceWidgetRef,
+  ElevenLabsVoiceWidgetProps
+>(function ElevenLabsVoiceWidget({
   agentId,
   onStart,
   onEnd,
   onError,
   onPermission,
+  onTranscriptUpdate,
+  onStatusChange,
   autoStart = false,
-}: ElevenLabsVoiceWidgetProps) => {
+  hideWidget = false,
+}, ref) {
   const [isActive, setIsActive] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +70,11 @@ export const ElevenLabsVoiceWidget = ({
           timestamp: Date.now(),
         };
 
-        setTranscript(prev => [...prev, newMessage]);
+        setTranscript(prev => {
+          const updated = [...prev, newMessage];
+          console.log('[ElevenLabs] Transcript updated. Total messages:', updated.length, '| Latest:', newMessage.role, '-', newMessage.content.substring(0, 50));
+          return updated;
+        });
       }
     },
 
@@ -114,6 +131,13 @@ export const ElevenLabsVoiceWidget = ({
 
   // Handle session end
   const handleSessionEnd = useCallback(() => {
+    console.log('[ElevenLabs] Ending session. Final transcript length:', transcript.length, 'messages');
+    if (transcript.length > 0) {
+      console.log('[ElevenLabs] First message:', transcript[0]);
+      console.log('[ElevenLabs] Last message:', transcript[transcript.length - 1]);
+    } else {
+      console.warn('[ElevenLabs] WARNING: No transcript messages captured!');
+    }
     setIsActive(false);
     onEnd?.(transcript);
   }, [transcript, onEnd]);
@@ -123,6 +147,11 @@ export const ElevenLabsVoiceWidget = ({
     conversation.setVolume(isMuted ? 1 : 0);
     setIsMuted(!isMuted);
   }, [conversation, isMuted]);
+
+  // Expose toggleMute function to parent via ref
+  useImperativeHandle(ref, () => ({
+    toggleMute,
+  }), [toggleMute]);
 
   // Auto-start if enabled
   useEffect(() => {
@@ -138,8 +167,24 @@ export const ElevenLabsVoiceWidget = ({
     };
   }, [autoStart, agentId]);
 
-  // Don't render if not active
-  if (!isActive && conversation.status !== 'connecting') {
+  // Report transcript updates to parent
+  useEffect(() => {
+    if (onTranscriptUpdate) {
+      onTranscriptUpdate(transcript);
+    }
+  }, [transcript, onTranscriptUpdate]);
+
+  // Report status changes to parent
+  useEffect(() => {
+    if (onStatusChange) {
+      const isConnected = conversation.status === 'connected';
+      const isSpeaking = conversation.isSpeaking || false;
+      onStatusChange({ isConnected, isSpeaking, isMuted });
+    }
+  }, [conversation.status, conversation.isSpeaking, isMuted, onStatusChange]);
+
+  // Don't render if not active or if widget should be hidden
+  if ((!isActive && conversation.status !== 'connecting') || hideWidget) {
     return null;
   }
 
@@ -240,4 +285,4 @@ export const ElevenLabsVoiceWidget = ({
       </span>
     </div>
   );
-};
+});

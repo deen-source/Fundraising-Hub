@@ -94,7 +94,7 @@ export const SceneIntro = ({
             <img
               src={avatar.imageSrc}
               alt={avatar.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover grayscale"
             />
           </div>
           <div>
@@ -165,18 +165,18 @@ export const SceneIntro = ({
           aria-label="Scenario introduction"
         >
           <SheetHeader className="space-y-3">
-            <div className="flex items-start justify-between gap-4">
-              <SheetTitle className="flex-1">{scenario.title}</SheetTitle>
+            <div className="flex items-center justify-center gap-4 mt-4">
+              <SheetTitle className="text-center">{scenario.title}</SheetTitle>
               <Badge variant="outline" className="gap-1 inline-flex shrink-0">
                 <Clock className="w-3 h-3" />
                 {scenario.duration}
               </Badge>
             </div>
-            <SheetDescription>
+            <SheetDescription className="sr-only">
               {scenario.description}
             </SheetDescription>
           </SheetHeader>
-          <div className="mt-3">
+          <div className="mt-6">
             {content}
           </div>
         </SheetContent>
@@ -191,18 +191,18 @@ export const SceneIntro = ({
         aria-label="Scenario introduction"
       >
         <DialogHeader className="space-y-3">
-          <div className="flex items-start justify-between gap-4">
-            <DialogTitle className="flex-1">{scenario.title}</DialogTitle>
+          <div className="flex items-center justify-center gap-4 mt-4">
+            <DialogTitle className="text-center">{scenario.title}</DialogTitle>
             <Badge variant="outline" className="gap-1 inline-flex shrink-0">
               <Clock className="w-3 h-3" />
               {scenario.duration}
             </Badge>
           </div>
-          <DialogDescription>
+          <DialogDescription className="sr-only">
             {scenario.description}
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-3">
+        <div className="mt-6">
           {content}
         </div>
       </DialogContent>

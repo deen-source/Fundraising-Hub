@@ -7,6 +7,7 @@ export interface Scenario {
   description: string;
   imageSrc: string;
   bullets: string[];
+  ctaText: string;
   agentId?: string;
   avatarId?: string;
   goal?: string;
@@ -47,6 +48,7 @@ export type AppState =
   | 'scenarios'
   | 'intro'
   | 'session'
+  | 'analyzing'
   | 'feedback';
 
 export interface AnalyticsEvent {

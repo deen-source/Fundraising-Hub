@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Clock, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,6 +10,7 @@ interface ScenarioCardProps {
   duration: string;
   imageSrc: string;
   description: string;
+  ctaText: string;
   selected: boolean;
   onSelect: (id: string) => void;
 }
@@ -19,6 +21,7 @@ export const ScenarioCard = ({
   duration,
   imageSrc,
   description,
+  ctaText,
   selected,
   onSelect,
 }: ScenarioCardProps) => {
@@ -41,11 +44,11 @@ export const ScenarioCard = ({
       onClick={handleClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        'group relative cursor-pointer transition-all duration-300 overflow-hidden rounded-xl',
-        'border-[#E5E7EB] hover:shadow-md',
+        'group relative cursor-pointer transition-all duration-300',
+        'border-2 hover:shadow-md',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-        selected && 'border-primary border-2 bg-primary/5',
-        'motion-safe:transition-transform motion-reduce:transition-none'
+        selected && 'border-primary bg-primary/5',
+        'flex flex-col h-full'
       )}
     >
       {/* Selection indicator - top right */}
@@ -55,7 +58,7 @@ export const ScenarioCard = ({
         </div>
       )}
 
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-1">
         {/* Image container - square with overlay */}
         <div className="relative mb-4 aspect-square w-20 h-20 mx-auto">
           <div className="w-full h-full rounded-lg overflow-hidden ring-1 ring-gray-200 transition-all">
@@ -63,17 +66,16 @@ export const ScenarioCard = ({
               <img
                 src={imageSrc}
                 alt={`${title} scenario`}
-                className="w-full h-full object-cover saturate-50 opacity-90"
+                className="w-full h-full object-cover grayscale"
                 loading="lazy"
                 srcSet={`${imageSrc} 1x, ${imageSrc.replace('.', '@2x.')} 2x`}
               />
-              <div className="absolute inset-0 bg-primary/5" />
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 flex flex-col flex-1">
           <h3 className="font-semibold text-lg text-foreground transition-colors">
             {title}
           </h3>
@@ -84,9 +86,23 @@ export const ScenarioCard = ({
             <span className="leading-none">{duration}</span>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed pt-1">
+          <p className="text-sm text-muted-foreground leading-relaxed pt-1 flex-1">
             {description}
           </p>
+
+          {/* CTA Button */}
+          <div className="pt-4 mt-auto">
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(id);
+              }}
+              className="w-full"
+              size="sm"
+            >
+              {ctaText}
+            </Button>
+          </div>
         </div>
       </div>
 

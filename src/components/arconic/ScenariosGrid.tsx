@@ -61,7 +61,7 @@ export const ScenariosGrid = ({ scenarios, selectedId, onSelect }: ScenariosGrid
       ref={gridRef}
       role="radiogroup"
       aria-label="Practice scenarios"
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
     >
       {scenarios.map((scenario) => (
         <ScenarioCard
@@ -71,6 +71,7 @@ export const ScenariosGrid = ({ scenarios, selectedId, onSelect }: ScenariosGrid
           duration={scenario.duration}
           imageSrc={scenario.imageSrc}
           description={scenario.description}
+          ctaText={scenario.ctaText}
           selected={scenario.id === selectedId}
           onSelect={onSelect}
         />
