@@ -47,13 +47,6 @@ async function handleFeedbackAnalysis({ transcript, scenarioId, duration }: {
   duration: number;
 }) {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-
-  // Debug logging to diagnose environment variable issues
-  console.log('[DEBUG] Environment check:', {
-    hasLovableKey: !!LOVABLE_API_KEY,
-    availableEnvVars: Object.keys(Deno.env.toObject()).filter(k => k.includes('LOVABLE') || k.includes('SUPABASE'))
-  });
-
   if (!LOVABLE_API_KEY) {
     throw new Error("LOVABLE_API_KEY is not configured");
   }
@@ -163,13 +156,12 @@ Provide structured feedback as JSON. Every observation must tie directly to actu
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: "claude-sonnet-4-5",
+      max_tokens: 2000,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
       ],
-      temperature: 0.5, // Balanced temperature for specific but natural feedback
-      max_tokens: 2000, // Ensure enough tokens for detailed feedback
     }),
   });
 
