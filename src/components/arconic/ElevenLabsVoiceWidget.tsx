@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef } from 'react';
 import { useConversation } from '@elevenlabs/react';
 import { Mic, MicOff, Volume2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,12 +45,16 @@ export const ElevenLabsVoiceWidget = forwardRef<
   const [error, setError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<ConversationMessage[]>([]);
 
+  // Use ref to always have access to latest transcript (avoids stale closure issues)
+  const transcriptRef = useRef<ConversationMessage[]>([]);
+
   // Initialize conversation with callbacks
   const conversation = useConversation({
     onConnect: () => {
       console.log('[ElevenLabs] Connected');
       setIsActive(true);
       setError(null);
+      transcriptRef.current = []; // Reset transcript ref for new session
       onStart?.();
     },
 
@@ -72,6 +76,7 @@ export const ElevenLabsVoiceWidget = forwardRef<
 
         setTranscript(prev => {
           const updated = [...prev, newMessage];
+          transcriptRef.current = updated; // Keep ref in sync
           console.log('[ElevenLabs] Transcript updated. Total messages:', updated.length, '| Latest:', newMessage.role, '-', newMessage.content.substring(0, 50));
           return updated;
         });
@@ -131,16 +136,18 @@ export const ElevenLabsVoiceWidget = forwardRef<
 
   // Handle session end
   const handleSessionEnd = useCallback(() => {
-    console.log('[ElevenLabs] Ending session. Final transcript length:', transcript.length, 'messages');
-    if (transcript.length > 0) {
-      console.log('[ElevenLabs] First message:', transcript[0]);
-      console.log('[ElevenLabs] Last message:', transcript[transcript.length - 1]);
+    // Use ref to get the latest transcript (avoids stale closure)
+    const finalTranscript = transcriptRef.current;
+    console.log('[ElevenLabs] Ending session. Final transcript length:', finalTranscript.length, 'messages');
+    if (finalTranscript.length > 0) {
+      console.log('[ElevenLabs] First message:', finalTranscript[0]);
+      console.log('[ElevenLabs] Last message:', finalTranscript[finalTranscript.length - 1]);
     } else {
       console.warn('[ElevenLabs] WARNING: No transcript messages captured!');
     }
     setIsActive(false);
-    onEnd?.(transcript);
-  }, [transcript, onEnd]);
+    onEnd?.(finalTranscript);
+  }, [onEnd]);
 
   // Toggle mute
   const toggleMute = useCallback(() => {
