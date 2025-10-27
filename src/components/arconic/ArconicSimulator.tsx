@@ -278,16 +278,13 @@ export const ArconicSimulator = () => {
               Master Your Pitch. Raise with Confidence.
             </h1>
             <p className="text-muted-foreground">
-              Turn every investor engagement into a real opportunity.
+              Select a scenario. Test your pitch. Get instant feedback.
             </p>
           </div>
 
           {/* Scenarios section */}
           <div className="space-y-6">
             <div className="text-center">
-              <p className="text-lg font-medium mb-2">
-                Pick a scenario. Test your pitch. Get instant feedback.
-              </p>
               <h2 className="text-xl font-semibold mb-4">Choose Your Scenario</h2>
             </div>
 

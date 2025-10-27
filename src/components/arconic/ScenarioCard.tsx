@@ -68,7 +68,6 @@ export const ScenarioCard = ({
                 alt={`${title} scenario`}
                 className="w-full h-full object-cover grayscale"
                 loading="lazy"
-                srcSet={`${imageSrc} 1x, ${imageSrc.replace('.', '@2x.')} 2x`}
               />
             </div>
           </div>
