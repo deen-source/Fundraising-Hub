@@ -47,6 +47,13 @@ async function handleFeedbackAnalysis({ transcript, scenarioId, duration }: {
   duration: number;
 }) {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+
+  // Debug logging to diagnose environment variable issues
+  console.log('[DEBUG] Environment check:', {
+    hasLovableKey: !!LOVABLE_API_KEY,
+    availableEnvVars: Object.keys(Deno.env.toObject()).filter(k => k.includes('LOVABLE') || k.includes('SUPABASE'))
+  });
+
   if (!LOVABLE_API_KEY) {
     throw new Error("LOVABLE_API_KEY is not configured");
   }
