@@ -229,13 +229,20 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-semibold mb-2">
-                Welcome back, {userName}
-              </h1>
-              <p className="text-muted-foreground">
-                Your fundraising journey at a glance
-              </p>
+            <div className="flex items-center gap-4">
+              <img
+                src="/arconic-logo.svg"
+                alt="Arconic Logo"
+                className="h-12 w-12"
+              />
+              <div>
+                <h1 className="text-3xl font-semibold mb-2">
+                  Welcome back, {userName}
+                </h1>
+                <p className="text-muted-foreground">
+                  Your fundraising journey at a glance
+                </p>
+              </div>
             </div>
             <Button variant="outline" onClick={handleSignOut} className="gap-2">
               <LogOut className="w-4 h-4" />

@@ -13,7 +13,7 @@ import { ActiveSessionView } from './ActiveSessionView';
 import { AnalyzingLoader } from './AnalyzingLoader';
 import { FeedbackPanel } from './FeedbackPanel';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mic } from 'lucide-react';
 
 export const ArconicSimulator = () => {
   const navigate = useNavigate();
@@ -250,7 +250,7 @@ export const ArconicSimulator = () => {
         className="fixed top-4 left-4 z-50 gap-2"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back
+        Back to Dashboard
       </Button>
 
       {/* Active Session View */}
@@ -273,11 +273,15 @@ export const ArconicSimulator = () => {
         {/* Main content */}
         <div className="container mx-auto px-4 py-8">
           {/* Hero section */}
-          <div className="mb-8 text-center">
-            <h1 className="text-3xl font-semibold mb-2">
+          <div className="mb-8 text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+              <Mic className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Pitch Practice</span>
+            </div>
+            <h1 className="text-5xl font-bold tracking-tight">
               Master Your Pitch. Raise with Confidence.
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Select a scenario. Test your pitch. Get instant feedback.
             </p>
           </div>
