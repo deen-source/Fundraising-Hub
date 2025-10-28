@@ -44,9 +44,16 @@ export const ArconicSimulator = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Start timer when first message arrives (conversation actually begins)
+  useEffect(() => {
+    if (isSessionActive && transcript.length > 0 && sessionStartTime === 0) {
+      setSessionStartTime(Date.now());
+    }
+  }, [isSessionActive, transcript, sessionStartTime]);
+
   // Session elapsed timer
   useEffect(() => {
-    if (!isSessionActive) return;
+    if (!isSessionActive || sessionStartTime === 0) return;
 
     const interval = setInterval(() => {
       setElapsed(Math.floor((Date.now() - sessionStartTime) / 1000));
@@ -115,7 +122,7 @@ export const ArconicSimulator = () => {
 
     setIsIntroOpen(false);
     setIsSessionActive(true);
-    setSessionStartTime(Date.now());
+    setSessionStartTime(0); // Don't start timer yet - wait for first message
     setElapsed(0);
     setTranscript([]);
     setAppState('session');
@@ -242,36 +249,48 @@ export const ArconicSimulator = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Back Button - Fixed top left */}
-      <Button
-        onClick={() => navigate('/dashboard')}
-        variant="ghost"
-        size="sm"
-        className="fixed top-4 left-4 z-50 gap-2"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to Dashboard
-      </Button>
-
       {/* Active Session View */}
       {isSessionActive && selectedScenario && (
-        <ActiveSessionView
-          scenario={selectedScenario}
-          avatar={AVATARS.find(a => a.id === selectedScenario.avatarId) || AVATARS[0]}
-          isConnected={voiceStatus.isConnected}
-          isSpeaking={voiceStatus.isSpeaking}
-          isMuted={voiceStatus.isMuted}
-          transcript={transcript}
-          elapsed={elapsed}
-          onToggleMute={handleToggleMute}
-          onEndSession={() => handleSessionEnd()}
-        />
+        <>
+          {/* Back Button for Active Session - Fixed top left */}
+          <Button
+            onClick={() => navigate('/dashboard')}
+            variant="ghost"
+            size="sm"
+            className="fixed top-4 left-4 z-50 gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Button>
+
+          <ActiveSessionView
+            scenario={selectedScenario}
+            avatar={AVATARS.find(a => a.id === selectedScenario.avatarId) || AVATARS[0]}
+            isConnected={voiceStatus.isConnected}
+            isSpeaking={voiceStatus.isSpeaking}
+            isMuted={voiceStatus.isMuted}
+            transcript={transcript}
+            elapsed={elapsed}
+            onToggleMute={handleToggleMute}
+            onEndSession={() => handleSessionEnd()}
+          />
+        </>
       )}
 
       {/* Home View - hidden during active session with fade transition */}
       <div className={isSessionActive ? 'hidden' : 'animate-in fade-in duration-400'}>
         {/* Main content */}
         <div className="container mx-auto px-4 py-8">
+          {/* Back Button - Same position as other pages */}
+          <Button
+            onClick={() => navigate('/dashboard')}
+            variant="ghost"
+            className="mb-6 gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Button>
+
           {/* Hero section */}
           <div className="mb-8 text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">

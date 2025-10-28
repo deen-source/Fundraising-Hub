@@ -5,6 +5,7 @@ import { Clock, Mic, MicOff, Volume2, MessageSquare, X, Minimize2 } from 'lucide
 import { cn } from '@/lib/utils';
 import { Avatar as AvatarType, Scenario } from '@/types/arconic-simulator';
 import { ConversationMessage } from './ElevenLabsVoiceWidget';
+import { ProgressiveText } from './ProgressiveText';
 
 interface ActiveSessionViewProps {
   scenario: Scenario;
@@ -43,9 +44,10 @@ export const ActiveSessionView = ({
 
   // Auto-scroll transcript to bottom when new messages arrive
   useEffect(() => {
-    const transcriptElement = document.getElementById('transcript-content');
-    if (transcriptElement) {
-      transcriptElement.scrollTop = transcriptElement.scrollHeight;
+    // ScrollArea uses a viewport wrapper, so we need to find it
+    const scrollContainer = document.querySelector('[data-radix-scroll-area-viewport]');
+    if (scrollContainer) {
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
     }
   }, [transcript]);
 
@@ -146,19 +148,32 @@ export const ActiveSessionView = ({
 
             <ScrollArea className="h-32" id="transcript-content">
               <div className="space-y-2 pr-4">
-                {recentMessages.map((msg, idx) => (
-                  <div key={idx} className="text-sm">
-                    <span className={cn(
-                      "font-medium",
-                      msg.role === 'user' ? 'text-primary' : 'text-secondary-foreground'
-                    )}>
-                      {msg.role === 'user' ? 'You:' : `${avatar.name}:`}
-                    </span>
-                    <span className="ml-2 text-muted-foreground">{msg.content}</span>
-                  </div>
-                ))}
-                {/* Typing indicator when AI is speaking */}
-                {isSpeaking && (
+                {recentMessages.map((msg, idx) => {
+                  const isLatestAIMessage = msg.role === 'assistant' && idx === recentMessages.length - 1;
+
+                  return (
+                    <div key={idx} className="text-sm">
+                      <span className={cn(
+                        "font-medium",
+                        msg.role === 'user' ? 'text-primary' : 'text-secondary-foreground'
+                      )}>
+                        {msg.role === 'user' ? 'You:' : `${avatar.name}:`}
+                      </span>
+                      {/* Use progressive text for latest AI message, instant for everything else */}
+                      {isLatestAIMessage ? (
+                        <ProgressiveText
+                          text={msg.content}
+                          className="ml-2 text-muted-foreground"
+                          speed={60}
+                        />
+                      ) : (
+                        <span className="ml-2 text-muted-foreground">{msg.content}</span>
+                      )}
+                    </div>
+                  );
+                })}
+                {/* Typing indicator when AI is about to speak (no messages yet) */}
+                {isSpeaking && recentMessages.length > 0 && recentMessages[recentMessages.length - 1].role === 'user' && (
                   <div className="text-sm flex items-center gap-2 animate-in fade-in duration-200">
                     <span className="font-medium text-secondary-foreground">{avatar.name}:</span>
                     <div className="flex gap-1 ml-2">
