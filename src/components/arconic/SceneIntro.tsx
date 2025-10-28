@@ -165,12 +165,17 @@ export const SceneIntro = ({
           aria-label="Scenario introduction"
         >
           <SheetHeader className="space-y-3">
-            <div className="flex items-center justify-center gap-4 mt-4">
+            <div className="flex flex-col items-center gap-2 mt-4">
               <SheetTitle className="text-center">{scenario.title}</SheetTitle>
-              <Badge variant="outline" className="gap-1 inline-flex shrink-0">
+              <Badge variant="outline" className="gap-1 inline-flex">
                 <Clock className="w-3 h-3" />
                 {scenario.duration}
               </Badge>
+              {scenario.scenarioContext && (
+                <p className="text-sm text-muted-foreground text-center mt-2 italic">
+                  {scenario.scenarioContext}
+                </p>
+              )}
             </div>
             <SheetDescription className="sr-only">
               {scenario.description}
@@ -191,12 +196,17 @@ export const SceneIntro = ({
         aria-label="Scenario introduction"
       >
         <DialogHeader className="space-y-3">
-          <div className="flex items-center justify-center gap-4 mt-4">
+          <div className="flex flex-col items-center gap-2 mt-4">
             <DialogTitle className="text-center">{scenario.title}</DialogTitle>
-            <Badge variant="outline" className="gap-1 inline-flex shrink-0">
+            <Badge variant="outline" className="gap-1 inline-flex">
               <Clock className="w-3 h-3" />
               {scenario.duration}
             </Badge>
+            {scenario.scenarioContext && (
+              <p className="text-sm text-muted-foreground text-center mt-2 italic">
+                {scenario.scenarioContext}
+              </p>
+            )}
           </div>
           <DialogDescription className="sr-only">
             {scenario.description}

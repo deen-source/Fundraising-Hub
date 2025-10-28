@@ -6,6 +6,7 @@ export interface Scenario {
   duration: string;
   description: string;
   imageSrc: string;
+  scenarioContext?: string;
   bullets: string[];
   ctaText: string;
   agentId?: string;
