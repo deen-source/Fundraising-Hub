@@ -55,6 +55,25 @@ export async function generateSessionFeedback({
     }
 
     console.log('[FeedbackService] Generated feedback:', feedback);
+
+    // Save session to database
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('practice_sessions').insert({
+          user_id: user.id,
+          scenario_id: scenarioId,
+          transcript,
+          feedback,
+          duration,
+        });
+        console.log('[FeedbackService] Session saved to database');
+      }
+    } catch (dbError) {
+      console.error('[FeedbackService] Failed to save session:', dbError);
+      // Don't fail the whole flow if database save fails
+    }
+
     return feedback;
 
   } catch (error) {

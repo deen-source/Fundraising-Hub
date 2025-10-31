@@ -139,7 +139,10 @@ export const ArconicSimulator = () => {
   const handleSessionEnd = async (transcriptFromWidget?: any[]) => {
     if (!selectedScenarioId) return;
 
-    const duration = Math.floor((Date.now() - sessionStartTime) / 1000);
+    // Calculate duration only if session actually started (sessionStartTime !== 0)
+    const duration = sessionStartTime > 0
+      ? Math.floor((Date.now() - sessionStartTime) / 1000)
+      : 0;
     setIsSessionActive(false);
 
     // Use transcript from state (which is updated in real-time)
