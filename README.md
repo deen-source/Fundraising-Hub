@@ -1,73 +1,191 @@
-# Welcome to your Lovable project
+# Fundraising Hub
 
-## Project info
+A comprehensive startup fundraising platform with AI-powered tools for founders.
 
-**URL**: https://lovable.dev/projects/b1035a39-0a38-4d4b-aff5-01e237937da8
+## Features
 
-## How can I edit this code?
+### Core Features
+- **Investor CRM**: Kanban-based pipeline management for investor relationships
+- **Data Room**: Secure document sharing with investors
+- **Practice Pitching**: AI-powered pitch practice with voice interaction
+- **Forum**: Community discussion board for founders
 
-There are several ways of editing your application.
+### Financial Tools
+- **Pitch Deck Analyzer**: AI-powered analysis of your pitch deck
+- **Term Sheet Checker**: Get AI insights on term sheets
+- **SAFE Calculator**: Calculate SAFE conversion scenarios
+- **Cap Table**: Track equity ownership
+- **Valuation Calculator**: Various valuation methodologies
+- **Dilution Calculator**: Model fundraising rounds
+- **Metric Benchmarks**: Industry standard metrics
+- **Document Templates**: Pre-built legal and business templates
 
-**Use Lovable**
+## Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/b1035a39-0a38-4d4b-aff5-01e237937da8) and start prompting.
+- **Frontend**: React 18 + TypeScript + Vite
+- **UI Library**: shadcn/ui (Radix UI + Tailwind CSS)
+- **Backend**: Supabase (PostgreSQL + Edge Functions)
+- **AI**: OpenAI API (gpt-4o-mini)
+- **Voice**: ElevenLabs Voice Agents
+- **Deployment**: Vercel (Frontend) + Supabase (Backend)
 
-Changes made via Lovable will be committed automatically to this repo.
+## Prerequisites
 
-**Use your preferred IDE**
+- Node.js 18+ and npm
+- Supabase account
+- OpenAI API key
+- ElevenLabs API key (optional, for voice features)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Setup Instructions
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 1. Clone the Repository
 
-Follow these steps:
+```bash
+git clone https://github.com/deen-source/Fundraising-Hub.git
+cd Fundraising-Hub
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 2. Install Dependencies
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+```bash
+npm install
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 3. Set Up Supabase
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+#### Install Supabase CLI
+
+```bash
+npm install -g supabase
+```
+
+#### Link to Your Supabase Project
+
+```bash
+supabase link --project-ref <your-project-id>
+```
+
+#### Run Database Migrations
+
+```bash
+supabase db push
+```
+
+Or manually run migrations in order from `supabase/migrations/` directory via Supabase Dashboard.
+
+#### Deploy Edge Functions
+
+```bash
+supabase functions deploy analyze-pitch-deck
+supabase functions deploy analyze-term-sheet
+supabase functions deploy practice-pitching
+```
+
+#### Set Edge Function Secrets
+
+```bash
+supabase secrets set OPENAI_API_KEY=sk-...
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+# Supabase
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your-anon-key
+
+# ElevenLabs (Optional)
+VITE_ELEVENLABS_AGENT_NETWORKING=agent-id
+VITE_ELEVENLABS_AGENT_COFFEE=agent-id
+VITE_ELEVENLABS_AGENT_DEMO=agent-id
+VITE_ELEVENLABS_AGENT_DEEPDIVE=agent-id
+```
+
+### 5. Run Development Server
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 6. Deploy to Vercel
 
-**Use GitHub Codespaces**
+#### Connect GitHub Repository
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Go to [Vercel](https://vercel.com)
+2. Import your GitHub repository
+3. Configure build settings:
+   - **Framework Preset**: Vite
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
 
-## What technologies are used for this project?
+#### Set Environment Variables in Vercel
 
-This project is built with:
+Add all environment variables from your `.env` file in Vercel Dashboard → Settings → Environment Variables
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+#### Deploy
 
-## How can I deploy this project?
+Click "Deploy" and your app will be live!
 
-Simply open [Lovable](https://lovable.dev/projects/b1035a39-0a38-4d4b-aff5-01e237937da8) and click on Share -> Publish.
+## Project Structure
 
-## Can I connect a custom domain to my Lovable project?
+```
+Fundraising-Hub/
+├── src/
+│   ├── components/       # React components
+│   ├── pages/           # Page components
+│   ├── integrations/    # Supabase client & types
+│   ├── hooks/           # Custom React hooks
+│   └── lib/             # Utility functions
+├── supabase/
+│   ├── functions/       # Edge functions (AI services)
+│   └── migrations/      # Database migrations
+├── public/              # Static assets
+└── [config files]
+```
 
-Yes, you can!
+## Available Scripts
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run test` - Run tests
+- `npm run lint` - Lint code
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Database Schema
+
+The application uses 14 tables:
+
+- **profiles**: User profiles
+- **investors**: Investor database with CRM data
+- **investor_interactions**: Contact history
+- **email_templates**: Reusable templates
+- **email_campaigns**: Bulk outreach tracking
+- **data_room_documents**: File metadata
+- **data_room_shares**: Shareable links
+- **forum_topics**: Discussion topics
+- **forum_posts**: Topic replies
+- **forum_votes**: Upvote/downvote system
+- **document_templates**: Pre-built templates
+- **saved_calculations**: Saved tool results
+- **term_sheet_analyses**: AI analysis history
+- **investor_data_imports**: Import tracking
+
+## Edge Functions
+
+Three Deno-based edge functions power AI features:
+
+1. **analyze-pitch-deck**: Analyzes pitch deck content
+2. **analyze-term-sheet**: Provides term sheet insights
+3. **practice-pitching**: Handles pitch practice scenarios and feedback
+
+## Support
+
+For issues or questions, please open an issue on GitHub.
+
+## License
+
+MIT
