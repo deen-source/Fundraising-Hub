@@ -228,17 +228,22 @@ const Dashboard = () => {
       <div className="min-h-screen relative">
         <div className="container mx-auto px-4 md:px-8 lg:px-12 py-12 md:py-16">
           {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-4">
-              <img
-                src="/arconic-logo.svg"
-                alt="Arconic Logo"
-                className="h-12 w-12"
-              />
-              <div>
-                <h1 className="text-3xl font-semibold mb-2">
-                  Welcome back, {userName}
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <div className="flex items-center gap-4 mb-4">
+                <img
+                  src="/arconic-logo.svg"
+                  alt="Arconic Logo"
+                  className="h-12 w-12"
+                />
+                <h1 className="text-4xl font-semibold">
+                  Fundraising Hub
                 </h1>
+              </div>
+              <div>
+                <p className="text-xl font-medium mb-1">
+                  Welcome back, {userName}
+                </p>
                 <p className="text-muted-foreground">
                   Your fundraising journey at a glance
                 </p>
