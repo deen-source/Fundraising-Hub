@@ -45,7 +45,7 @@ const toolsByStage = {
     },
     {
       id: 'pitch-deck',
-      title: 'Pitch Deck Analyzer',
+      title: 'Pitch Deck Analyser',
       description: 'Get AI feedback on your pitch deck',
       icon: FileText,
       path: '/tools/pitch-deck',
@@ -226,7 +226,7 @@ const Dashboard = () => {
   return (
     <AuthGuard>
       <div className="min-h-screen relative">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 md:px-8 lg:px-12 py-12 md:py-16">
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-4">
@@ -251,7 +251,7 @@ const Dashboard = () => {
           </div>
 
           {/* Overall Progress */}
-          <Card className="border mb-8">
+          <Card className="border mb-12">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -274,7 +274,7 @@ const Dashboard = () => {
                   <div key={stage.id} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 flex items-center justify-center bg-foreground text-background font-semibold text-xs">
+                        <div className="w-6 h-6 flex items-center justify-center bg-primary text-primary-foreground font-semibold text-xs">
                           {idx + 1}
                         </div>
                         <span className="font-medium">{stage.name}</span>
@@ -290,7 +290,7 @@ const Dashboard = () => {
                     </div>
                     <div className="h-2 bg-muted overflow-hidden">
                       <div
-                        className="h-full bg-foreground transition-all duration-500"
+                        className="h-full bg-primary transition-all duration-500"
                         style={{ width: `${stageCompletion[stage.id]}%` }}
                       />
                     </div>
@@ -302,17 +302,17 @@ const Dashboard = () => {
 
 
           {/* Stage-Based Tools */}
-          <div className="space-y-8">
+          <div className="space-y-16">
             {stages.map((stage) => (
               <div key={stage.id}>
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-6">
                   <h2 className="text-xl font-semibold">{stage.name}</h2>
                   <span className="ml-auto text-sm text-muted-foreground">
                     {Math.round(stageCompletion[stage.id])}% Complete
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
                   {toolsByStage[stage.id].map((tool) => {
                     const Icon = tool.icon;
                     const isComplete = completionStatus[tool.dataKey];

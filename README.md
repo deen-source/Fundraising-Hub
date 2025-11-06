@@ -11,7 +11,7 @@ A comprehensive startup fundraising platform with AI-powered tools for founders.
 - **Forum**: Community discussion board for founders
 
 ### Financial Tools
-- **Pitch Deck Analyzer**: AI-powered analysis of your pitch deck
+- **Pitch Deck Analyser**: AI-powered analysis of your pitch deck
 - **Term Sheet Checker**: Get AI insights on term sheets
 - **SAFE Calculator**: Calculate SAFE conversion scenarios
 - **Cap Table**: Track equity ownership

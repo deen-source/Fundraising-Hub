@@ -22,7 +22,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-const PitchDeckAnalyzer = () => {
+const PitchDeckAnalyser = () => {
   const navigate = useNavigate();
   const [deckContent, setDeckContent] = useState('');
   const [analysis, setAnalysis] = useState<any>(null);
@@ -203,7 +203,7 @@ const PitchDeckAnalyzer = () => {
                 <Sparkles className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-primary">AI-Powered Pitch Analysis</span>
               </div>
-              <h1 className="text-5xl font-bold tracking-tight">Pitch Deck Analyzer</h1>
+              <h1 className="text-5xl font-bold tracking-tight">Pitch Deck Analyser</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Get comprehensive, investor-grade feedback on your pitch deck with detailed analysis across all key dimensions
               </p>
@@ -257,7 +257,7 @@ const PitchDeckAnalyzer = () => {
               <TabsList className="grid w-full grid-cols-3 mb-8">
                 <TabsTrigger value="analyzer" className="gap-2">
                   <Sparkles className="w-4 h-4" />
-                  Analyzer
+                  Analyser
                 </TabsTrigger>
                 <TabsTrigger value="understanding" className="gap-2">
                   <BookOpen className="w-4 h-4" />
@@ -269,7 +269,7 @@ const PitchDeckAnalyzer = () => {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Analyzer Tab */}
+              {/* Analyser Tab */}
               <TabsContent value="analyzer" className="space-y-8">
                 {/* Past Analyses */}
                 {pastAnalyses.length > 0 && (
@@ -1083,4 +1083,4 @@ Slide 4: Traction
   );
 };
 
-export default PitchDeckAnalyzer;
+export default PitchDeckAnalyser;

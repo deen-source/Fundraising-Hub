@@ -11,7 +11,7 @@ import MetricBenchmarks from "./pages/tools/MetricBenchmarks";
 import SafeCalculator from "./pages/tools/SafeCalculatorNew";
 import CapTable from "./pages/tools/CapTable";
 import ValuationCalculator from "./pages/tools/ValuationCalculator";
-import PitchDeckAnalyzer from "./pages/tools/PitchDeckAnalyzer";
+import PitchDeckAnalyser from "./pages/tools/PitchDeckAnalyzer";
 import DilutionCalculator from "./pages/tools/DilutionCalculator";
 import DataRoom from "./pages/tools/DataRoom";
 import InvestorDataRoom from "./pages/InvestorDataRoom";
@@ -38,7 +38,7 @@ const App = () => (
           <Route path="/tools/safe-calculator" element={<SafeCalculator />} />
           <Route path="/tools/cap-table" element={<CapTable />} />
           <Route path="/tools/valuation" element={<ValuationCalculator />} />
-          <Route path="/tools/pitch-deck" element={<PitchDeckAnalyzer />} />
+          <Route path="/tools/pitch-deck" element={<PitchDeckAnalyser />} />
           <Route path="/tools/dilution" element={<DilutionCalculator />} />
           <Route path="/tools/data-room" element={<DataRoom />} />
           <Route path="/investor/:token" element={<InvestorDataRoom />} />

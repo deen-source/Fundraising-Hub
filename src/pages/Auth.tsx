@@ -79,21 +79,21 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative">
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 lg:p-12 relative">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
-        <div className="space-y-8">
+        <div className="space-y-10">
           <div className="space-y-4">
             <h1 className="text-5xl font-bold">
-              FounderTools
+              Fundraising Hub
             </h1>
             <p className="text-2xl text-muted-foreground">
               The complete investment toolkit for ambitious founders
             </p>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 border">
+          <div className="space-y-8">
+            <div className="flex items-start gap-6">
+              <div className="p-4 border">
                 <TrendingUp className="w-6 h-6" />
               </div>
               <div>
@@ -104,8 +104,8 @@ const Auth = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4">
-              <div className="p-3 border">
+            <div className="flex items-start gap-6">
+              <div className="p-4 border">
                 <Shield className="w-6 h-6" />
               </div>
               <div>
@@ -116,8 +116,8 @@ const Auth = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-4">
-              <div className="p-3 border">
+            <div className="flex items-start gap-6">
+              <div className="p-4 border">
                 <Zap className="w-6 h-6" />
               </div>
               <div>
