@@ -50,6 +50,30 @@ async function handleFeedbackAnalysis({ transcript, scenarioId, duration }: {
     );
   }
 
+  // Reject sessions that are too short for meaningful feedback
+  if (duration < 15) {
+    console.warn('[Feedback Analysis] Session too short:', duration, 'seconds');
+    return new Response(
+      JSON.stringify({
+        feedback: {
+          overall: "Session too short for meaningful feedback. Please have a longer conversation and try again.",
+          landed: [],
+          gaps: ["Have a longer conversation (at least 15 seconds) to receive detailed feedback"],
+          items: [
+            {
+              category: "Session Duration",
+              score: 1,
+              comment: "This session was too brief to provide meaningful feedback. Try having a more extended conversation with the investor.",
+              highlight: ""
+            }
+          ],
+          duration
+        }
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
   if (conversationText.length < 50) {
     console.warn('[Feedback Analysis] WARNING: Very short transcript:', conversationText);
   }
@@ -66,13 +90,11 @@ Scenario: ${scenarioId === 'first-coffee' ? 'First Coffee (2 min)' : 'Deep Dive 
 Duration: ${formattedDuration}
 Your role: Calm, curious, analytical VC partner using the Arc Coverage framework
 
-TONE REQUIREMENTS (founder-first, constructive, encouraging)
-• Default to encouragement: start with what landed well
-• Frame gaps as opportunities, not failures
-• Suggest concrete next steps, not just criticism
-• Assume good intent; be supportive and warm
+TONE REQUIREMENTS
+• Clear, concise and honest
+• Written in the clear and concise words, tone and style of Sam Altman
+• Frame gaps as opportunities with concrete next steps
 • Remember: they're practising, not pitching for real investment
-• Celebrate articulation improvements and specific anchors
 • Use British English spelling throughout (analyse, organise, realise)
 
 EVALUATION FRAMEWORK

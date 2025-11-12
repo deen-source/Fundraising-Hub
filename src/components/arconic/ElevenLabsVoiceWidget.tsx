@@ -48,6 +48,9 @@ export const ElevenLabsVoiceWidget = forwardRef<
   // Use ref to always have access to latest transcript (avoids stale closure issues)
   const transcriptRef = useRef<ConversationMessage[]>([]);
 
+  // Ref for farewell auto-end timeout
+  const farewellTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Initialize conversation with callbacks
   const conversation = useConversation({
     onConnect: () => {
@@ -80,6 +83,11 @@ export const ElevenLabsVoiceWidget = forwardRef<
           console.log('[ElevenLabs] Transcript updated. Total messages:', updated.length, '| Latest:', newMessage.role, '-', newMessage.content.substring(0, 50));
           return updated;
         });
+
+        // Check for farewell (only for assistant messages)
+        if (newMessage.role === 'assistant' && detectFarewell(newMessage.content)) {
+          scheduleAutoEnd();
+        }
       }
     },
 
@@ -94,6 +102,40 @@ export const ElevenLabsVoiceWidget = forwardRef<
       console.log('[ElevenLabs] Mode changed:', mode);
     },
   });
+
+  // Detect farewell phrases indicating agent is ending conversation
+  const detectFarewell = useCallback((message: string): boolean => {
+    const lowerMessage = message.toLowerCase();
+
+    // Check for specific farewell phrases from agent system prompts
+    const farewellPhrases = [
+      'thanks for the chat',
+      'thanks so much for the deep dive',
+    ];
+
+    return farewellPhrases.some(phrase => lowerMessage.includes(phrase));
+  }, []);
+
+  // Auto-end session after farewell is detected (with 3-second delay)
+  const scheduleAutoEnd = useCallback(() => {
+    // Clear any existing timeout
+    if (farewellTimeoutRef.current) {
+      clearTimeout(farewellTimeoutRef.current);
+    }
+
+    console.log('[ElevenLabs] Farewell detected. Auto-ending session in 3 seconds...');
+
+    // Schedule auto-end after 3 seconds
+    farewellTimeoutRef.current = setTimeout(async () => {
+      console.log('[ElevenLabs] Auto-ending session now');
+      try {
+        await conversation.endSession();
+        console.log('[ElevenLabs] Session ended via auto-end');
+      } catch (err) {
+        console.error('[ElevenLabs] Error auto-ending session:', err);
+      }
+    }, 3000);
+  }, [conversation]);
 
   // Start session
   const startSession = useCallback(async () => {
@@ -126,6 +168,12 @@ export const ElevenLabsVoiceWidget = forwardRef<
 
   // Stop session
   const stopSession = useCallback(async () => {
+    // Clear any pending auto-end timeout
+    if (farewellTimeoutRef.current) {
+      clearTimeout(farewellTimeoutRef.current);
+      farewellTimeoutRef.current = null;
+    }
+
     try {
       await conversation.endSession();
       console.log('[ElevenLabs] Session ended');
@@ -168,6 +216,13 @@ export const ElevenLabsVoiceWidget = forwardRef<
 
     // Cleanup on unmount
     return () => {
+      // Clear any pending auto-end timeout
+      if (farewellTimeoutRef.current) {
+        clearTimeout(farewellTimeoutRef.current);
+        farewellTimeoutRef.current = null;
+      }
+
+      // End session if still connected
       if (conversation.status === 'connected') {
         stopSession();
       }
