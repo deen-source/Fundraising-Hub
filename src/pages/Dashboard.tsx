@@ -262,28 +262,32 @@ const Dashboard = () => {
     hasForum: forumActivityCount > 0,
   };
 
-  // Only count available tools in completion calculation
+  // Count ALL tools (including unavailable ones) in completion calculation
   const stageCompletion = {
     preparation: (() => {
-      const available = toolsByStage.preparation.filter(t => t.available !== false);
-      const completed = available.filter(t => completionStatus[t.dataKey]).length;
-      return available.length > 0 ? (completed / available.length * 100) : 0;
+      const allTools = toolsByStage.preparation;
+      const completed = allTools.filter(t => completionStatus[t.dataKey]).length;
+      return allTools.length > 0 ? (completed / allTools.length * 100) : 0;
     })(),
     structuring: (() => {
-      const available = toolsByStage.structuring.filter(t => t.available !== false);
-      const completed = available.filter(t => completionStatus[t.dataKey]).length;
-      return available.length > 0 ? (completed / available.length * 100) : 0;
+      const allTools = toolsByStage.structuring;
+      const completed = allTools.filter(t => completionStatus[t.dataKey]).length;
+      return allTools.length > 0 ? (completed / allTools.length * 100) : 0;
     })(),
     active: (() => {
-      const available = toolsByStage.active.filter(t => t.available !== false);
-      const completed = available.filter(t => completionStatus[t.dataKey]).length;
-      return available.length > 0 ? (completed / available.length * 100) : 0;
+      const allTools = toolsByStage.active;
+      const completed = allTools.filter(t => completionStatus[t.dataKey]).length;
+      return allTools.length > 0 ? (completed / allTools.length * 100) : 0;
     })(),
   };
 
-  const overallCompletion = Math.round(
-    (stageCompletion.preparation + stageCompletion.structuring + stageCompletion.active) / 3
-  );
+  // Calculate overall completion based on total tools completed / total tools
+  const totalTools = toolsByStage.preparation.length + toolsByStage.structuring.length + toolsByStage.active.length;
+  const totalCompleted =
+    toolsByStage.preparation.filter(t => completionStatus[t.dataKey]).length +
+    toolsByStage.structuring.filter(t => completionStatus[t.dataKey]).length +
+    toolsByStage.active.filter(t => completionStatus[t.dataKey]).length;
+  const overallCompletion = totalTools > 0 ? Math.round((totalCompleted / totalTools) * 100) : 0;
 
 
   return (
@@ -397,7 +401,7 @@ const Dashboard = () => {
                         onClick={() => isAvailable && navigate(tool.path)}
                       >
                         {!isAvailable && (
-                          <div className="absolute top-3 right-3">
+                          <div className="absolute -top-3 right-2 z-10">
                             <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
                           </div>
                         )}
