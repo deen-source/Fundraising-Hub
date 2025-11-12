@@ -28,6 +28,15 @@ import {
 const toolsByStage = {
   preparation: [
     {
+      id: 'practice-pitching',
+      title: 'Practice Pitching',
+      description: 'Practice your pitch with AI investor',
+      icon: Mic,
+      path: '/tools/practice-pitching',
+      dataKey: 'hasPractice',
+      available: true,
+    },
+    {
       id: 'valuation',
       title: 'Valuation Calculator',
       description: 'Determine your startup valuation',
@@ -62,15 +71,6 @@ const toolsByStage = {
       path: '/tools/document-templates',
       dataKey: 'hasTemplates',
       available: false,
-    },
-    {
-      id: 'practice-pitching',
-      title: 'Practice Pitching',
-      description: 'Practice your pitch with AI investor',
-      icon: Mic,
-      path: '/tools/practice-pitching',
-      dataKey: 'hasPractice',
-      available: true,
     },
   ],
   structuring: [
@@ -389,17 +389,25 @@ const Dashboard = () => {
                     const Icon = tool.icon;
                     const isComplete = completionStatus[tool.dataKey];
                     const isAvailable = tool.available !== false;
+                    const isLive = tool.available === true;
 
                     return (
                       <Card
                         key={tool.id}
                         className={`group transition-all duration-300 border-2 relative ${
-                          isAvailable
+                          isLive
+                            ? 'border-green-500 bg-green-50/50 hover:shadow-lg hover:border-green-600 cursor-pointer'
+                            : isAvailable
                             ? 'hover:shadow-md cursor-pointer'
                             : 'opacity-60 cursor-not-allowed'
                         }`}
                         onClick={() => isAvailable && navigate(tool.path)}
                       >
+                        {isLive && (
+                          <div className="absolute -top-3 right-2 z-10">
+                            <Badge className="text-xs bg-green-600 hover:bg-green-700">LIVE</Badge>
+                          </div>
+                        )}
                         {!isAvailable && (
                           <div className="absolute -top-3 right-2 z-10">
                             <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
