@@ -10,9 +10,7 @@ import { Users, TrendingUp, Presentation, Target } from 'lucide-react';
 // 4. (Optional) Move these to environment variables for security
 
 const AGENT_IDS = {
-  NETWORKING: import.meta.env.VITE_ELEVENLABS_AGENT_NETWORKING || 'agent_1701k7670etze94ambhpxxyynw87',
   FIRST_COFFEE: import.meta.env.VITE_ELEVENLABS_AGENT_COFFEE || 'agent_6201k767k2s5fgkrx9p97r4pz703',
-  DEMO_DAY: import.meta.env.VITE_ELEVENLABS_AGENT_DEMO || 'agent_7801k763rfw7f7at4n1qgy7v0wve',
   DEEP_DIVE: import.meta.env.VITE_ELEVENLABS_AGENT_DEEPDIVE || 'agent_1301k76ae0hwfryvq8epjeabxhg0',
 };
 
@@ -52,26 +50,9 @@ export const AVATARS: Avatar[] = [
 
 export const SCENARIOS: Scenario[] = [
   {
-    id: 'networking',
-    title: 'Networking',
-    duration: '2 min',
-    description: 'A quick intro at an event. Make your startup unforgettable, fast.',
-    imageSrc: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=288&h=288&fit=crop',
-    scenarioContext: 'Imagine we\'ve just met at a busy event and only have a few minutes to chat and make an impression.',
-    goal: 'Deliver a sharp one-liner: what you do, who it\'s for and a quick why now.',
-    bullets: [
-      'Charlie will want to hear your pitch in under 2 minutes',
-      'Expect questions about your value proposition',
-      'You\'ll need to answer follow-up questions on the spot',
-    ],
-    ctaText: 'Start Networking Drill',
-    agentId: AGENT_IDS.NETWORKING,
-    avatarId: 'charlie',
-  },
-  {
     id: 'first-coffee',
     title: 'First Coffee',
-    duration: '5 min',
+    duration: '2 min',
     description: 'An informal chat to test mutual interest. Build rapport, not slides.',
     imageSrc: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=288&h=288&fit=crop',
     scenarioContext: 'Imagine we\'re sitting down for our first coffee. The goal isn\'t to land an investment on the spot – think of it as a chance to spark interest and open the door to a deeper conversation.',
@@ -86,26 +67,9 @@ export const SCENARIOS: Scenario[] = [
     avatarId: 'eric',
   },
   {
-    id: 'demo-day',
-    title: 'Demo Day',
-    duration: '5 min',
-    description: 'Deliver a tight pitch, then field rapid-fire Q&A. Capture attention, hold the room.',
-    imageSrc: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=288&h=288&fit=crop',
-    scenarioContext: 'Imagine that you\'re on stage at a demo day, pitching to a room of potential investors.',
-    goal: 'Deliver a two-minute pitch covering what you do, who it\'s for, your traction, the market size and why your team will win – then handle Q&A.',
-    bullets: [
-      'Rapid-fire Q&A immediately after your pitch',
-      'Questions about your team\'s background and credentials',
-      'Alice will investigate your market size assumptions',
-    ],
-    ctaText: 'Run Demo Day',
-    agentId: AGENT_IDS.DEMO_DAY,
-    avatarId: 'alice',
-  },
-  {
     id: 'deep-dive',
     title: 'Deep Dive',
-    duration: '10 min',
+    duration: '5 min',
     description: 'A deep dive on your model, metrics and assumptions. Show clarity under pressure.',
     imageSrc: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=288&h=288&fit=crop',
     scenarioContext: 'Imagine this is a focused deep dive follow up after you\'ve had a few initial conversation with a venture fund.',
@@ -127,42 +91,6 @@ export const generateMockFeedback = (scenarioId: string, duration: number): Sess
 
   // Different feedback based on scenario
   const feedbackMap: Record<string, Partial<SessionFeedback>> = {
-    networking: {
-      landed: [
-        'Crystal-clear problem statement',
-        'Compelling market timing',
-        'Strong personal credibility',
-      ],
-      gaps: [
-        'Competitive differentiation could be sharper',
-        'Consider adding a specific traction metric',
-      ],
-      decision: 'next-meeting',
-      overall: 'Your elevator pitch showed strong clarity and passion. The problem-solution fit is evident. To strengthen further, consider weaving in a concrete traction number and sharpening how you\'re uniquely positioned vs competitors.',
-      items: [
-        {
-          category: 'Clarity',
-          score: 4,
-          comment: 'Problem and solution were articulated clearly.',
-          highlight: '"We help SMBs automate their bookkeeping in under 5 minutes."',
-        },
-        {
-          category: 'Timing',
-          score: 5,
-          comment: 'Market timing argument was compelling and well-researched.',
-        },
-        {
-          category: 'Differentiation',
-          score: 3,
-          comment: 'Could strengthen unique positioning vs existing solutions.',
-        },
-        {
-          category: 'Credibility',
-          score: 4,
-          comment: 'Strong founder background came through authentically.',
-        },
-      ],
-    },
     'first-coffee': {
       landed: [
         'Authentic storytelling about founding journey',
@@ -195,47 +123,6 @@ export const generateMockFeedback = (scenarioId: string, duration: number): Sess
           category: 'Market Understanding',
           score: 4,
           comment: 'Demonstrated deep market knowledge.',
-        },
-      ],
-    },
-    'demo-day': {
-      landed: [
-        'Structured pitch with clear flow',
-        'Strong visual storytelling',
-        'Impressive team credentials',
-        'Large addressable market',
-      ],
-      gaps: [
-        'Revenue model needs more detail',
-        'Customer acquisition strategy unclear',
-      ],
-      decision: 'next-meeting',
-      overall: 'Excellent structure and delivery. Your team slide was particularly strong. To move forward, we\'d want to dig deeper into how you\'re planning to monetize and scale customer acquisition.',
-      items: [
-        {
-          category: 'Pitch Structure',
-          score: 5,
-          comment: 'Well-organised, hit all key points in time.',
-        },
-        {
-          category: 'Team Credentials',
-          score: 5,
-          comment: 'Impressive backgrounds directly relevant to problem.',
-        },
-        {
-          category: 'Market Opportunity',
-          score: 4,
-          comment: 'Large TAM well-supported with data.',
-        },
-        {
-          category: 'Business Model',
-          score: 3,
-          comment: 'Revenue model needs more specificity.',
-        },
-        {
-          category: 'Q&A Handling',
-          score: 4,
-          comment: 'Responded confidently to questions.',
         },
       ],
     },
@@ -283,7 +170,7 @@ export const generateMockFeedback = (scenarioId: string, duration: number): Sess
     },
   };
 
-  const baseTemplate = feedbackMap[scenarioId] || feedbackMap.networking;
+  const baseTemplate = feedbackMap[scenarioId] || feedbackMap['first-coffee'];
 
   return {
     landed: baseTemplate.landed || [],

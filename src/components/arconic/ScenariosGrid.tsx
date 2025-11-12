@@ -31,13 +31,13 @@ export const ScenariosGrid = ({ scenarios, selectedId, onSelect }: ScenariosGrid
         case 'ArrowDown':
           e.preventDefault();
           // Move down by calculating next row (depends on grid cols)
-          const cols = window.innerWidth >= 1025 ? 4 : window.innerWidth >= 481 ? 2 : 1;
+          const cols = window.innerWidth >= 768 ? 2 : 1;
           nextIndex = Math.min(currentIndex + cols, scenarios.length - 1);
           break;
         case 'ArrowUp':
           e.preventDefault();
           // Move up by calculating previous row
-          const colsUp = window.innerWidth >= 1025 ? 4 : window.innerWidth >= 481 ? 2 : 1;
+          const colsUp = window.innerWidth >= 768 ? 2 : 1;
           nextIndex = Math.max(currentIndex - colsUp, 0);
           break;
         default:
@@ -61,7 +61,7 @@ export const ScenariosGrid = ({ scenarios, selectedId, onSelect }: ScenariosGrid
       ref={gridRef}
       role="radiogroup"
       aria-label="Practice scenarios"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto"
     >
       {scenarios.map((scenario) => (
         <ScenarioCard

@@ -297,8 +297,8 @@ export const ArconicSimulator = () => {
           {/* Hero section */}
           <div className="mb-8 text-center space-y-4">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-              <Mic className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Pitch Practice</span>
+              <Mic className="w-4 h-4 text-foreground" />
+              <span className="text-sm font-medium text-foreground">Pitch Practice</span>
             </div>
             <h1 className="text-5xl font-bold tracking-tight">
               Master Your Pitch. Raise with Confidence.
