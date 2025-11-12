@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -937,6 +938,40 @@ const MetricBenchmarks = () => {
   const [industry, setIndustry] = useState('SaaS');
   const [stage, setStage] = useState('Seed');
   const [metrics, setMetrics] = useState<Record<string, string>>({});
+
+  // Auto-save when user enters metrics
+  const lastSavedRef = useRef<string>('');
+  useEffect(() => {
+    const saveMetrics = async () => {
+      // Only save if metrics have been entered
+      if (Object.keys(metrics).length === 0) return;
+
+      const metricsHash = JSON.stringify({ industry, stage, metrics });
+      if (metricsHash === lastSavedRef.current) return;
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        await supabase.from('saved_calculations').insert({
+          user_id: user.id,
+          tool_type: 'benchmarks',
+          title: `${industry} ${stage} Benchmarks`,
+          calculation_data: {
+            industry,
+            stage,
+            metrics,
+          },
+        });
+
+        lastSavedRef.current = metricsHash;
+      } catch (error) {
+        console.error('Error saving benchmark metrics:', error);
+      }
+    };
+
+    saveMetrics();
+  }, [industry, stage, metrics]);
 
   const isInverseMetric = (metricName: string) => {
     return metricName.toLowerCase().includes('churn') || metricName.toLowerCase().includes('payback');

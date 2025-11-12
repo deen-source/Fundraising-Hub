@@ -107,6 +107,7 @@ const TermSheetChecker = () => {
           user_id: user.id,
           term_sheet_text: termSheetText,
           analysis_result: data.analysis,
+          tool_type: 'term_sheet'
         });
       }
 

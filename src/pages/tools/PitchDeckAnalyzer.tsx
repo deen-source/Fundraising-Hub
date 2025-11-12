@@ -45,6 +45,7 @@ const PitchDeckAnalyser = () => {
         .from('term_sheet_analyses')
         .select('*')
         .eq('user_id', user.id)
+        .eq('tool_type', 'pitch_deck')
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -128,7 +129,8 @@ const PitchDeckAnalyser = () => {
         .insert({
           user_id: user.id,
           term_sheet_text: deckContent.substring(0, 1000), // Store preview
-          analysis_result: data.analysis
+          analysis_result: data.analysis,
+          tool_type: 'pitch_deck'
         });
 
       if (saveError) {

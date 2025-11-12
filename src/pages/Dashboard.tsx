@@ -142,6 +142,9 @@ const Dashboard = () => {
   const [savedCalculations, setSavedCalculations] = useState<any[]>([]);
   const [termSheetAnalyses, setTermSheetAnalyses] = useState<any[]>([]);
   const [investorCount, setInvestorCount] = useState(0);
+  const [forumActivityCount, setForumActivityCount] = useState(0);
+  const [practiceSessionCount, setPracticeSessionCount] = useState(0);
+  const [dataRoomDocCount, setDataRoomDocCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [currentStage, setCurrentStage] = useState('preparation');
 
@@ -158,7 +161,7 @@ const Dashboard = () => {
       .select('full_name')
       .eq('id', user.id)
       .single();
-    
+
     setUserName(profile?.full_name || user.email?.split('@')[0] || 'Founder');
 
     const { data: calculations } = await supabase
@@ -169,6 +172,7 @@ const Dashboard = () => {
 
     if (calculations) setSavedCalculations(calculations);
 
+    // Load all analyses (both pitch deck and term sheet)
     const { data: analyses } = await supabase
       .from('term_sheet_analyses')
       .select('*')
@@ -188,6 +192,40 @@ const Dashboard = () => {
       setInvestorCount(investorCount);
     }
 
+    // Load forum activity (posts + votes)
+    const { count: postsCount } = await supabase
+      .from('forum_posts')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    const { count: votesCount } = await supabase
+      .from('forum_votes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    const totalForumActivity = (postsCount || 0) + (votesCount || 0);
+    setForumActivityCount(totalForumActivity);
+
+    // Load practice sessions count
+    const { count: practiceCount } = await supabase
+      .from('practice_sessions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    if (practiceCount && practiceCount > 0) {
+      setPracticeSessionCount(practiceCount);
+    }
+
+    // Load data room documents count
+    const { count: dataRoomCount } = await supabase
+      .from('data_room_documents')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    if (dataRoomCount && dataRoomCount > 0) {
+      setDataRoomDocCount(dataRoomCount);
+    }
+
     setLoading(false);
   };
 
@@ -199,17 +237,17 @@ const Dashboard = () => {
   // Calculate completion status
   const completionStatus = {
     hasInvestors: investorCount > 0,
-    hasDataRoom: savedCalculations.some(c => c.tool_type === 'data_room'),
-    hasTemplates: true, // Templates are always available
-    hasPitchDeck: termSheetAnalyses.length > 0,
+    hasDataRoom: dataRoomDocCount > 0,
+    hasTemplates: savedCalculations.some(c => c.tool_type === 'document_templates'),
+    hasPitchDeck: termSheetAnalyses.some((a: any) => a.tool_type === 'pitch_deck'),
     hasValuation: savedCalculations.some(c => c.tool_type === 'valuation'),
     hasBenchmarks: savedCalculations.some(c => c.tool_type === 'benchmarks'),
     hasCapTable: savedCalculations.some(c => c.tool_type === 'cap_table'),
     hasDilution: savedCalculations.some(c => c.tool_type === 'dilution'),
     hasSafe: savedCalculations.some(c => c.tool_type === 'safe'),
-    hasTermSheet: termSheetAnalyses.length > 0,
-    hasPractice: savedCalculations.some(c => c.tool_type === 'practice_pitching'),
-    hasForum: true, // Forum is always available
+    hasTermSheet: termSheetAnalyses.some((a: any) => a.tool_type === 'term_sheet'),
+    hasPractice: practiceSessionCount > 0,
+    hasForum: forumActivityCount > 0,
   };
 
   const stageCompletion = {

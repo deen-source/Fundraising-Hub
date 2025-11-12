@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -119,6 +120,42 @@ const DilutionCalculator = () => {
   };
 
   const results = calculateDilution();
+
+  // Auto-save calculation when results change
+  const lastSavedRef = useRef<string>('');
+  useEffect(() => {
+    const saveCalculation = async () => {
+      if (!results || results.length === 0) return;
+
+      const resultHash = JSON.stringify(results);
+      if (resultHash === lastSavedRef.current) return;
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        await supabase.from('saved_calculations').insert({
+          user_id: user.id,
+          tool_type: 'dilution',
+          title: `Dilution Analysis - ${rounds.length} Round(s)`,
+          calculation_data: {
+            initialOwnership,
+            optionPool,
+            optionPoolTiming,
+            includeOptionPool,
+            rounds,
+            results,
+          },
+        });
+
+        lastSavedRef.current = resultHash;
+      } catch (error) {
+        console.error('Error saving dilution calculation:', error);
+      }
+    };
+
+    saveCalculation();
+  }, [results]);
 
   return (
     <AuthGuard>

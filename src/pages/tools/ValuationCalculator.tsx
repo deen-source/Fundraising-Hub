@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -191,6 +192,44 @@ const ValuationCalculator = () => {
       default: return DollarSign;
     }
   };
+
+  // Auto-save calculation when result changes
+  const lastSavedRef = useRef<string>('');
+  useEffect(() => {
+    const saveCalculation = async () => {
+      const result = revenueResult || dcfResult || comparableResult || vcResult;
+      if (!result) return;
+
+      // Create a hash of the result to prevent duplicate saves
+      const resultHash = JSON.stringify(result);
+      if (resultHash === lastSavedRef.current) return;
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        await supabase.from('saved_calculations').insert({
+          user_id: user.id,
+          tool_type: 'valuation',
+          title: `${method.charAt(0).toUpperCase() + method.slice(1).replace('-', ' ')} Valuation`,
+          calculation_data: {
+            method,
+            result,
+            inputs: method === 'revenue-multiple' ? { revenue, growthRate, industry, profitMargin } :
+                    method === 'dcf' ? { projectedRevenue, discountRate, terminalGrowthRate, ebitdaMargin } :
+                    method === 'comparable' ? { comparableValuations, comparableRevenue, yourRevenue } :
+                    { exitValuation, yearsToExit, targetReturn, investmentAmount },
+          },
+        });
+
+        lastSavedRef.current = resultHash;
+      } catch (error) {
+        console.error('Error saving valuation calculation:', error);
+      }
+    };
+
+    saveCalculation();
+  }, [revenueResult, dcfResult, comparableResult, vcResult, method]);
 
   const MethodIcon = getMethodIcon(method);
 

@@ -125,7 +125,7 @@ const DocumentTemplates = () => {
     setCopied(false);
   };
 
-  const handleCopyTemplate = () => {
+  const handleCopyTemplate = async () => {
     if (selectedTemplate?.content) {
       navigator.clipboard.writeText(selectedTemplate.content);
       setCopied(true);
@@ -134,10 +134,29 @@ const DocumentTemplates = () => {
         description: 'Template copied to clipboard',
       });
       setTimeout(() => setCopied(false), 2000);
+
+      // Track template usage
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('saved_calculations').insert({
+            user_id: user.id,
+            tool_type: 'document_templates',
+            title: `Copied: ${selectedTemplate.name}`,
+            calculation_data: {
+              template_id: selectedTemplate.id,
+              template_name: selectedTemplate.name,
+              action: 'copy',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error tracking template usage:', error);
+      }
     }
   };
 
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
     if (selectedTemplate?.content) {
       const blob = new Blob([selectedTemplate.content], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);
@@ -148,11 +167,30 @@ const DocumentTemplates = () => {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      
+
       toast({
         title: 'Downloaded',
         description: 'Template downloaded successfully',
       });
+
+      // Track template usage
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('saved_calculations').insert({
+            user_id: user.id,
+            tool_type: 'document_templates',
+            title: `Downloaded: ${selectedTemplate.name}`,
+            calculation_data: {
+              template_id: selectedTemplate.id,
+              template_name: selectedTemplate.name,
+              action: 'download',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error tracking template usage:', error);
+      }
     }
   };
 

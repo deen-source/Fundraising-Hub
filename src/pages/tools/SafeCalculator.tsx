@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -130,9 +131,42 @@ const SafeCalculator = () => {
 
   const result = calculateConversion();
   const comparisons = getAllComparisons();
-  const bestDeal = comparisons.reduce((best, curr) => 
+  const bestDeal = comparisons.reduce((best, curr) =>
     curr.ownership > best.ownership ? curr : best
   , comparisons[0] || { type: '', ownership: 0 });
+
+  // Auto-save calculation when result changes
+  const lastSavedRef = useRef<string>('');
+  useEffect(() => {
+    const saveCalculation = async () => {
+      if (!result) return;
+
+      const resultHash = JSON.stringify(result);
+      if (resultHash === lastSavedRef.current) return;
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        await supabase.from('saved_calculations').insert({
+          user_id: user.id,
+          tool_type: 'safe',
+          title: `SAFE ${safeType} Calculation`,
+          calculation_data: {
+            safeType,
+            inputs: { investmentAmount, valuationCap, discount, pricePerShare, preMoneyValuation },
+            result,
+          },
+        });
+
+        lastSavedRef.current = resultHash;
+      } catch (error) {
+        console.error('Error saving SAFE calculation:', error);
+      }
+    };
+
+    saveCalculation();
+  }, [result, safeType]);
 
   return (
     <AuthGuard>
