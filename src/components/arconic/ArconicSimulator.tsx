@@ -4,7 +4,7 @@ import { AppState, Scenario, SessionFeedback } from '@/types/arconic-simulator';
 import { SCENARIOS, AVATARS } from '@/data/arconic-data';
 import { analytics } from '@/lib/arconic-analytics';
 import { generateSessionFeedbackWithDelay } from '@/lib/feedback-service';
-import { canStartSession, recordSessionStart, getTodaySessionCount } from '@/lib/practice-session-service';
+import { canStartSession, recordSessionStart, getTodaySessionCount, ENABLE_SESSION_LIMITS } from '@/lib/practice-session-service';
 import { supabase } from '@/integrations/supabase/client';
 import { Hero } from './Hero';
 import { ScenariosGrid } from './ScenariosGrid';
@@ -359,16 +359,16 @@ export const ArconicSimulator = () => {
             </p>
           </div>
 
-          {/* Session Limit Banner */}
-          {!isLoadingLimits && (
+          {/* Session Limit Banner - only show if limits are enabled */}
+          {ENABLE_SESSION_LIMITS && !isLoadingLimits && (
             <SessionLimitBanner
               sessionsUsed={sessionsUsedToday}
               onRefresh={refreshSessionCount}
             />
           )}
 
-          {/* Scenarios section - only show if under limit */}
-          {sessionsUsedToday < 4 ? (
+          {/* Scenarios section - only show if under limit OR if limits are disabled */}
+          {!ENABLE_SESSION_LIMITS || sessionsUsedToday < 4 ? (
             <div className="space-y-6">
               <div className="text-center">
                 <h2 className="text-xl font-semibold mb-4">Choose Your Scenario</h2>

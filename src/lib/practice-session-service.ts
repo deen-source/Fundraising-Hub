@@ -2,10 +2,19 @@ import { supabase } from '@/integrations/supabase/client';
 
 const DAILY_SESSION_LIMIT = 4;
 
+// Feature flag to disable session limits for testing
+// Set to false to bypass all session limit checks
+export const ENABLE_SESSION_LIMITS = false; // TODO: Set back to true after testing
+
 /**
  * Get the count of sessions started today (since midnight UTC)
  */
 export async function getTodaySessionCount(userId: string): Promise<number> {
+  // If limits are disabled, always return 0
+  if (!ENABLE_SESSION_LIMITS) {
+    return 0;
+  }
+
   try {
     const todayStart = new Date();
     todayStart.setUTCHours(0, 0, 0, 0);
@@ -32,6 +41,15 @@ export async function getTodaySessionCount(userId: string): Promise<number> {
  * Check if user can start a new session (under daily limit)
  */
 export async function canStartSession(userId: string): Promise<{ allowed: boolean; count: number; remaining: number }> {
+  // If limits are disabled, always allow
+  if (!ENABLE_SESSION_LIMITS) {
+    return {
+      allowed: true,
+      count: 0,
+      remaining: 999,
+    };
+  }
+
   const count = await getTodaySessionCount(userId);
   const remaining = Math.max(0, DAILY_SESSION_LIMIT - count);
   const allowed = count < DAILY_SESSION_LIMIT;
@@ -48,6 +66,12 @@ export async function canStartSession(userId: string): Promise<{ allowed: boolea
  * Returns the session ID if successful
  */
 export async function recordSessionStart(userId: string, scenarioId: string): Promise<string | null> {
+  // If limits are disabled, skip recording for testing
+  if (!ENABLE_SESSION_LIMITS) {
+    console.log('[SessionService] Session limits disabled - skipping database recording');
+    return 'test-session-id';
+  }
+
   try {
     const { data, error } = await supabase
       .from('practice_sessions')
