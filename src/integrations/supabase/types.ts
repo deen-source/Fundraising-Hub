@@ -554,6 +554,36 @@ export type Database = {
         }
         Relationships: []
       }
+      practice_sessions: {
+        Row: {
+          created_at: string | null
+          duration: number
+          feedback: Json
+          id: string
+          scenario_id: string
+          transcript: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration?: number
+          feedback?: Json
+          id?: string
+          scenario_id: string
+          transcript?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration?: number
+          feedback?: Json
+          id?: string
+          scenario_id?: string
+          transcript?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -689,10 +719,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_share_token: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_share_token: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never

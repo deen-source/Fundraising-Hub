@@ -4,6 +4,8 @@ import { AppState, Scenario, SessionFeedback } from '@/types/arconic-simulator';
 import { SCENARIOS, AVATARS } from '@/data/arconic-data';
 import { analytics } from '@/lib/arconic-analytics';
 import { generateSessionFeedbackWithDelay } from '@/lib/feedback-service';
+import { canStartSession, recordSessionStart, getTodaySessionCount } from '@/lib/practice-session-service';
+import { supabase } from '@/integrations/supabase/client';
 import { Hero } from './Hero';
 import { ScenariosGrid } from './ScenariosGrid';
 import { SceneIntro } from './SceneIntro';
@@ -12,6 +14,7 @@ import { SessionBar } from './SessionBar';
 import { ActiveSessionView } from './ActiveSessionView';
 import { AnalyzingLoader } from './AnalyzingLoader';
 import { FeedbackPanel } from './FeedbackPanel';
+import { SessionLimitBanner } from './SessionLimitBanner';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Mic } from 'lucide-react';
 
@@ -32,6 +35,33 @@ export const ArconicSimulator = () => {
 
   // Feedback state
   const [sessionFeedback, setSessionFeedback] = useState<SessionFeedback | null>(null);
+
+  // Session limit state
+  const [sessionsUsedToday, setSessionsUsedToday] = useState<number>(0);
+  const [isLoadingLimits, setIsLoadingLimits] = useState(true);
+
+  // Load session count on mount
+  useEffect(() => {
+    const loadSessionCount = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const count = await getTodaySessionCount(user.id);
+        setSessionsUsedToday(count);
+      }
+      setIsLoadingLimits(false);
+    };
+
+    loadSessionCount();
+  }, []);
+
+  // Refresh session count function
+  const refreshSessionCount = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const count = await getTodaySessionCount(user.id);
+      setSessionsUsedToday(count);
+    }
+  };
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -117,8 +147,29 @@ export const ArconicSimulator = () => {
   };
 
   // Handle session start
-  const handleSessionStart = () => {
+  const handleSessionStart = async () => {
     if (!selectedScenarioId || !selectedScenario) return;
+
+    // Check session limit before starting
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('[Arconic] No user found');
+      return;
+    }
+
+    const limitCheck = await canStartSession(user.id);
+    if (!limitCheck.allowed) {
+      console.warn('[Arconic] Daily session limit reached');
+      setIsIntroOpen(false);
+      announceToScreenReader('Daily session limit reached. Please try again tomorrow.');
+      return;
+    }
+
+    // Record session start in database
+    await recordSessionStart(user.id, selectedScenarioId);
+
+    // Update local count
+    setSessionsUsedToday(prev => prev + 1);
 
     setIsIntroOpen(false);
     setIsSessionActive(true);
@@ -308,18 +359,28 @@ export const ArconicSimulator = () => {
             </p>
           </div>
 
-          {/* Scenarios section */}
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-4">Choose Your Scenario</h2>
-            </div>
-
-            <ScenariosGrid
-              scenarios={SCENARIOS}
-              selectedId={selectedScenarioId}
-              onSelect={handleScenarioSelect}
+          {/* Session Limit Banner */}
+          {!isLoadingLimits && (
+            <SessionLimitBanner
+              sessionsUsed={sessionsUsedToday}
+              onRefresh={refreshSessionCount}
             />
-          </div>
+          )}
+
+          {/* Scenarios section - only show if under limit */}
+          {sessionsUsedToday < 4 ? (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-xl font-semibold mb-4">Choose Your Scenario</h2>
+              </div>
+
+              <ScenariosGrid
+                scenarios={SCENARIOS}
+                selectedId={selectedScenarioId}
+                onSelect={handleScenarioSelect}
+              />
+            </div>
+          ) : null}
 
           {/* Confidence statistic */}
           <div className="mt-8 py-6 px-6 border rounded-lg text-center">
