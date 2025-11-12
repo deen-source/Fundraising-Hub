@@ -113,7 +113,7 @@ export const FeedbackPanel = ({
             </div>
             <p className="text-xs text-muted-foreground">{item.comment}</p>
             {item.highlight && (
-              <p className="text-xs text-primary italic">"{item.highlight}"</p>
+              <p className="text-xs text-foreground italic">"{item.highlight}"</p>
             )}
           </div>
         ))}

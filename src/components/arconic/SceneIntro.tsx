@@ -79,7 +79,7 @@ export const SceneIntro = ({
         <ul className="space-y-2 text-sm text-muted-foreground">
           {scenario.bullets.map((bullet, index) => (
             <li key={index} className="flex gap-2 items-start">
-              <Check className="w-4 h-4 mt-0.5 text-primary flex-shrink-0" />
+              <Check className="w-4 h-4 mt-0.5 text-foreground flex-shrink-0" />
               <span>{bullet}</span>
             </li>
           ))}
@@ -116,14 +116,14 @@ export const SceneIntro = ({
             className="gap-2"
           >
             {micPermission === 'granted' ? (
-              <Mic className="w-4 h-4 text-primary" />
+              <Mic className="w-4 h-4 text-foreground" />
             ) : (
               <MicOff className="w-4 h-4 text-destructive" />
             )}
             {micTesting ? 'Testing...' : 'Test Mic'}
           </Button>
           {micPermission === 'granted' && (
-            <span className="text-sm text-primary flex items-center gap-1">
+            <span className="text-sm text-foreground flex items-center gap-1 font-medium">
               <Check className="w-4 h-4" />
               Ready
             </span>

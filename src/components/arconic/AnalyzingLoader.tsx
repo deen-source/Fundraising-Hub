@@ -46,14 +46,14 @@ export const AnalyzingLoader = ({ scenarioTitle }: AnalyzingLoaderProps) => {
         <div className="flex justify-center">
           <div className="relative">
             {/* Spinning loader */}
-            <Loader2 className="w-16 h-16 text-primary animate-spin" />
+            <Loader2 className="w-16 h-16 text-foreground animate-spin" />
 
             {/* Pulsing sparkles */}
             <div className="absolute -top-2 -right-2">
-              <Sparkles className="w-6 h-6 text-primary animate-pulse" />
+              <Sparkles className="w-6 h-6 text-foreground animate-pulse" />
             </div>
             <div className="absolute -bottom-2 -left-2">
-              <Target className="w-5 h-5 text-primary/60 animate-pulse delay-75" />
+              <Target className="w-5 h-5 text-muted-foreground animate-pulse delay-75" />
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ export const AnalyzingLoader = ({ scenarioTitle }: AnalyzingLoaderProps) => {
         <div className="space-y-2">
           <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-300 ease-out"
+              className="h-full bg-foreground transition-all duration-300 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -93,19 +93,19 @@ export const AnalyzingLoader = ({ scenarioTitle }: AnalyzingLoaderProps) => {
         {/* Feature highlights */}
         <div className="grid grid-cols-3 gap-4 pt-4">
           <div className="flex flex-col items-center gap-2 p-3 rounded-lg bg-muted/30">
-            <TrendingUp className="w-5 h-5 text-primary" />
+            <TrendingUp className="w-5 h-5 text-foreground" />
             <span className="text-xs text-center text-muted-foreground">
               Strengths
             </span>
           </div>
           <div className="flex flex-col items-center gap-2 p-3 rounded-lg bg-muted/30">
-            <Target className="w-5 h-5 text-primary" />
+            <Target className="w-5 h-5 text-foreground" />
             <span className="text-xs text-center text-muted-foreground">
               Areas to Improve
             </span>
           </div>
           <div className="flex flex-col items-center gap-2 p-3 rounded-lg bg-muted/30">
-            <Sparkles className="w-5 h-5 text-primary" />
+            <Sparkles className="w-5 h-5 text-foreground" />
             <span className="text-xs text-center text-muted-foreground">
               Next Steps
             </span>

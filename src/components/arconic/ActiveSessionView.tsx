@@ -70,8 +70,8 @@ export const ActiveSessionView = ({
             {scenario.title}
           </h2>
           <div className="flex items-center justify-center gap-2">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            <span className="text-sm text-primary font-medium">Live Session</span>
+            <div className="w-2 h-2 bg-foreground rounded-full animate-pulse" />
+            <span className="text-sm text-foreground font-medium">Live Session</span>
           </div>
         </div>
 
@@ -81,24 +81,24 @@ export const ActiveSessionView = ({
             <img
               src={avatar.imageSrc}
               alt={avatar.name}
-              className="w-32 h-32 rounded-full object-cover border-4 border-primary/20 shadow-lg"
+              className="w-32 h-32 rounded-full object-cover border-4 border-border shadow-lg"
             />
             {/* Status indicator on avatar */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-background px-3 py-1 rounded-full border-2 border-primary/20 shadow-md transition-all duration-200">
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-background px-3 py-1 rounded-full border-2 border-border shadow-md transition-all duration-200">
               <div className="flex items-center gap-2">
                 {isSpeaking ? (
                   <>
-                    <Volume2 className="w-3 h-3 text-primary animate-pulse" />
+                    <Volume2 className="w-3 h-3 text-foreground animate-pulse" />
                     <span className="text-xs font-medium text-foreground">Speaking</span>
                   </>
                 ) : isConnected ? (
                   <>
-                    <Mic className="w-3 h-3 text-primary" />
+                    <Mic className="w-3 h-3 text-foreground" />
                     <span className="text-xs font-medium text-foreground">Listening</span>
                   </>
                 ) : (
                   <>
-                    <div className="w-3 h-3 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                    <div className="w-3 h-3 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin" />
                     <span className="text-xs font-medium text-muted-foreground">Processing...</span>
                   </>
                 )}
@@ -115,7 +115,7 @@ export const ActiveSessionView = ({
                 <div
                   key={i}
                   className={cn(
-                    'w-1 rounded-full bg-primary transition-all duration-150',
+                    'w-1 rounded-full bg-foreground transition-all duration-150',
                     isSpeaking ? 'opacity-100' : 'opacity-40'
                   )}
                   style={{
@@ -141,7 +141,7 @@ export const ActiveSessionView = ({
           <div ref={scrollContainerRef} className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-primary" />
+                <MessageSquare className="w-4 h-4 text-foreground" />
                 <h3 className="text-sm font-medium text-foreground">Live Transcript</h3>
               </div>
               <Button
@@ -163,7 +163,7 @@ export const ActiveSessionView = ({
                     <div key={idx} className="text-sm">
                       <span className={cn(
                         "font-medium",
-                        msg.role === 'user' ? 'text-primary' : 'text-secondary-foreground'
+                        msg.role === 'user' ? 'text-foreground' : 'text-secondary-foreground'
                       )}>
                         {msg.role === 'user' ? 'You:' : `${avatar.name}:`}
                       </span>
