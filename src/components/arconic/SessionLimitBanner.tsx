@@ -18,7 +18,7 @@ export const SessionLimitBanner = ({ sessionsUsed, onRefresh }: SessionLimitBann
   if (remaining <= 0) {
     return (
       <div className="w-full max-w-4xl mx-auto px-4 py-8">
-        <Card className="p-8 text-center space-y-6 border-2 border-muted">
+        <Card className="p-8 text-center space-y-6 border border-muted">
           <div className="flex justify-center">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
               <X className="w-8 h-8 text-muted-foreground" />
@@ -28,28 +28,18 @@ export const SessionLimitBanner = ({ sessionsUsed, onRefresh }: SessionLimitBann
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-foreground">Daily Limit Reached</h2>
             <p className="text-lg text-muted-foreground">
-              You've completed {sessionsUsed} practice sessions today
+              You've completed {sessionsUsed} sessions today
             </p>
           </div>
 
-          <div className="bg-muted/30 rounded-lg p-4 space-y-2">
-            <p className="text-sm text-foreground">
-              Come back tomorrow to continue practicing!
-            </p>
-            <p className="text-xs text-muted-foreground">
+          <div className="bg-muted/30 rounded-lg p-4">
+            <p className="text-sm text-muted-foreground">
               Your limit resets in <span className="font-medium text-foreground">{formatTimeUntilReset()}</span>
             </p>
-            <p className="text-xs text-muted-foreground">
-              (Midnight UTC)
-            </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-            <Button variant="outline" onClick={onRefresh} className="gap-2">
-              <Info className="w-4 h-4" />
-              Check Status
-            </Button>
-            <Button onClick={() => navigate('/dashboard')} className="gap-2">
+          <div className="flex justify-center pt-4">
+            <Button onClick={() => navigate('/dashboard')}>
               Back to Dashboard
             </Button>
           </div>
