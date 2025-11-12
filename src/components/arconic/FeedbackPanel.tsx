@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Check, AlertTriangle, RotateCcw, ArrowRight, Clock } from 'lucide-react';
+import { Check, AlertTriangle, RotateCcw, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FeedbackPanelProps {
@@ -42,21 +42,11 @@ export const FeedbackPanel = ({
     return 'text-red-600 bg-red-50 border-red-200';
   };
 
-  const formatDuration = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}m ${secs}s`;
-  };
-
   const content = (
     <div className="space-y-6">
-      {/* Centered header with duration */}
+      {/* Centered header */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold text-foreground">Session Feedback</h2>
-        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-          <Clock className="w-4 h-4" />
-          <span>Session duration: {formatDuration(feedback.duration)}</span>
-        </div>
       </div>
 
       {/* Overall summary */}
@@ -112,9 +102,6 @@ export const FeedbackPanel = ({
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground">{item.comment}</p>
-            {item.highlight && (
-              <p className="text-xs text-foreground italic">"{item.highlight}"</p>
-            )}
           </div>
         ))}
       </div>
