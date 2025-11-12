@@ -34,6 +34,7 @@ const toolsByStage = {
       icon: DollarSign,
       path: '/tools/valuation',
       dataKey: 'hasValuation',
+      available: false,
     },
     {
       id: 'benchmarks',
@@ -42,6 +43,7 @@ const toolsByStage = {
       icon: TrendingUp,
       path: '/tools/benchmarks',
       dataKey: 'hasBenchmarks',
+      available: false,
     },
     {
       id: 'pitch-deck',
@@ -50,6 +52,7 @@ const toolsByStage = {
       icon: FileText,
       path: '/tools/pitch-deck',
       dataKey: 'hasPitchDeck',
+      available: false,
     },
     {
       id: 'document-templates',
@@ -58,6 +61,7 @@ const toolsByStage = {
       icon: FileStack,
       path: '/tools/document-templates',
       dataKey: 'hasTemplates',
+      available: false,
     },
     {
       id: 'practice-pitching',
@@ -66,6 +70,7 @@ const toolsByStage = {
       icon: Mic,
       path: '/tools/practice-pitching',
       dataKey: 'hasPractice',
+      available: true,
     },
   ],
   structuring: [
@@ -76,6 +81,7 @@ const toolsByStage = {
       icon: Calculator,
       path: '/tools/safe-calculator',
       dataKey: 'hasSafe',
+      available: false,
     },
     {
       id: 'cap-table',
@@ -84,6 +90,7 @@ const toolsByStage = {
       icon: PieChart,
       path: '/tools/cap-table',
       dataKey: 'hasCapTable',
+      available: false,
     },
     {
       id: 'dilution',
@@ -92,6 +99,7 @@ const toolsByStage = {
       icon: BarChart3,
       path: '/tools/dilution',
       dataKey: 'hasDilution',
+      available: false,
     },
     {
       id: 'term-sheet',
@@ -100,6 +108,7 @@ const toolsByStage = {
       icon: FileCheck,
       path: '/tools/term-sheet',
       dataKey: 'hasTermSheet',
+      available: false,
     },
   ],
   active: [
@@ -110,6 +119,7 @@ const toolsByStage = {
       icon: Users,
       path: '/investor-crm',
       dataKey: 'hasInvestors',
+      available: false,
     },
     {
       id: 'data-room',
@@ -118,6 +128,7 @@ const toolsByStage = {
       icon: FolderOpen,
       path: '/tools/data-room',
       dataKey: 'hasDataRoom',
+      available: false,
     },
     {
       id: 'forum',
@@ -126,6 +137,7 @@ const toolsByStage = {
       icon: MessageSquare,
       path: '/forum',
       dataKey: 'hasForum',
+      available: false,
     },
   ],
 };
@@ -250,10 +262,23 @@ const Dashboard = () => {
     hasForum: forumActivityCount > 0,
   };
 
+  // Only count available tools in completion calculation
   const stageCompletion = {
-    preparation: toolsByStage.preparation.filter(t => completionStatus[t.dataKey]).length / toolsByStage.preparation.length * 100,
-    structuring: toolsByStage.structuring.filter(t => completionStatus[t.dataKey]).length / toolsByStage.structuring.length * 100,
-    active: toolsByStage.active.filter(t => completionStatus[t.dataKey]).length / toolsByStage.active.length * 100,
+    preparation: (() => {
+      const available = toolsByStage.preparation.filter(t => t.available !== false);
+      const completed = available.filter(t => completionStatus[t.dataKey]).length;
+      return available.length > 0 ? (completed / available.length * 100) : 0;
+    })(),
+    structuring: (() => {
+      const available = toolsByStage.structuring.filter(t => t.available !== false);
+      const completed = available.filter(t => completionStatus[t.dataKey]).length;
+      return available.length > 0 ? (completed / available.length * 100) : 0;
+    })(),
+    active: (() => {
+      const available = toolsByStage.active.filter(t => t.available !== false);
+      const completed = available.filter(t => completionStatus[t.dataKey]).length;
+      return available.length > 0 ? (completed / available.length * 100) : 0;
+    })(),
   };
 
   const overallCompletion = Math.round(
@@ -359,19 +384,29 @@ const Dashboard = () => {
                   {toolsByStage[stage.id].map((tool) => {
                     const Icon = tool.icon;
                     const isComplete = completionStatus[tool.dataKey];
-                    
+                    const isAvailable = tool.available !== false;
+
                     return (
                       <Card
                         key={tool.id}
-                        className="group hover:shadow-md transition-all duration-300 border-2 cursor-pointer relative"
-                        onClick={() => navigate(tool.path)}
+                        className={`group transition-all duration-300 border-2 relative ${
+                          isAvailable
+                            ? 'hover:shadow-md cursor-pointer'
+                            : 'opacity-60 cursor-not-allowed'
+                        }`}
+                        onClick={() => isAvailable && navigate(tool.path)}
                       >
-                        {isComplete && (
+                        {!isAvailable && (
+                          <div className="absolute top-3 right-3">
+                            <Badge variant="secondary" className="text-xs">Coming Soon</Badge>
+                          </div>
+                        )}
+                        {isComplete && isAvailable && (
                           <div className="absolute top-3 right-3">
                             <span className="text-sm">✓</span>
                           </div>
                         )}
-                        
+
                         <CardHeader>
                           <CardTitle className="text-base">{tool.title}</CardTitle>
                           <CardDescription className="mt-2">{tool.description}</CardDescription>
