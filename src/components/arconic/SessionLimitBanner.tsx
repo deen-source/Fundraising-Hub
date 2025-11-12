@@ -20,8 +20,8 @@ export const SessionLimitBanner = ({ sessionsUsed, onRefresh }: SessionLimitBann
       <div className="w-full max-w-4xl mx-auto px-4 py-8">
         <Card className="p-8 text-center space-y-6 border border-muted">
           <div className="flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-              <X className="w-8 h-8 text-muted-foreground" />
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+              <X className="w-5 h-5 text-muted-foreground" />
             </div>
           </div>
 
@@ -32,10 +32,12 @@ export const SessionLimitBanner = ({ sessionsUsed, onRefresh }: SessionLimitBann
             </p>
           </div>
 
-          <div className="bg-muted/30 rounded-lg p-4">
-            <p className="text-sm text-muted-foreground">
-              Your limit resets in <span className="font-medium text-foreground">{formatTimeUntilReset()}</span>
-            </p>
+          <div className="flex justify-center">
+            <div className="bg-muted/30 rounded-lg px-4 py-3 inline-block">
+              <p className="text-sm text-muted-foreground">
+                Your limit resets in <span className="font-medium text-foreground">{formatTimeUntilReset()}</span>
+              </p>
+            </div>
           </div>
 
           <div className="flex justify-center pt-4">
