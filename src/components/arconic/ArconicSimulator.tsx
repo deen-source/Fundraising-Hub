@@ -330,6 +330,13 @@ export const ArconicSimulator = () => {
               95% of speakers conquer nerves by rehearsing first. Start your next raise with certainty.
             </p>
           </div>
+
+          {/* Disclaimer */}
+          <div className="mt-8 py-4 px-6 text-center border-t">
+            <p className="text-xs text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              This is an AI-powered simulation for practice and educational purposes only. This is not financial, legal, or investment advice and does not consider your personal circumstances. Your voice conversations are processed securely by ElevenLabs. Always seek advice from a licensed professional for actual fundraising decisions.
+            </p>
+          </div>
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, Mic, MicOff, Volume2, MessageSquare, X, Minimize2 } from 'lucide-react';
@@ -31,6 +31,7 @@ export const ActiveSessionView = ({
   onEndSession,
 }: ActiveSessionViewProps) => {
   const [showTranscript, setShowTranscript] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Format time display
   const formatTime = (seconds: number): string => {
@@ -44,11 +45,18 @@ export const ActiveSessionView = ({
 
   // Auto-scroll transcript to bottom when new messages arrive
   useEffect(() => {
-    // ScrollArea uses a viewport wrapper, so we need to find it
-    const scrollContainer = document.querySelector('[data-radix-scroll-area-viewport]');
-    if (scrollContainer) {
-      scrollContainer.scrollTop = scrollContainer.scrollHeight;
-    }
+    if (!scrollContainerRef.current) return;
+
+    // Use setTimeout to ensure content is rendered before scrolling
+    const scrollTimeout = setTimeout(() => {
+      // ScrollArea uses a viewport wrapper, so we need to find it within our container
+      const scrollViewport = scrollContainerRef.current?.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollViewport) {
+        scrollViewport.scrollTop = scrollViewport.scrollHeight;
+      }
+    }, 100);
+
+    return () => clearTimeout(scrollTimeout);
   }, [transcript]);
 
   return (
@@ -130,7 +138,7 @@ export const ActiveSessionView = ({
 
         {/* Live transcript */}
         {showTranscript && transcript.length > 0 && (
-          <div className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm">
+          <div ref={scrollContainerRef} className="bg-card border border-border rounded-lg p-4 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-primary" />
