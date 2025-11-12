@@ -101,7 +101,6 @@ export const generateMockFeedback = (scenarioId: string, duration: number): Sess
         'Early traction numbers need more context',
         'Go-to-market strategy could be more specific',
       ],
-      decision: 'next-meeting',
       overall: 'Great chemistry and authentic passion for the problem. Your founding story resonated well. Next steps: bring more specificity around early signals and your distribution strategy.',
       items: [
         {
@@ -137,7 +136,6 @@ export const generateMockFeedback = (scenarioId: string, duration: number): Sess
         'Churn assumptions may be optimistic',
         'Customer concentration risk needs addressing',
       ],
-      decision: 'term-sheet',
       overall: 'Impressive command of your business fundamentals. Unit economics look sound with realistic assumptions. We\'d want to understand churn dynamics better and discuss customer concentration, but overall very strong diligence-ready presentation.',
       items: [
         {
@@ -175,7 +173,6 @@ export const generateMockFeedback = (scenarioId: string, duration: number): Sess
   return {
     landed: baseTemplate.landed || [],
     gaps: baseTemplate.gaps || [],
-    decision: baseTemplate.decision || 'next-meeting',
     overall: baseTemplate.overall || 'Good session overall.',
     items: baseTemplate.items || [],
     duration,

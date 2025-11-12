@@ -32,7 +32,6 @@ export interface FeedbackItem {
 export interface SessionFeedback {
   landed: string[];
   gaps: string[];
-  decision: 'pass' | 'next-meeting' | 'term-sheet' | 'pending';
   overall: string;
   items: FeedbackItem[];
   duration: number;

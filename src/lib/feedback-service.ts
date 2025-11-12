@@ -49,7 +49,7 @@ export async function generateSessionFeedback({
     const feedback: SessionFeedback = data.feedback;
 
     // Validate the feedback structure
-    if (!feedback.landed || !feedback.gaps || !feedback.decision || !feedback.overall || !feedback.items) {
+    if (!feedback.landed || !feedback.gaps || !feedback.overall || !feedback.items) {
       console.warn('[FeedbackService] Incomplete feedback structure:', feedback);
       return getFallbackFeedback(scenarioId, duration);
     }
@@ -101,7 +101,6 @@ function getFallbackFeedback(scenarioId: string, duration: number): SessionFeedb
         'Session was very short (< 45 seconds) - try a longer conversation for meaningful feedback',
         'Engage with the VC\'s questions and provide detailed responses about your startup',
       ],
-      decision: 'pending',
       overall: `This session was quite brief (${duration} seconds). For valuable feedback, aim for at least 2-3 minutes and engage substantively with the investor's questions about your problem, solution, market, and traction.`,
       items: [
         {
@@ -127,7 +126,6 @@ function getFallbackFeedback(scenarioId: string, duration: number): SessionFeedb
       'We encountered an error generating detailed feedback - please try again',
       'If this persists, there may be a technical issue with the feedback system',
     ],
-    decision: 'pending',
     overall: 'We had trouble analyzing your session due to a technical issue. Please try practicing again, and if you continue to see this message, contact support.',
     items: [
       {

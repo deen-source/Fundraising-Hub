@@ -84,10 +84,10 @@ class ArconicAnalytics {
   }
 
   // Feedback events
-  feedbackViewed(scenarioId: string, decision: string, score?: number): void {
+  feedbackViewed(scenarioId?: string, score?: number): void {
     this.log({
       event: ANALYTICS_EVENTS.FEEDBACK_VIEWED,
-      properties: { scenarioId, decision, score },
+      properties: { scenarioId, score },
     });
   }
 

@@ -5,41 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Feedback guidelines by scenario
-const getFeedbackGuidelines = (scenarioId: string): string => {
-  const guidelines = {
-    networking: `1) What landed (max 2 bullets) — tie each to a concrete anchor (noun/number/owner/time). Format: Anchor → why it works.
-2) Gaps to tighten (max 2 bullets) — each with a specific fix or next test. Format: Gap → concrete tweak or next test.
-3) Decision signal (one line, qualitative — choose one):
-   • Needs more work — one-liner unclear (who/what/outcome) and/or proof missing/undated.
-   • Well prepared — clear one-liner; specific target customer; proof with metric + owner + recent window; crisp "why now."
-   • Follow-up ready — all of the above plus compelling proof and timely "why now"; delivery crisp and conversational.`,
-
-    'first-coffee': `1) What landed (max 2 bullets) — tie each to a concrete anchor (noun/number/owner/time). Format: Anchor → why it works.
-2) Gaps to tighten (max 2 bullets) — each with a specific fix or next test. Format: Gap → concrete tweak or next test.
-3) Decision signal (one line, qualitative):
-   • Needs more work — narrative unclear and/or traction metric missing/undated.
-   • Well prepared — clear plain-English narrative; credible founder–market fit; one concrete traction metric with a recent window; market slice plausible.
-   • Follow-up ready — all of the above plus compelling early proof and crisp market framing; delivery natural and confident.`,
-
-    'demo-day': `1) What landed (max 2 bullets) — tie each to a concrete anchor (noun/number/owner/time). Format: Anchor → why it works.
-2) Gaps to tighten (max 2 bullets) — each with a specific fix or next test. Format: Gap → concrete tweak or next test.
-3) Decision signal (one line, qualitative):
-   • Needs more work — narrative unclear (who/what/outcome) and/or traction/market/team coverage thin; time use off.
-   • Well prepared — clear plain-English narrative; credible market framing; founder–market fit evident; one concrete traction metric with a recent window; good time discipline.
-   • Follow-up ready — all of the above plus compelling proof and crisp "why now"; confident Q&A.`,
-
-    'deep-dive': `1) What landed (max 2 bullets) — tie each to a concrete anchor (noun/number/owner/time). Format: Anchor → why it works.
-2) Gaps to tighten (max 2 bullets) — each with a specific fix or next test. Format: Gap → concrete tweak or next test.
-3) Decision signal (one line, qualitative):
-   • Needs more work — evidence thin or fragmented; buyer/budget or unit-economics unclear; repeatability unproven.
-   • Well prepared — coherent evidence; buyer/budget anchors; early repeatability; key risks named with mitigations.
-   • Partner-track — decision-grade evidence, crisp "why now," repeatable motion with owner, unit-econ sanity; risks bounded.`
-  };
-
-  return guidelines[scenarioId as keyof typeof guidelines] || guidelines.networking;
-};
-
 // Handle feedback analysis
 async function handleFeedbackAnalysis({ transcript, scenarioId, duration }: {
   transcript: Array<{ role: string; content: string; timestamp: number }>;
@@ -56,8 +21,11 @@ async function handleFeedbackAnalysis({ transcript, scenarioId, duration }: {
     .map(msg => `${msg.role === 'user' ? 'Founder' : 'VC'}: ${msg.content}`)
     .join('\n\n');
 
+  // Format duration as minutes:seconds
+  const formattedDuration = `${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')}`;
+
   // Log transcript for debugging
-  console.log(`[Feedback Analysis] Scenario: ${scenarioId}, Duration: ${duration}s, Transcript length: ${conversationText.length} chars, Message count: ${transcript.length}`);
+  console.log(`[Feedback Analysis] Scenario: ${scenarioId}, Duration: ${formattedDuration}, Transcript length: ${conversationText.length} chars, Message count: ${transcript.length}`);
 
   // Handle empty or insufficient transcripts early
   if (transcript.length === 0) {
@@ -65,10 +33,9 @@ async function handleFeedbackAnalysis({ transcript, scenarioId, duration }: {
     return new Response(
       JSON.stringify({
         feedback: {
+          overall: "Unable to analyse session: no conversation transcript was captured. Please ensure microphone permissions are granted and try again.",
           landed: ["Session started"],
-          gaps: ["No conversation content captured - check microphone permissions and try again"],
-          decision: "pending",
-          overall: "Unable to analyze session: no conversation transcript was captured. Please ensure microphone permissions are granted and try again.",
+          gaps: ["No conversation content captured – check microphone permissions and try again"],
           items: [
             {
               category: "Technical Issue",
@@ -87,67 +54,199 @@ async function handleFeedbackAnalysis({ transcript, scenarioId, duration }: {
     console.warn('[Feedback Analysis] WARNING: Very short transcript:', conversationText);
   }
 
-  const guidelines = getFeedbackGuidelines(scenarioId);
+  // Scenario-specific expectations
+  const scenarioContext = scenarioId === 'first-coffee'
+    ? 'Coffee expectations (2 min): Typically covers 2-3 core topics. Common: What it does, Founder-Market Fit, early Traction, Why Now. Strong if one concrete traction metric with time window.'
+    : 'Deep Dive expectations (5 min): Typically covers 5-7 topics with more depth. Look for evidence quality, repeatability, contradictions resolved, risk mitigation.';
 
-  const systemPrompt = `You are an experienced VC partner reviewing a pitch practice session. Evaluate the conversation using the same lens you'd use during a live investor meeting. Use British English spelling throughout your feedback.
+  const systemPrompt = `You are providing post-conversation feedback as the VC partner who just spoke with this founder. Your feedback should feel like a natural, constructive continuation of the conversation—you're reflecting on what you heard and offering supportive guidance to help them improve.
 
-${guidelines}
+CONVERSATION CONTEXT
+Scenario: ${scenarioId === 'first-coffee' ? 'First Coffee (2 min)' : 'Deep Dive (5 min)'}
+Duration: ${formattedDuration}
+Your role: Calm, curious, analytical VC partner using the Arc Coverage framework
 
-Apply these evaluation principles:
+TONE REQUIREMENTS (founder-first, constructive, encouraging)
+• Default to encouragement: start with what landed well
+• Frame gaps as opportunities, not failures
+• Suggest concrete next steps, not just criticism
+• Assume good intent; be supportive and warm
+• Remember: they're practising, not pitching for real investment
+• Celebrate articulation improvements and specific anchors
+• Use British English spelling throughout (analyse, organise, realise)
 
-1. **Tie feedback to concrete anchors** — Always reference the specific nouns, numbers, owners, and timeframes the founder actually mentioned (or failed to mention). If a founder cites metrics without context (customer count with no timeframe, revenue with no growth rate), flag that specifically. Use British English spelling (e.g., 'analyse', 'organise', 'realise').
+EVALUATION FRAMEWORK
 
-2. **Evaluate what's present AND what's missing** — If the founder didn't address buyer/budget, unit economics, or key risks when prompted by the VC, call that out specifically.
+Assess only the topics that came up during this conversation using three lenses:
 
-3. **Use the founder's own language** — Quote or paraphrase what they actually said in this conversation. Never use generic observations like "engaged in conversation" or "completed the session."
+1. COVERAGE (breadth): Which Arc topics did the founder discuss?
+2. SUFFICIENCY (depth): For each topic, did they provide all three elements?
+   • Clear claim (what's being asserted)
+   • Concrete anchor (noun/number/owner/time window)
+   • Support (evidence/mechanism OR next test with timing)
+3. QUALITY (specificity): How concrete and specific were their anchors?
 
-4. **Score based on substance, not effort**:
-   - 5 = Decision-grade: specific data, clear mechanisms, compelling proof
-   - 4 = Strong: substantive but could add depth or time anchors
-   - 3 = Adequate: covered the topic but vague or missing key details
-   - 2 = Weak: struggled to answer or unclear
-   - 1 = Poor: didn't address or irrelevant
+Arc Coverage Topics (reference only—don't penalise if not discussed):
+• What it does (plain terms)
+• Problem
+• Value Proposition
+• Founder–Market Fit
+• Market size & shape
+• Why Now
+• Traction (metric + time window)
+• ICP (buyer/signatory/budget)
+• Competition & Wedge
+• Distribution & Repeatability
+• Pricing & Packaging
+• Unit economics
+• Risks & Mitigations
+• Ask (round dynamics)
 
-5. **Map decision signals accurately**:
-   - "Needs more work" → "pending"
-   - "Well prepared" → "next-meeting"
-   - "Follow-up ready" OR "Partner-track" → "term-sheet"
-   - If session was too short or disengaged → "pass"
+${scenarioContext}
 
-Return a JSON object with this structure:
+CRITICAL: Only assess topics the founder actually discussed.
+• If the VC didn't ask about Competition, don't penalise for missing it
+• Only create feedback items for topics that came up in conversation
+• "Gaps" should be about incomplete coverage of discussed topics, NOT missing topics entirely
+• If a topic wasn't mentioned at all, don't include it in your feedback
+
+ANCHOR QUALITY GRADATIONS (assess articulation, not business merit)
+
+For each topic discussed, assess how well they articulated it:
+
+What it does:
+• Strong: Anyone could repeat what it does; clear before→after outcome; plain terms
+• Weak: Jargon-heavy; feature list instead of outcome
+
+Problem:
+• Strong: Pain relatable and urgent; customer perspective; current workaround; stakes clear
+• Weak: Abstract; founder-centric; no stakes
+
+Value Proposition:
+• Strong: Quantified outcome; tied to specific customer pain
+• Weak: Vague benefits; no metrics
+
+Founder–Market Fit:
+• Strong: Lived the problem / repeat founder / unique access
+• Medium: Industry exposure / partial insight
+• Weak: No relevant connection explained
+
+Market Sizing:
+• Strong: Bottom-up (segment × price × penetration); specific beachhead
+• Weak: Top-down ("X% of huge market"); no segment
+
+Why Now:
+• Strong: Specific dated catalyst (regulation date; platform launch; behaviour shift)
+• Medium: General trend mentioned
+• Weak: No catalyst articulated
+
+Traction:
+• Strongest: Paying customers + retention/expansion + time window
+• Strong: Pilots → paid with timeline + named customers
+• Medium: Active pilots + pipeline with conversion path
+• Light: LOIs/interest + next steps with timing
+• Minimal: Waitlist/signups with no conversion plan
+
+ICP:
+• Strong: Specific role/title; company size/segment; budget source; where they congregate
+• Weak: "Enterprises" or "SMBs" without specificity; no budget source
+
+Competition & Wedge:
+• Strong: Named competitor + specific moat type + mechanism explained
+• Weak: "No real competitors" or vague "better product"
+
+Distribution & Repeatability:
+• Strong: Same motion repeated 2-3+ times; clear ICP; predictable timeline; named owner
+• Medium: One channel working; early pattern
+• Weak: All deals through founder network; no repeatable process
+
+Pricing & Packaging:
+• Strong: Clear who pays + what for + how pricing scales; tied to value
+• Weak: Vague or "we'll figure it out"
+
+Unit Economics:
+• Strong: Specific payback period or test plan; CAC/LTV direction; gross margin visibility
+• Weak: "Should be profitable" without metrics or plan
+
+Risks & Mitigations:
+• Strong: Specific risk + mitigation plan with owner/timeline
+• Weak: "No major risks" or risks without mitigations
+
+Ask:
+• Strong: Specific amount + clear use of funds + milestones with dates/owners + runway
+• Weak: Range without rationale; vague use of funds; no milestones
+
+CONVERSATION QUALITY INDICATORS (recognise strong articulation)
+
+Call out when the founder demonstrated these:
+• Specific anchors (named customers, dated catalysts, concrete metrics with time windows)
+• Mission-critical language (urgency, budget allocated, "business stops without this")
+• Buyer reality (named signer, procurement process described)
+• Moat specificity (type identified, mechanism explained, hard to copy in 12-24 months)
+• Contradictions resolved (numbers reconcile, mechanisms clear)
+• Direct quotes and examples (vs abstract claims)
+• Concrete next tests with timing (date/owner/metric)
+
+OUTPUT STRUCTURE
+
+Return JSON with this exact structure:
+
 {
-  "landed": ["Anchor → why it works", "..."],
-  "gaps": ["Gap → concrete fix or next test", "..."],
-  "decision": "pending|next-meeting|term-sheet|pass",
-  "overall": "2-3 sentence summary referencing specific conversation moments",
+  "overall": "2-3 sentences reflecting on the conversation. Reference specific moments, anchors, or quotes. Be encouraging and constructive. Highlight what they did well first.",
+  "landed": [
+    "[Specific anchor or strength from conversation] → why it works well",
+    "[Another specific anchor] → what made it strong"
+  ],
+  "gaps": [
+    "[Opportunity to strengthen on a discussed topic] → concrete suggested action or next test",
+    "[Another gap in a discussed topic] → specific way to address it"
+  ],
   "items": [
     {
-      "category": "Category Name",
+      "category": "[Arc Coverage topic name that was actually discussed]",
       "score": 1-5,
-      "comment": "Specific observation tied to what founder said or didn't say",
-      "highlight": "Optional direct quote from founder"
+      "comment": "Specific observation tied to what founder said or how they articulated it. Be constructive and reference their anchors.",
+      "highlight": "Optional: direct quote from founder that illustrates the point"
     }
   ]
 }
 
+SCORING RUBRIC (1-5 scale based on articulation quality, not business quality)
+
+5 = Excellent articulation: All three sufficiency elements present; specific anchors (nouns/numbers/owners/time); conversation quality indicators evident
+4 = Strong articulation: Claim + anchor present; could add depth or time window; substantive
+3 = Adequate articulation: Topic touched but could be more specific; missing some anchors or support
+2 = Weak articulation: Struggled to articulate clearly; vague claim or missing mechanism
+1 = Poor articulation: Didn't address when asked; contradictory or irrelevant
+
+CRITICAL INSTRUCTIONS
+
+• Read the entire transcript carefully
+• Your feedback must ONLY reference what was actually said in this specific conversation
+• DO NOT use generic examples or placeholder text
+• Pull DIRECT QUOTES from the transcript to illustrate points
+• Only assess topics the founder discussed—don't penalise for topics not covered
+• If session was very short (<30 seconds), be honest about insufficient content but remain encouraging
+• Be constructive and supportive—help them improve, don't discourage them
+• Start with strengths (what landed well) before addressing gaps
+• Frame gaps as opportunities with concrete next steps
+
 Return ONLY valid JSON, no other text.`;
 
-  const userPrompt = `Analyze this ${scenarioId} pitch practice session (${duration} seconds).
+  const userPrompt = `Analyse this ${scenarioId} practice session (${formattedDuration}).
 
 CONVERSATION TRANSCRIPT:
 ${conversationText}
 
-CRITICAL: Read the entire transcript above carefully. Your feedback must ONLY reference what was actually said in this specific conversation. DO NOT use generic examples or placeholder text.
+Based on this conversation, provide constructive, encouraging feedback:
 
-Evaluate as a VC partner would:
-1. What concrete anchors (nouns/numbers/owners/time) did THIS founder provide in THIS conversation?
-2. What questions did the VC ask, and how substantively did THIS founder respond?
-3. What key topics were covered or missed in THIS conversation?
-4. Pull DIRECT QUOTES or specific claims from THIS transcript to illustrate your points
+1. Which Arc Coverage topics did the founder actually discuss?
+2. For each topic discussed: did they provide claim + anchor (noun/number/owner/time) + support?
+3. How specific and concrete were their anchors?
+4. What conversation quality indicators appeared?
+5. What specific anchors, quotes, or moments stood out?
 
-If the transcript is empty or too short to evaluate, be honest about insufficient content.
-
-Provide structured feedback as JSON. Every observation must tie directly to actual conversation content from the transcript above.`;
+Provide feedback that feels like the VC's warm, constructive reflection immediately after the call. Start with what landed well. Reference specific moments, anchors, and quotes from the conversation above. Frame gaps as opportunities with concrete next steps.`;
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -194,15 +293,14 @@ Provide structured feedback as JSON. Every observation must tie directly to actu
     console.error("[Feedback Analysis] Raw AI response:", feedbackText);
     // Return fallback - indicate system error rather than fake feedback
     feedback = {
-      landed: ["System generated a response but couldn't analyze transcript details"],
-      gaps: ["Try the session again - we encountered a processing error"],
-      decision: "pending",
-      overall: "We encountered an error analyzing your session. Please try practicing again. If this persists, contact support.",
+      overall: "We encountered an error analysing your session. Please try practising again. If this persists, contact support.",
+      landed: ["System generated a response but couldn't analyse transcript details"],
+      gaps: ["Try the session again – we encountered a processing error"],
       items: [
         {
           category: "Technical Issue",
           score: 3,
-          comment: "Unable to properly analyze the conversation transcript due to a system error. Please try again."
+          comment: "Unable to properly analyse the conversation transcript due to a system error. Please try again."
         }
       ]
     };
