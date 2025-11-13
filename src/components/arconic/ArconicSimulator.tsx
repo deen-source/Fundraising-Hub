@@ -25,6 +25,7 @@ export const ArconicSimulator = () => {
   const [isIntroOpen, setIsIntroOpen] = useState(false);
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<number>(0);
+  const sessionStartTimeRef = useRef<number>(0); // Ref to avoid stale closures
   const [isMobile, setIsMobile] = useState(false);
 
   // Voice session state
@@ -77,7 +78,9 @@ export const ArconicSimulator = () => {
   // Start timer when first message arrives (conversation actually begins)
   useEffect(() => {
     if (isSessionActive && transcript.length > 0 && sessionStartTime === 0) {
-      setSessionStartTime(Date.now());
+      const now = Date.now();
+      setSessionStartTime(now);
+      sessionStartTimeRef.current = now; // Also set ref to avoid stale closures
     }
   }, [isSessionActive, transcript, sessionStartTime]);
 
@@ -174,6 +177,7 @@ export const ArconicSimulator = () => {
     setIsIntroOpen(false);
     setIsSessionActive(true);
     setSessionStartTime(0); // Don't start timer yet - wait for first message
+    sessionStartTimeRef.current = 0; // Also reset ref
     setElapsed(0);
     setTranscript([]);
     setAppState('session');
@@ -190,10 +194,12 @@ export const ArconicSimulator = () => {
   const handleSessionEnd = async (transcriptFromWidget?: any[]) => {
     if (!selectedScenarioId) return;
 
-    // Calculate duration only if session actually started (sessionStartTime !== 0)
-    const duration = sessionStartTime > 0
-      ? Math.floor((Date.now() - sessionStartTime) / 1000)
+    // Calculate duration only if session actually started (use ref to avoid stale closures)
+    const duration = sessionStartTimeRef.current > 0
+      ? Math.floor((Date.now() - sessionStartTimeRef.current) / 1000)
       : 0;
+
+    console.log('[Arconic] Session ended. Duration:', duration, 'seconds');
     setIsSessionActive(false);
 
     // Use transcript from state (which is updated in real-time)

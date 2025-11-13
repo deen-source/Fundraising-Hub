@@ -4,7 +4,7 @@ const DAILY_SESSION_LIMIT = 4;
 
 // Feature flag to disable session limits for testing
 // Set to false to bypass all session limit checks
-export const ENABLE_SESSION_LIMITS = false; // TODO: Set back to true after testing
+export const ENABLE_SESSION_LIMITS = true;
 
 /**
  * Get the count of sessions started today (since midnight UTC)
