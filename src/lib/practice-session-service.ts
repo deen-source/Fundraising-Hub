@@ -7,7 +7,7 @@ const DAILY_SESSION_LIMIT = 4;
 export const ENABLE_SESSION_LIMITS = true;
 
 /**
- * Get the count of sessions started today (since midnight UTC)
+ * Get the count of sessions started today (since midnight Sydney time)
  */
 export async function getTodaySessionCount(userId: string): Promise<number> {
   // If limits are disabled, always return 0
@@ -16,14 +16,24 @@ export async function getTodaySessionCount(userId: string): Promise<number> {
   }
 
   try {
-    const todayStart = new Date();
-    todayStart.setUTCHours(0, 0, 0, 0);
+    // Get midnight Sydney time (Australia/Sydney timezone)
+    const now = new Date();
+    const sydneyTimeString = now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' });
+    const sydneyTime = new Date(sydneyTimeString);
+
+    // Set to midnight Sydney time
+    const todayStart = new Date(sydneyTime);
+    todayStart.setHours(0, 0, 0, 0);
+
+    // Convert back to UTC for database comparison
+    const offset = now.getTime() - new Date(sydneyTimeString).getTime();
+    const todayStartUTC = new Date(todayStart.getTime() + offset);
 
     const { count, error } = await supabase
       .from('practice_sessions')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .gte('created_at', todayStart.toISOString());
+      .gte('created_at', todayStartUTC.toISOString());
 
     if (error) {
       console.error('[SessionService] Error counting today sessions:', error);
@@ -99,14 +109,25 @@ export async function recordSessionStart(userId: string, scenarioId: string): Pr
 }
 
 /**
- * Get time until midnight UTC (daily limit reset)
+ * Get time until midnight Sydney time (daily limit reset)
  */
 export function getTimeUntilReset(): { hours: number; minutes: number; totalMinutes: number } {
   const now = new Date();
-  const tomorrow = new Date();
-  tomorrow.setUTCHours(24, 0, 0, 0);
 
-  const diffMs = tomorrow.getTime() - now.getTime();
+  // Get current time in Sydney
+  const sydneyTimeString = now.toLocaleString('en-US', { timeZone: 'Australia/Sydney' });
+  const sydneyTime = new Date(sydneyTimeString);
+
+  // Get midnight tomorrow in Sydney
+  const tomorrowSydney = new Date(sydneyTime);
+  tomorrowSydney.setDate(tomorrowSydney.getDate() + 1);
+  tomorrowSydney.setHours(0, 0, 0, 0);
+
+  // Convert to UTC timestamps and calculate difference
+  const offset = now.getTime() - new Date(sydneyTimeString).getTime();
+  const tomorrowUTC = new Date(tomorrowSydney.getTime() + offset);
+
+  const diffMs = tomorrowUTC.getTime() - now.getTime();
   const totalMinutes = Math.floor(diffMs / 1000 / 60);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
