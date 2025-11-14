@@ -67,11 +67,8 @@ export const SessionLimitBanner = ({ sessionsUsed, onRefresh }: SessionLimitBann
 
   // State 1: Info - Multiple sessions remaining
   return (
-    <Alert className="mb-6 border-blue-200 bg-blue-50/50">
-      <Info className="h-4 w-4 text-blue-600" />
-      <AlertDescription className="text-sm text-blue-900">
-        <span className="font-medium">{remaining} of {DAILY_SESSION_LIMIT} sessions remaining today</span>
-      </AlertDescription>
-    </Alert>
+    <div className="text-center text-sm text-muted-foreground mt-6">
+      You have <span className="font-medium text-foreground">{remaining}</span> session{remaining !== 1 ? 's' : ''} remaining today
+    </div>
   );
 };

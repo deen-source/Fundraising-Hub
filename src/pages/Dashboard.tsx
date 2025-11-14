@@ -23,7 +23,9 @@ import {
   LogOut,
   MessageSquare,
   FileStack,
+  LineChart,
 } from "lucide-react";
+import { isAdmin } from '@/lib/admin';
 
 const toolsByStage = {
   preparation: [
@@ -151,6 +153,7 @@ const stages = [
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [savedCalculations, setSavedCalculations] = useState<any[]>([]);
   const [termSheetAnalyses, setTermSheetAnalyses] = useState<any[]>([]);
   const [investorCount, setInvestorCount] = useState(0);
@@ -167,6 +170,8 @@ const Dashboard = () => {
   const loadUserData = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    setUserEmail(user.email || null);
 
     const { data: profile } = await supabase
       .from('profiles')
@@ -316,10 +321,22 @@ const Dashboard = () => {
                 </p>
               </div>
             </div>
-            <Button variant="outline" onClick={handleSignOut} className="gap-2">
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </Button>
+            <div className="flex flex-col gap-2">
+              {isAdmin(userEmail) && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate('/admin/analytics')}
+                  className="gap-2"
+                >
+                  <LineChart className="w-4 h-4" />
+                  Analytics
+                </Button>
+              )}
+              <Button variant="outline" onClick={handleSignOut} className="gap-2">
+                <LogOut className="w-4 h-4" />
+                Sign Out
+              </Button>
+            </div>
           </div>
 
           {/* Overall Progress */}

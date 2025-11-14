@@ -22,15 +22,15 @@ export const AVATARS: Avatar[] = [
     id: 'charlie',
     name: 'Charlie',
     role: 'Partner',
-    imageSrc: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces',
+    imageSrc: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=400&fit=crop&crop=faces',
     voiceId: 'charlie-voice',
   },
   {
-    id: 'eric',
-    name: 'Eric',
+    id: 'jess',
+    name: 'Jess',
     role: 'Partner',
-    imageSrc: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces',
-    voiceId: 'eric-voice',
+    imageSrc: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=faces',
+    voiceId: 'jess-voice',
   },
   {
     id: 'alice',
@@ -40,11 +40,11 @@ export const AVATARS: Avatar[] = [
     voiceId: 'alice-voice',
   },
   {
-    id: 'george',
-    name: 'George',
+    id: 'eric',
+    name: 'Eric',
     role: 'Partner',
-    imageSrc: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=faces',
-    voiceId: 'george-voice',
+    imageSrc: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces',
+    voiceId: 'eric-voice',
   },
 ];
 
@@ -52,7 +52,7 @@ export const SCENARIOS: Scenario[] = [
   {
     id: 'first-coffee',
     title: 'First Coffee',
-    duration: '2 min',
+    duration: '5 min',
     description: 'An informal chat to test mutual interest. Build rapport, not slides.',
     imageSrc: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=288&h=288&fit=crop',
     scenarioContext: 'Imagine we\'re sitting down for our first coffee. The goal isn\'t to land an investment on the spot – think of it as a chance to spark interest and open the door to a deeper conversation.',
@@ -60,11 +60,11 @@ export const SCENARIOS: Scenario[] = [
     bullets: [
       'A casual conversation about what you\'re building',
       'Discussion about your team',
-      'Eric will probe your market understanding and early traction',
+      'Charlie will probe your market understanding and early traction',
     ],
     ctaText: 'Start Coffee Chat',
     agentId: AGENT_IDS.FIRST_COFFEE,
-    avatarId: 'eric',
+    avatarId: 'charlie',
   },
   {
     id: 'deep-dive',
@@ -77,11 +77,11 @@ export const SCENARIOS: Scenario[] = [
     bullets: [
       'Questions about your business model',
       'Discussion about competitive risks and mitigation plans',
-      'George will stress-test your operational assumptions',
+      'Jess will stress-test your operational assumptions',
     ],
     ctaText: 'Start Deep Dive',
     agentId: AGENT_IDS.DEEP_DIVE,
-    avatarId: 'george',
+    avatarId: 'jess',
   },
 ];
 

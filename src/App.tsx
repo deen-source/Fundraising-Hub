@@ -20,6 +20,7 @@ import PracticePitching from "./pages/tools/PracticePitching";
 import NotFound from "./pages/NotFound";
 import Forum from "./pages/Forum";
 import ForumTopic from "./pages/ForumTopic";
+import Analytics from "./pages/admin/Analytics";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/tools/practice-pitching" element={<PracticePitching />} />
           <Route path="/forum" element={<Forum />} />
           <Route path="/forum/:topicId" element={<ForumTopic />} />
+          <Route path="/admin/analytics" element={<Analytics />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -26,6 +26,7 @@ export const ArconicSimulator = () => {
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [sessionStartTime, setSessionStartTime] = useState<number>(0);
   const sessionStartTimeRef = useRef<number>(0); // Ref to avoid stale closures
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   // Voice session state
@@ -169,7 +170,8 @@ export const ArconicSimulator = () => {
     }
 
     // Record session start in database
-    await recordSessionStart(user.id, selectedScenarioId);
+    const sessionId = await recordSessionStart(user.id, selectedScenarioId);
+    setCurrentSessionId(sessionId);
 
     // Update local count
     setSessionsUsedToday(prev => prev + 1);
@@ -222,6 +224,7 @@ export const ArconicSimulator = () => {
     try {
       // Generate AI feedback with minimum 2-second delay for UX
       const feedback = await generateSessionFeedbackWithDelay({
+        sessionId: currentSessionId,
         transcript: currentTranscript,
         scenarioId: selectedScenarioId,
         duration,
@@ -365,14 +368,6 @@ export const ArconicSimulator = () => {
             </p>
           </div>
 
-          {/* Session Limit Banner - only show if limits are enabled */}
-          {ENABLE_SESSION_LIMITS && !isLoadingLimits && (
-            <SessionLimitBanner
-              sessionsUsed={sessionsUsedToday}
-              onRefresh={refreshSessionCount}
-            />
-          )}
-
           {/* Scenarios section - only show if under limit OR if limits are disabled */}
           {!ENABLE_SESSION_LIMITS || sessionsUsedToday < 4 ? (
             <div className="space-y-6">
@@ -385,6 +380,14 @@ export const ArconicSimulator = () => {
                 selectedId={selectedScenarioId}
                 onSelect={handleScenarioSelect}
               />
+
+              {/* Session Limit Banner - moved below scenarios */}
+              {ENABLE_SESSION_LIMITS && !isLoadingLimits && (
+                <SessionLimitBanner
+                  sessionsUsed={sessionsUsedToday}
+                  onRefresh={refreshSessionCount}
+                />
+              )}
             </div>
           ) : null}
 

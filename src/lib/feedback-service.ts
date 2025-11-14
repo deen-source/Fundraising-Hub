@@ -3,6 +3,7 @@ import { SessionFeedback } from '@/types/arconic-simulator';
 import { ConversationMessage } from '@/components/arconic/ElevenLabsVoiceWidget';
 
 export interface GenerateFeedbackParams {
+  sessionId: string | null;
   transcript: ConversationMessage[];
   scenarioId: string;
   duration: number;
@@ -13,11 +14,13 @@ export interface GenerateFeedbackParams {
  * Calls the Supabase Edge Function to analyze the conversation transcript
  */
 export async function generateSessionFeedback({
+  sessionId,
   transcript,
   scenarioId,
   duration,
 }: GenerateFeedbackParams): Promise<SessionFeedback> {
   console.log('[FeedbackService] Generating feedback for session:', {
+    sessionId,
     scenarioId,
     duration,
     transcriptLength: transcript.length,
@@ -47,6 +50,7 @@ export async function generateSessionFeedback({
     }
 
     const feedback: SessionFeedback = data.feedback;
+    const llmUsage = data.llmUsage || {};
 
     // Validate the feedback structure
     if (!feedback.landed || !feedback.gaps || !feedback.overall || !feedback.items) {
@@ -56,18 +60,43 @@ export async function generateSessionFeedback({
 
     console.log('[FeedbackService] Generated feedback:', feedback);
 
-    // Save session to database
+    // Save/update session in database
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from('practice_sessions').insert({
-          user_id: user.id,
-          scenario_id: scenarioId,
-          transcript,
-          feedback,
-          duration,
-        });
-        console.log('[FeedbackService] Session saved to database');
+        if (sessionId) {
+          // Update existing session
+          await supabase
+            .from('practice_sessions')
+            .update({
+              transcript,
+              feedback,
+              duration,
+              llm_prompt_tokens: llmUsage.promptTokens || 0,
+              llm_completion_tokens: llmUsage.completionTokens || 0,
+              llm_total_tokens: llmUsage.totalTokens || 0,
+              llm_cost: llmUsage.cost || 0,
+            })
+            .eq('id', sessionId);
+          console.log('[FeedbackService] Session updated in database:', sessionId, {
+            llmTokens: llmUsage.totalTokens,
+            llmCost: llmUsage.cost,
+          });
+        } else {
+          // Fallback: Insert new session (shouldn't happen normally)
+          await supabase.from('practice_sessions').insert({
+            user_id: user.id,
+            scenario_id: scenarioId,
+            transcript,
+            feedback,
+            duration,
+            llm_prompt_tokens: llmUsage.promptTokens || 0,
+            llm_completion_tokens: llmUsage.completionTokens || 0,
+            llm_total_tokens: llmUsage.totalTokens || 0,
+            llm_cost: llmUsage.cost || 0,
+          });
+          console.log('[FeedbackService] Session inserted to database (no session ID provided)');
+        }
       }
     } catch (dbError) {
       console.error('[FeedbackService] Failed to save session:', dbError);

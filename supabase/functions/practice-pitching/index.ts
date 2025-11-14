@@ -296,7 +296,25 @@ Provide feedback that feels like the VC's warm, constructive reflection immediat
   const data = await response.json();
   let feedbackText = data.choices?.[0]?.message?.content;
 
-  console.log('[Feedback Analysis] AI response length:', feedbackText?.length, 'chars');
+  // Extract token usage from OpenAI response
+  const usage = data.usage || {};
+  const promptTokens = usage.prompt_tokens || 0;
+  const completionTokens = usage.completion_tokens || 0;
+  const totalTokens = usage.total_tokens || 0;
+
+  // Calculate cost for GPT-4o-mini (as of 2025)
+  // Pricing: $0.150/1M input tokens, $0.600/1M output tokens
+  const promptCost = (promptTokens / 1_000_000) * 0.150;
+  const completionCost = (completionTokens / 1_000_000) * 0.600;
+  const totalCost = promptCost + completionCost;
+
+  console.log('[Feedback Analysis] AI response:', {
+    textLength: feedbackText?.length,
+    promptTokens,
+    completionTokens,
+    totalTokens,
+    estimatedCost: `$${totalCost.toFixed(4)}`
+  });
 
   // Clean up response - remove markdown code blocks if present
   if (feedbackText.includes('```json')) {
@@ -332,7 +350,15 @@ Provide feedback that feels like the VC's warm, constructive reflection immediat
   feedback.duration = duration;
 
   return new Response(
-    JSON.stringify({ feedback }),
+    JSON.stringify({
+      feedback,
+      llmUsage: {
+        promptTokens,
+        completionTokens,
+        totalTokens,
+        cost: totalCost
+      }
+    }),
     { headers: { ...corsHeaders, "Content-Type": "application/json" } }
   );
 }
