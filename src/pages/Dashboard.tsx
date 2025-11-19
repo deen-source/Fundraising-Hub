@@ -63,7 +63,7 @@ const toolsByStage = {
       icon: FileText,
       path: '/tools/pitch-deck',
       dataKey: 'hasPitchDeck',
-      available: false,
+      available: true,
     },
     {
       id: 'document-templates',
@@ -267,31 +267,33 @@ const Dashboard = () => {
     hasForum: forumActivityCount > 0,
   };
 
-  // Count ALL tools (including unavailable ones) in completion calculation
+  // Calculate completion based on ALL tools in each stage
+  // Only count a tool as completed if it's BOTH available AND has data
   const stageCompletion = {
     preparation: (() => {
       const allTools = toolsByStage.preparation;
-      const completed = allTools.filter(t => completionStatus[t.dataKey]).length;
-      return allTools.length > 0 ? (completed / allTools.length * 100) : 0;
+      const completed = allTools.filter(t => t.available && completionStatus[t.dataKey]).length;
+      return allTools.length > 0 ? Math.round((completed / allTools.length) * 100) : 0;
     })(),
     structuring: (() => {
       const allTools = toolsByStage.structuring;
-      const completed = allTools.filter(t => completionStatus[t.dataKey]).length;
-      return allTools.length > 0 ? (completed / allTools.length * 100) : 0;
+      const completed = allTools.filter(t => t.available && completionStatus[t.dataKey]).length;
+      return allTools.length > 0 ? Math.round((completed / allTools.length) * 100) : 0;
     })(),
     active: (() => {
       const allTools = toolsByStage.active;
-      const completed = allTools.filter(t => completionStatus[t.dataKey]).length;
-      return allTools.length > 0 ? (completed / allTools.length * 100) : 0;
+      const completed = allTools.filter(t => t.available && completionStatus[t.dataKey]).length;
+      return allTools.length > 0 ? Math.round((completed / allTools.length) * 100) : 0;
     })(),
   };
 
-  // Calculate overall completion based on total tools completed / total tools
+  // Calculate overall completion based on ALL tools across all stages
+  // Only count tools as completed if they're BOTH available AND have data
   const totalTools = toolsByStage.preparation.length + toolsByStage.structuring.length + toolsByStage.active.length;
   const totalCompleted =
-    toolsByStage.preparation.filter(t => completionStatus[t.dataKey]).length +
-    toolsByStage.structuring.filter(t => completionStatus[t.dataKey]).length +
-    toolsByStage.active.filter(t => completionStatus[t.dataKey]).length;
+    toolsByStage.preparation.filter(t => t.available && completionStatus[t.dataKey]).length +
+    toolsByStage.structuring.filter(t => t.available && completionStatus[t.dataKey]).length +
+    toolsByStage.active.filter(t => t.available && completionStatus[t.dataKey]).length;
   const overallCompletion = totalTools > 0 ? Math.round((totalCompleted / totalTools) * 100) : 0;
 
 

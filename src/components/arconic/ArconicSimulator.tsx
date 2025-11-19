@@ -344,15 +344,20 @@ export const ArconicSimulator = () => {
       <div className={isSessionActive ? 'hidden' : 'animate-in fade-in duration-400'}>
         {/* Main content */}
         <div className="container mx-auto px-4 py-8">
-          {/* Back Button - Same position as other pages */}
-          <Button
-            onClick={() => navigate('/dashboard')}
-            variant="ghost"
-            className="mb-6 gap-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </Button>
+          {/* Back Button and Logo Row */}
+          <div className="flex justify-between items-center mb-6">
+            <Button
+              onClick={() => navigate('/dashboard')}
+              variant="ghost"
+              className="gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Button>
+
+            {/* Arconic Logo aligned to right with same spacing */}
+            <img src="/arconic-logo.svg" alt="Arconic Capital" className="h-10 w-10" />
+          </div>
 
           {/* Hero section */}
           <div className="mb-8 text-center space-y-4">

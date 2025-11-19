@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthGuard } from '@/components/AuthGuard';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, TrendingUp, Mail, Building, Calendar } from 'lucide-react';
 import { isAdmin } from '@/lib/admin';
 import { UsageSummaryCard } from '@/components/analytics/UsageSummaryCard';
 import { CostSummaryCard } from '@/components/analytics/CostSummaryCard';
 import { UsageTrendsChart } from '@/components/analytics/UsageTrendsChart';
 import { TopUsersTable } from '@/components/analytics/TopUsersTable';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 // Plan configuration (Creator plan with Conversational AI)
 const PLAN_CONFIG = {
@@ -45,6 +47,7 @@ const Analytics = () => {
   const [totalLlmCost, setTotalLlmCost] = useState(0);
   const [dailyUsage, setDailyUsage] = useState<DailyUsage[]>([]);
   const [userUsage, setUserUsage] = useState<UserUsage[]>([]);
+  const [flaggedLeads, setFlaggedLeads] = useState<any[]>([]);
 
   useEffect(() => {
     checkAdminAndLoadData();
@@ -60,7 +63,37 @@ const Analytics = () => {
     }
 
     setIsUserAdmin(true);
-    await loadAnalyticsData();
+    await Promise.all([loadAnalyticsData(), loadFlaggedLeads()]);
+  };
+
+  const loadFlaggedLeads = async () => {
+    try {
+      // Fetch flagged pitch deck analyses
+      const { data, error } = await supabase
+        .from('term_sheet_analyses')
+        .select(`
+          id,
+          created_at,
+          stage,
+          investment_grade,
+          user_id,
+          profiles (
+            email,
+            full_name,
+            company_name
+          )
+        `)
+        .eq('tool_type', 'pitch_deck')
+        .eq('flagged_for_review', true)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      setFlaggedLeads(data || []);
+    } catch (error) {
+      console.error('Error loading flagged leads:', error);
+    }
   };
 
   const loadAnalyticsData = async () => {
@@ -301,6 +334,64 @@ const Analytics = () => {
             </div>
           ) : (
             <div className="space-y-6">
+              {/* Flagged Leads Section */}
+              {flaggedLeads.length > 0 && (
+                <Card className="border-2 border-success/30 bg-success/5">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-success">
+                      <TrendingUp className="w-5 h-5" />
+                      High-Potential Startups ({flaggedLeads.length})
+                    </CardTitle>
+                    <CardDescription>
+                      Pitch deck analyses flagged as "Strong Investment Candidate"
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {flaggedLeads.map((lead: any) => (
+                        <div key={lead.id} className="p-4 rounded-lg bg-background border border-success/30">
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Mail className="w-3 h-3" />
+                                Email
+                              </div>
+                              <div className="font-medium">{lead.profiles?.email || 'N/A'}</div>
+                            </div>
+
+                            {lead.profiles?.company_name && (
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                  <Building className="w-3 h-3" />
+                                  Company
+                                </div>
+                                <div className="font-medium">{lead.profiles.company_name}</div>
+                              </div>
+                            )}
+
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <TrendingUp className="w-3 h-3" />
+                                Stage
+                              </div>
+                              <Badge variant="default">{lead.stage || 'Not specified'}</Badge>
+                            </div>
+
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Calendar className="w-3 h-3" />
+                                Date
+                              </div>
+                              <div className="text-sm">{new Date(lead.created_at).toLocaleDateString()}</div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <UsageSummaryCard
