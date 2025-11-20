@@ -122,7 +122,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 md:p-8 lg:p-12 relative">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
-        <div className="space-y-10">
+        <div className="space-y-4">
           <div className="space-y-2">
             <div className="flex items-center gap-4">
               <img
