@@ -130,16 +130,21 @@ const Auth = () => {
                 alt="Arconic Logo"
                 className="h-12 w-12"
               />
-              <h1 className="text-5xl font-bold">
-                Fundraising Hub
+              <h1 className="text-4xl font-bold">
+                Arconic Capital Fundraising Hub
               </h1>
             </div>
-            <p className="text-2xl text-muted-foreground">
+            <p className="text-lg text-muted-foreground">
               The complete investment toolkit for ambitious founders
             </p>
           </div>
 
           <div className="space-y-6">
+            {/* Description */}
+            <p className="text-muted-foreground leading-relaxed">
+              Practical AI tools to help founders raise with clarity and confidence. Each solves a real challenge in the fundraising process. Sign up to make fundraising simpler.
+            </p>
+
             <div className="flex items-start gap-4">
               <div className="p-3 border">
                 <TrendingUp className="w-5 h-5" />
@@ -174,18 +179,6 @@ const Auth = () => {
                   Calculate complex scenarios in seconds, not hours
                 </p>
               </div>
-            </div>
-
-            {/* Description */}
-            <div className="pt-4 space-y-3 border-t">
-              <h2 className="text-xl font-bold">
-                Welcome to the Arconic Capital Fundraising Hub
-              </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                A set of practical AI tools to help founders raise with clarity and confidence.
-                Each tool solves a real problem: telling your story, finding investors, understanding
-                your economics. Sign up for fast, focused tools that make fundraising easier.
-              </p>
             </div>
           </div>
         </div>
