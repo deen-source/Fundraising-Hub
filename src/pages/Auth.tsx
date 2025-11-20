@@ -139,41 +139,53 @@ const Auth = () => {
             </p>
           </div>
 
-          <div className="space-y-8">
-            <div className="flex items-start gap-6">
-              <div className="p-4 border">
-                <TrendingUp className="w-6 h-6" />
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3 border">
+                <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">AI-Powered Analysis</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-medium text-sm mb-0.5">AI-Powered Analysis</h3>
+                <p className="text-muted-foreground text-xs">
                   Get instant insights on term sheets, metrics, and valuations
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-6">
-              <div className="p-4 border">
-                <Shield className="w-6 h-6" />
+            <div className="flex items-start gap-4">
+              <div className="p-3 border">
+                <Shield className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Secure & Private</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-medium text-sm mb-0.5">Secure & Private</h3>
+                <p className="text-muted-foreground text-xs">
                   Your data is encrypted and never shared with third parties
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-6">
-              <div className="p-4 border">
-                <Zap className="w-6 h-6" />
+            <div className="flex items-start gap-4">
+              <div className="p-3 border">
+                <Zap className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Lightning Fast</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-medium text-sm mb-0.5">Lightning Fast</h3>
+                <p className="text-muted-foreground text-xs">
                   Calculate complex scenarios in seconds, not hours
                 </p>
               </div>
+            </div>
+
+            {/* Description */}
+            <div className="pt-4 space-y-3 border-t">
+              <h2 className="text-xl font-bold">
+                Welcome to the Arconic Capital Fundraising Hub
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">
+                A set of practical AI tools to help founders raise with clarity and confidence.
+                Each tool solves a real problem: telling your story, finding investors, understanding
+                your economics. Sign up for fast, focused tools that make fundraising easier.
+              </p>
             </div>
           </div>
         </div>
