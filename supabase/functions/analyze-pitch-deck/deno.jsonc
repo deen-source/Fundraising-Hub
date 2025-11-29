@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "include": [
+    "index.ts",
+    "rubrics/*.md"
+  ]
+}
