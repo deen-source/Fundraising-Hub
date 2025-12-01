@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
+import { TeamGuard } from '@/components/TeamGuard';
 import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight, BookOpen, Lightbulb, AlertCircle, Users, DollarSign, LineChart, Presentation, Upload, X, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -263,7 +264,8 @@ const PitchDeckAnalyser = () => {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen relative bg-slate-50">
+      <TeamGuard>
+        <div className="min-h-screen relative bg-slate-50">
         <div className="container mx-auto px-4 py-12 max-w-7xl">
           {/* Back Button and Logo Row */}
           <div className="flex justify-between items-center mb-6">
@@ -785,7 +787,8 @@ const PitchDeckAnalyser = () => {
             </Tabs>
           </div>
         </div>
-      </div>
+        </div>
+      </TeamGuard>
     </AuthGuard>
   );
 };
