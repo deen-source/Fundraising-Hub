@@ -42,7 +42,7 @@ export async function getTodayAnalysisCount(userId: string): Promise<number> {
 /**
  * Check if user can start a new analysis (under daily limit)
  */
-export async function canAnalyzeDeck(userId: string): Promise<{ allowed: boolean; count: number; remaining: number }> {
+export async function canAnalyseDeck(userId: string): Promise<{ allowed: boolean; count: number; remaining: number }> {
   // If limits are disabled, always allow
   if (!ENABLE_ANALYSIS_LIMITS) {
     return {

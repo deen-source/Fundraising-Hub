@@ -79,7 +79,7 @@ export const TeamGuard = ({ children, allowedDomains = ['@arconiccap.com'] }: Te
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              The Pitch Deck Analyzer is currently in beta and only available to Arconic team members.
+              The Pitch Deck Analyser is currently in beta and only available to Arconic team members.
               {user?.email && (
                 <span className="block mt-2">
                   Your account: <span className="font-medium">{user.email}</span>

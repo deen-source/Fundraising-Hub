@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import * as pdfjsLib from 'pdfjs-dist';
-import { canAnalyzeDeck, DAILY_ANALYSIS_LIMIT, formatTimeUntilReset } from '@/lib/pitch-deck-service';
+import { canAnalyseDeck, DAILY_ANALYSIS_LIMIT, formatTimeUntilReset } from '@/lib/pitch-deck-service';
 
 // Set up PDF.js worker with proper path
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -48,7 +48,7 @@ const PitchDeckAnalyser = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const limitCheck = await canAnalyzeDeck(user.id);
+      const limitCheck = await canAnalyseDeck(user.id);
       setAnalysesUsed(limitCheck.count);
       setAnalysesRemaining(limitCheck.remaining);
     } catch (error) {
@@ -185,14 +185,14 @@ const PitchDeckAnalyser = () => {
       }
 
       // Check daily limit
-      const limitCheck = await canAnalyzeDeck(user.id);
+      const limitCheck = await canAnalyseDeck(user.id);
       if (!limitCheck.allowed) {
         toast.error(`Daily limit reached. You can analyse ${DAILY_ANALYSIS_LIMIT} decks per day. Resets in ${formatTimeUntilReset()}.`);
         setLoading(false);
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('analyze-pitch-deck', {
+      const { data, error } = await supabase.functions.invoke('analyse-pitch-deck', {
         body: { images: deckImages, stage },
       });
 
@@ -236,7 +236,7 @@ const PitchDeckAnalyser = () => {
   };
 
 
-  // Helper function to determine score color - grayscale (darker = better)
+  // Helper function to determine score colour - grayscale (darker = better)
   const getScoreColor = (score: number) => {
     if (score >= 8) return '#171717'; // Near-black for high scores
     if (score >= 6) return '#424242'; // Medium gray for medium scores
@@ -429,10 +429,10 @@ const PitchDeckAnalyser = () => {
             </Card>
 
             {/* Tabs Interface */}
-            <Tabs defaultValue="analyzer" className="w-full">
+            <Tabs defaultValue="analyser" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/50 p-1.5 h-auto border rounded-2xl">
                 <TabsTrigger
-                  value="analyzer"
+                  value="analyser"
                   className="gap-2 py-3 px-4 rounded-xl font-medium data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:font-semibold data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground transition-all"
                 >
                   <Sparkles className="w-4 h-4" />
@@ -448,7 +448,7 @@ const PitchDeckAnalyser = () => {
               </TabsList>
 
               {/* Analyser Tab */}
-              <TabsContent value="analyzer" className="space-y-12">
+              <TabsContent value="analyser" className="space-y-12">
                 {/* Loading Screen */}
                 {loading && (
                   <Card className="border-2 shadow-lg bg-gradient-to-br from-slate-50 to-white">
