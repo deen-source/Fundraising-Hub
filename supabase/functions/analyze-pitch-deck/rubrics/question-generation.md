@@ -10,6 +10,8 @@ Generate exactly 5 questions investors will likely ask, based on:
 4. **Criteria scored Low (0-4)** — Weak areas in startup assessment
 5. **Criteria unassessable from deck** — Important factors requiring conversation
 
+**Format Requirement:** Each question must be a single, focused question — no compound questions with multiple sub-parts or follow-up questions bundled together. One question mark per question. Maximum 2 sentences per question.
+
 ---
 
 ## Question Selection Logic

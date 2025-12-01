@@ -88,24 +88,51 @@ const PitchDeckAnalyser = () => {
       // Convert each page to image
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 2.0 }); // Higher scale for better quality
+        let scale = 1.5; // Reduced from 2.0 to keep images smaller
+        let quality = 0.85; // JPEG quality
+        let imageData: string;
+        let imageSizeKB: number;
 
-        // Create canvas
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        if (!context) throw new Error('Could not get canvas context');
+        // Render and compress until under 4MB
+        do {
+          const viewport = page.getViewport({ scale });
 
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+          // Create canvas
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          if (!context) throw new Error('Could not get canvas context');
 
-        // Render PDF page to canvas
-        await page.render({
-          canvasContext: context,
-          viewport: viewport
-        }).promise;
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
 
-        // Convert canvas to base64 PNG
-        const imageData = canvas.toDataURL('image/png').split(',')[1]; // Remove data:image/png;base64, prefix
+          // Render PDF page to canvas
+          await page.render({
+            canvasContext: context,
+            viewport: viewport
+          }).promise;
+
+          // Convert canvas to base64 JPEG (better compression than PNG)
+          const fullDataUrl = canvas.toDataURL('image/jpeg', quality);
+          imageData = fullDataUrl.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+
+          // Calculate size in KB (base64 is ~4/3 of actual size)
+          imageSizeKB = (imageData.length * 3) / 4 / 1024;
+
+          // If image is too large, reduce quality/scale and try again
+          if (imageSizeKB > 4000) { // 4MB limit
+            if (quality > 0.5) {
+              quality -= 0.1; // Reduce quality first
+            } else if (scale > 1.0) {
+              scale -= 0.25; // Then reduce scale
+              quality = 0.85; // Reset quality
+            } else {
+              // If we're at minimum settings and still too large, just use it
+              console.warn(`Slide ${i} is ${Math.round(imageSizeKB / 1024)}MB, exceeds ideal size`);
+              break;
+            }
+          }
+        } while (imageSizeKB > 4000 && (scale > 1.0 || quality > 0.5));
+
         images.push(imageData);
       }
 

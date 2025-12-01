@@ -108,6 +108,8 @@
 
 **Focus:** Are essential slides present? Is the ordering logical?
 
+**Important:** Evaluate ONLY whether essential slides are present and logically ordered. Do not comment on slide count here — that is covered separately in Deck Length scoring.
+
 ### Essential Slides by Stage
 
 #### Pre-Seed
@@ -319,7 +321,9 @@ The deck should follow: Context → Problem → Insight → Solution → Proof �
 
 ## 6. Deck Length (2%)
 
-**Focus:** Is slide count appropriate?
+**Focus:** Is slide count appropriate for the stage?
+
+**Important:** Evaluate ONLY whether the slide count is appropriate. Do not comment on what slides are included or missing — that is covered in Structure & Completeness.
 
 ### Scoring Formula
 

@@ -110,6 +110,8 @@ export const deckScoringRubric = `# Pitch Deck Scoring Rubric
 
 **Focus:** Are essential slides present? Is the ordering logical?
 
+**Important:** Evaluate ONLY whether essential slides are present and logically ordered. Do not comment on slide count here — that is covered separately in Deck Length scoring.
+
 ### Essential Slides by Stage
 
 #### Pre-Seed
@@ -321,7 +323,9 @@ The deck should follow: Context → Problem → Insight → Solution → Proof �
 
 ## 6. Deck Length (2%)
 
-**Focus:** Is slide count appropriate?
+**Focus:** Is slide count appropriate for the stage?
+
+**Important:** Evaluate ONLY whether the slide count is appropriate. Do not comment on what slides are included or missing — that is covered in Structure & Completeness.
 
 ### Scoring Formula
 
@@ -391,6 +395,8 @@ Generate exactly 5 questions investors will likely ask, based on:
 3. **Claims requiring validation** — Statements without evidence
 4. **Criteria scored Low (0-4)** — Weak areas in startup assessment
 5. **Criteria unassessable from deck** — Important factors requiring conversation
+
+**Format Requirement:** Each question must be a single, focused question — no compound questions with multiple sub-parts or follow-up questions bundled together. One question mark per question. Maximum 2 sentences per question.
 
 ---
 
@@ -485,10 +491,10 @@ Evaluates the pitch deck as a communication vehicle—clarity, structure, flow, 
 
 | Component | Length | Purpose |
 |-----------|--------|---------|
-| Executive Summary | 2-3 sentences | Overall deck quality and key takeaway |
-| Strengths | 2-3 items | What the deck does well |
-| Weaknesses | 2-3 items | What needs improvement (with severity) |
-| Priority Actions | 2-3 items | Most important changes to make |
+| Executive Summary | Maximum 3 sentences | Overall deck quality and key takeaway |
+| Strengths | 2-3 items, maximum 2 sentences each | What the deck does well |
+| Weaknesses | 2-3 items, maximum 3 sentences each | What needs improvement (with severity) |
+| Priority Actions | 2-3 items, maximum 2 sentences each | Most important changes to make |
 
 ### Output Format
 
@@ -519,13 +525,15 @@ Evaluates the pitch deck as a communication vehicle—clarity, structure, flow, 
 
 Evaluates the underlying business based on what can be assessed from the deck—team, market, traction, product, defensibility, and fundability.
 
+**Critical Distinction:** Startup feedback evaluates the BUSINESS quality, not the deck presentation. Do not reference missing slides, presentation issues, or what the deck fails to show. Focus only on the underlying business: team capability, market opportunity, product strength, traction quality, and fundability. If information is missing, evaluate based on what IS presented, not what isn't.
+
 ### Structure
 
 | Component | Length | Purpose |
 |-----------|--------|---------|
-| Executive Summary | 2-3 sentences | Overall startup quality and investment readiness |
-| Strengths | 2-3 items | What's compelling about this business |
-| Concerns | 2-3 items | Key risks or gaps (with severity) |
+| Executive Summary | Maximum 3 sentences | Overall startup quality and investment readiness |
+| Strengths | 2-3 items, maximum 2 sentences each | What's compelling about this business |
+| Concerns | 2-3 items, maximum 3 sentences each | Key risks or gaps (with severity) |
 
 ### Output Format
 
@@ -584,6 +592,11 @@ Calibrate all feedback to the appropriate stage. What constitutes a concern at S
 - Be specific—reference actual slides, metrics, or content
 - Be constructive—don't just identify problems, give direction
 - Acknowledge uncertainty—don't claim to know things that can't be assessed from a deck
+- **Use UK English spelling throughout all outputs** (e.g., analyse, organisation, colour, behaviour, centre, licence)
+
+## Length Constraints
+
+All category reasoning in Deck Breakdown and Startup Breakdown: **Maximum 2 sentences each**
 `;
 
 export const startupPreseedRubric = `# Pre-Seed Startup Scoring Rubric
