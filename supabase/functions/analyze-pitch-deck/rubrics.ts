@@ -492,32 +492,13 @@ Evaluates the pitch deck as a communication vehicle—clarity, structure, flow, 
 | Component | Length | Purpose |
 |-----------|--------|---------|
 | Executive Summary | Maximum 3 sentences | Overall deck quality and key takeaway |
-| Strengths | 2-3 items, maximum 2 sentences each | What the deck does well |
-| Weaknesses | 2-3 items, maximum 3 sentences each | What needs improvement (with severity) |
-| Priority Actions | 2-3 items, maximum 2 sentences each | Most important changes to make |
+| Priority Actions | 2-3 items, maximum 2 sentences each | Most important changes to improve presentation |
 
 ### Output Format
 
-**Executive Summary:** Provide an overall assessment, the biggest strength, and the biggest gap or opportunity.
+**Executive Summary:** Provide an overall assessment of deck quality, highlighting the most critical presentation issue and opportunity for improvement.
 
-**Strengths:**
-\`\`\`json
-{
-  "title": "Short descriptor",
-  "description": "Specific explanation with evidence from deck"
-}
-\`\`\`
-
-**Weaknesses:**
-\`\`\`json
-{
-  "title": "Short descriptor",
-  "description": "Specific explanation of the issue and its impact",
-  "severity": "critical | high | medium"
-}
-\`\`\`
-
-**Priority Actions:** Numbered list of 2-3 specific, actionable changes, ordered by impact.
+**Priority Actions:** List of 2-3 specific, actionable changes to improve deck presentation and communication, ordered by impact. Focus on how to better communicate (not what information to add).
 
 ---
 
@@ -532,39 +513,13 @@ Evaluates the underlying business based on what can be assessed from the deck—
 | Component | Length | Purpose |
 |-----------|--------|---------|
 | Executive Summary | Maximum 3 sentences | Overall startup quality and investment readiness |
-| Strengths | 2-3 items, maximum 2 sentences each | What's compelling about this business |
-| Concerns | 2-3 items, maximum 3 sentences each | Key risks or gaps (with severity) |
+| Priority Actions | 2-3 items, maximum 2 sentences each | Most important steps to improve investment readiness |
 
 ### Output Format
 
 **Executive Summary:** Provide an overall investment readiness assessment, the most compelling element, and the biggest question or risk. If scores are polarized (e.g., strong team but weak traction), call out the trade-off explicitly.
 
-**Strengths:**
-\`\`\`json
-{
-  "title": "Short descriptor",
-  "description": "Specific explanation with evidence from deck"
-}
-\`\`\`
-
-**Concerns:**
-\`\`\`json
-{
-  "title": "Short descriptor",
-  "description": "Specific explanation of the risk and why it matters",
-  "severity": "critical | high | medium"
-}
-\`\`\`
-
----
-
-## Severity Definitions
-
-| Severity | Meaning |
-|----------|---------|
-| Critical | Likely a deal-breaker for most investors at this stage; fix before sending any decks |
-| High | Significant concern that weakens the deck/business; must be addressed |
-| Medium | Notable issue but not fatal; improve when possible |
+**Priority Actions:** List of 2-3 specific, actionable steps the founder should take to strengthen the business and improve investment readiness, ordered by impact. Focus on business improvements (not deck improvements).
 
 ---
 
@@ -580,8 +535,9 @@ Calibrate all feedback to the appropriate stage. What constitutes a concern at S
 
 ## Key Distinctions
 
-- **Deck vs. Startup feedback:** Deck feedback evaluates communication and presentation. Startup feedback evaluates the underlying business. Keep these separate—a startup concern should be about business risk, not slide design.
-- **Priority actions flow from weaknesses:** The actions should directly address the weaknesses identified, ordered by impact.
+- **Deck vs. Startup feedback:** Deck feedback evaluates communication and presentation. Startup feedback evaluates the underlying business. Keep these separate.
+- **Deck Priority Actions:** Focus on how to improve presentation, communication, and storytelling.
+- **Startup Priority Actions:** Focus on business improvements that would strengthen investment readiness (e.g., traction milestones, team additions, market validation).
 - **Flag exceptional performance:** If something is genuinely exceptional for the stage (e.g., ARR, retention, founder track record), explicitly call it out so founders understand they're ahead of typical benchmarks.
 
 ---

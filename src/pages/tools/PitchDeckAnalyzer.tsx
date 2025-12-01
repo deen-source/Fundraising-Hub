@@ -216,6 +216,24 @@ const PitchDeckAnalyser = () => {
     return '#6b7280'; // Light gray for low scores
   };
 
+  // Helper function to format category names with "and"
+  const formatCategoryName = (category: string) => {
+    const nameMap: { [key: string]: string } = {
+      'content_clarity': 'Content and Clarity',
+      'structure_completeness': 'Structure and Completeness',
+      'storytelling': 'Storytelling',
+      'design_visual_clarity': 'Design and Visual Clarity',
+      'spelling_grammar': 'Spelling and Grammar',
+      'deck_length': 'Deck Length',
+      'team': 'Team',
+      'market_insight': 'Market and Insight',
+      'product_tech': 'Product and Tech',
+      'traction_gtm': 'Traction and GTM',
+      'business_fundability': 'Business and Fundability'
+    };
+    return nameMap[category] || category.replace(/_/g, ' ');
+  };
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'critical':
@@ -363,12 +381,18 @@ const PitchDeckAnalyser = () => {
 
             {/* Tabs Interface */}
             <Tabs defaultValue="analyzer" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted p-1 h-auto border-2 rounded-2xl">
-                <TabsTrigger value="analyzer" className="gap-2 border rounded-xl data-[state=active]:bg-background data-[state=active]:border-foreground data-[state=active]:shadow-sm">
+              <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/50 p-1.5 h-auto border rounded-2xl">
+                <TabsTrigger
+                  value="analyzer"
+                  className="gap-2 py-3 px-4 rounded-xl font-medium data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:font-semibold data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground transition-all"
+                >
                   <Sparkles className="w-4 h-4" />
                   Analyser
                 </TabsTrigger>
-                <TabsTrigger value="pre-deck-exercise" className="gap-2 border rounded-xl data-[state=active]:bg-background data-[state=active]:border-foreground data-[state=active]:shadow-sm">
+                <TabsTrigger
+                  value="pre-deck-exercise"
+                  className="gap-2 py-3 px-4 rounded-xl font-medium data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:font-semibold data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground transition-all"
+                >
                   <Target className="w-4 h-4" />
                   Pre-Deck Exercise
                 </TabsTrigger>
@@ -376,12 +400,36 @@ const PitchDeckAnalyser = () => {
 
               {/* Analyser Tab */}
               <TabsContent value="analyzer" className="space-y-12">
+                {/* Loading Screen */}
+                {loading && (
+                  <Card className="border-2 shadow-lg bg-gradient-to-br from-slate-50 to-white">
+                    <CardContent className="p-12">
+                      <div className="flex flex-col items-center justify-center space-y-8 text-center">
+                        <div className="relative">
+                          <Loader2 className="w-16 h-16 animate-spin text-[#171717]" />
+                          <Sparkles className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" />
+                        </div>
+                        <div className="space-y-3">
+                          <h3 className="text-2xl font-bold text-[#171717]">Analysing Your Pitch Deck</h3>
+                          <p className="text-sm text-muted-foreground max-w-md">
+                            Our AI is reviewing your deck slide-by-slide, evaluating presentation quality, business fundamentals, and generating investor feedback. This typically takes 15-30 seconds.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <div className="w-2 h-2 bg-[#171717] rounded-full animate-pulse" />
+                          <span>Reviewing {deckImages.length} slides</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {analysis && (
               <div className="space-y-8">
                 {/* Dual Score Display - Deck & Startup */}
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Deck Score */}
-                  <Card className="border shadow-sm">
+                  <Card className="border-2 shadow-lg bg-white">
                     <CardContent className="p-8">
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -392,10 +440,9 @@ const PitchDeckAnalyser = () => {
                         </div>
                         <div className="relative h-3 rounded-full overflow-hidden bg-gray-100">
                           <div
-                            className="absolute inset-0 rounded-full transition-all duration-500"
+                            className="absolute inset-0 rounded-full transition-all duration-500 bg-gradient-to-r from-gray-700 to-gray-900"
                             style={{
-                              width: `${(analysis.deck_score_overall / 10) * 100}%`,
-                              background: 'linear-gradient(to right, #ff9a76, #ff6b9d)'
+                              width: `${(analysis.deck_score_overall / 10) * 100}%`
                             }}
                           />
                         </div>
@@ -405,7 +452,7 @@ const PitchDeckAnalyser = () => {
                   </Card>
 
                   {/* Startup Score */}
-                  <Card className="border shadow-sm">
+                  <Card className="border-2 shadow-lg bg-white">
                     <CardContent className="p-8">
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -416,10 +463,9 @@ const PitchDeckAnalyser = () => {
                         </div>
                         <div className="relative h-3 rounded-full overflow-hidden bg-gray-100">
                           <div
-                            className="absolute inset-0 rounded-full transition-all duration-500"
+                            className="absolute inset-0 rounded-full transition-all duration-500 bg-gradient-to-r from-gray-700 to-gray-900"
                             style={{
-                              width: `${(analysis.startup_score_overall / 10) * 100}%`,
-                              background: 'linear-gradient(to right, #4ade80, #3b82f6)'
+                              width: `${(analysis.startup_score_overall / 10) * 100}%`
                             }}
                           />
                         </div>
@@ -429,135 +475,41 @@ const PitchDeckAnalyser = () => {
                   </Card>
                 </div>
 
-                {/* First Impression Score */}
-                {analysis.first_impression && (
-                  <Card className="border">
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">First Impression (Slides 1-3)</div>
-                            <div className="text-xl font-semibold text-[#171717]">
-                              {analysis.first_impression.verdict === 'CONTINUE' ? 'Continue Reading' : 'Likely Pass'}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-[#171717]">
-                              {analysis.first_impression.score}{analysis.first_impression.score <= 10 ? '/10' : '/100'}
-                            </div>
-                            <div className="text-xs text-muted-foreground">Impact</div>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {analysis.first_impression.reasoning}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Deck Categories - Clean Table */}
-                {analysis.deck_categories && (
-                  <Card className="border">
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-4">Deck Breakdown</div>
-                        <div className="space-y-3">
-                          {Object.entries(analysis.deck_categories).map(([category, data]: [string, any]) => (
-                            <div key={category} className="space-y-1">
-                              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                <span className="text-sm font-medium capitalize">
-                                  {category.replace(/_/g, ' ')}
-                                </span>
-                                <span className="text-sm font-semibold text-[#171717]">
-                                  {data.score?.toFixed(1)}/10
-                                </span>
-                              </div>
-                              {data.reasoning && (
-                                <p className="text-xs text-muted-foreground pl-2">{data.reasoning}</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Startup Categories */}
-                {analysis.startup_categories && (
-                  <Card className="border">
-                    <CardContent className="p-6">
-                      <div className="space-y-4">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-4">Startup Breakdown</div>
-                        <div className="space-y-3">
-                          {Object.entries(analysis.startup_categories).map(([category, data]: [string, any]) => (
-                            <div key={category} className="space-y-1">
-                              <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                                <span className="text-sm font-medium capitalize">
-                                  {category.replace(/_/g, ' ')}
-                                </span>
-                                <span className="text-sm font-semibold text-[#171717]">
-                                  {data.score?.toFixed(1)}/10
-                                </span>
-                              </div>
-                              {data.reasoning && (
-                                <p className="text-xs text-muted-foreground pl-2">{data.reasoning}</p>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Deck Feedback */}
-                {analysis.deck_feedback && (
-                  <Card className="border">
-                    <CardContent className="p-6">
-                      <div className="space-y-6">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground">Deck Evaluation</div>
+                {/* Combined Deck Section */}
+                {(analysis.deck_feedback || analysis.deck_categories) && (
+                  <Card className="border-2 shadow-lg bg-white">
+                    <CardContent className="p-8">
+                      <div className="space-y-8">
+                        <div className="text-xl font-bold text-[#171717]">Deck Evaluation</div>
 
                         {/* Executive Summary */}
-                        {analysis.deck_feedback.executive_summary && (
-                          <div className="space-y-2">
-                            <div className="font-semibold text-sm text-[#171717]">Executive Summary</div>
+                        {analysis.deck_feedback?.executive_summary && (
+                          <div className="space-y-3">
+                            <div className="text-sm font-semibold text-[#171717]">Executive Summary</div>
                             <p className="text-sm text-muted-foreground leading-relaxed">
                               {analysis.deck_feedback.executive_summary}
                             </p>
                           </div>
                         )}
 
-                        {/* Strengths */}
-                        {analysis.deck_feedback.strengths && analysis.deck_feedback.strengths.length > 0 && (
-                          <div className="space-y-3">
-                            <div className="font-semibold text-sm text-[#171717]">Strengths</div>
-                            <div className="space-y-2">
-                              {analysis.deck_feedback.strengths.map((strength: any, idx: number) => (
-                                <div key={idx} className="pb-2 border-b border-gray-100 last:border-0 last:pb-0">
-                                  <div className="font-medium text-sm text-[#171717]">{strength.title}</div>
-                                  <div className="text-sm text-muted-foreground">{strength.description}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Weaknesses */}
-                        {analysis.deck_feedback.weaknesses && analysis.deck_feedback.weaknesses.length > 0 && (
-                          <div className="space-y-3">
-                            <div className="font-semibold text-sm text-[#171717]">Weaknesses</div>
-                            <div className="space-y-2">
-                              {analysis.deck_feedback.weaknesses.map((weakness: any, idx: number) => (
-                                <div key={idx} className="pb-2 border-b border-gray-100 last:border-0 last:pb-0">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-medium text-sm text-[#171717]">{weakness.title}</span>
-                                    <Badge variant={getSeverityColor(weakness.severity)} className="text-xs h-5">
-                                      {weakness.severity}
-                                    </Badge>
+                        {/* Deck Breakdown */}
+                        {analysis.deck_categories && (
+                          <div className="space-y-4">
+                            <div className="text-sm font-semibold text-[#171717]">Deck Breakdown</div>
+                            <div className="space-y-3">
+                              {Object.entries(analysis.deck_categories).map(([category, data]: [string, any]) => (
+                                <div key={category} className="space-y-1">
+                                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                                    <span className="text-sm font-medium">
+                                      {formatCategoryName(category)}
+                                    </span>
+                                    <span className="text-sm font-semibold text-[#171717]">
+                                      {data.score?.toFixed(1)}/10
+                                    </span>
                                   </div>
-                                  <div className="text-sm text-muted-foreground">{weakness.description}</div>
+                                  {data.reasoning && (
+                                    <p className="text-xs text-muted-foreground pl-2">{data.reasoning}</p>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -565,12 +517,12 @@ const PitchDeckAnalyser = () => {
                         )}
 
                         {/* Priority Actions */}
-                        {analysis.deck_feedback.priority_actions && analysis.deck_feedback.priority_actions.length > 0 && (
+                        {analysis.deck_feedback?.priority_actions && analysis.deck_feedback.priority_actions.length > 0 && (
                           <div className="space-y-3">
-                            <div className="font-semibold text-sm text-[#171717]">Priority Actions</div>
+                            <div className="text-sm font-semibold text-[#171717]">Priority Actions</div>
                             <div className="space-y-2">
                               {analysis.deck_feedback.priority_actions.map((action: string, idx: number) => (
-                                <div key={idx} className="text-sm text-muted-foreground py-1 border-b border-gray-100 last:border-0">
+                                <div key={idx} className="text-sm text-muted-foreground py-2 border-b border-gray-100 last:border-0">
                                   {idx + 1}. {action}
                                 </div>
                               ))}
@@ -582,52 +534,55 @@ const PitchDeckAnalyser = () => {
                   </Card>
                 )}
 
-                {/* Startup Feedback */}
-                {analysis.startup_feedback && (
-                  <Card className="border">
-                    <CardContent className="p-6">
-                      <div className="space-y-6">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground">Startup Evaluation</div>
+                {/* Combined Startup Section */}
+                {(analysis.startup_feedback || analysis.startup_categories) && (
+                  <Card className="border-2 shadow-lg bg-white">
+                    <CardContent className="p-8">
+                      <div className="space-y-8">
+                        <div className="text-xl font-bold text-[#171717]">Startup Evaluation</div>
 
                         {/* Executive Summary */}
-                        {analysis.startup_feedback.executive_summary && (
-                          <div className="space-y-2">
-                            <div className="font-semibold text-sm text-[#171717]">Executive Summary</div>
+                        {analysis.startup_feedback?.executive_summary && (
+                          <div className="space-y-3">
+                            <div className="text-sm font-semibold text-[#171717]">Executive Summary</div>
                             <p className="text-sm text-muted-foreground leading-relaxed">
                               {analysis.startup_feedback.executive_summary}
                             </p>
                           </div>
                         )}
 
-                        {/* Strengths */}
-                        {analysis.startup_feedback.strengths && analysis.startup_feedback.strengths.length > 0 && (
-                          <div className="space-y-3">
-                            <div className="font-semibold text-sm text-[#171717]">Strengths</div>
-                            <div className="space-y-2">
-                              {analysis.startup_feedback.strengths.map((strength: any, idx: number) => (
-                                <div key={idx} className="pb-2 border-b border-gray-100 last:border-0 last:pb-0">
-                                  <div className="font-medium text-sm text-[#171717]">{strength.title}</div>
-                                  <div className="text-sm text-muted-foreground">{strength.description}</div>
+                        {/* Startup Breakdown */}
+                        {analysis.startup_categories && (
+                          <div className="space-y-4">
+                            <div className="text-sm font-semibold text-[#171717]">Startup Breakdown</div>
+                            <div className="space-y-3">
+                              {Object.entries(analysis.startup_categories).map(([category, data]: [string, any]) => (
+                                <div key={category} className="space-y-1">
+                                  <div className="flex items-center justify-between py-2 border-b border-gray-100">
+                                    <span className="text-sm font-medium">
+                                      {formatCategoryName(category)}
+                                    </span>
+                                    <span className="text-sm font-semibold text-[#171717]">
+                                      {data.score?.toFixed(1)}/10
+                                    </span>
+                                  </div>
+                                  {data.reasoning && (
+                                    <p className="text-xs text-muted-foreground pl-2">{data.reasoning}</p>
+                                  )}
                                 </div>
                               ))}
                             </div>
                           </div>
                         )}
 
-                        {/* Concerns */}
-                        {analysis.startup_feedback.concerns && analysis.startup_feedback.concerns.length > 0 && (
+                        {/* Priority Actions */}
+                        {analysis.startup_feedback?.priority_actions && analysis.startup_feedback.priority_actions.length > 0 && (
                           <div className="space-y-3">
-                            <div className="font-semibold text-sm text-[#171717]">Concerns</div>
+                            <div className="text-sm font-semibold text-[#171717]">Priority Actions</div>
                             <div className="space-y-2">
-                              {analysis.startup_feedback.concerns.map((concern: any, idx: number) => (
-                                <div key={idx} className="pb-2 border-b border-gray-100 last:border-0 last:pb-0">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-medium text-sm text-[#171717]">{concern.title}</span>
-                                    <Badge variant={getSeverityColor(concern.severity)} className="text-xs h-5">
-                                      {concern.severity}
-                                    </Badge>
-                                  </div>
-                                  <div className="text-sm text-muted-foreground">{concern.description}</div>
+                              {analysis.startup_feedback.priority_actions.map((action: string, idx: number) => (
+                                <div key={idx} className="text-sm text-muted-foreground py-2 border-b border-gray-100 last:border-0">
+                                  {idx + 1}. {action}
                                 </div>
                               ))}
                             </div>
@@ -640,11 +595,11 @@ const PitchDeckAnalyser = () => {
 
                 {/* Investor Questions */}
                 {analysis.investor_questions && analysis.investor_questions.length > 0 && (
-                  <Card className="border">
-                    <CardContent className="p-6">
+                  <Card className="border-2 shadow-lg bg-white">
+                    <CardContent className="p-8">
                       <div className="space-y-4">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground">Questions Investors Will Ask</div>
-                        <div className="space-y-2">
+                        <div className="text-xl font-bold text-[#171717] mb-4">Questions Investors Will Ask</div>
+                        <div className="space-y-3">
                           {analysis.investor_questions.map((question: string, idx: number) => (
                             <div key={idx} className="text-sm text-muted-foreground py-2 border-b border-gray-100 last:border-0">
                               {idx + 1}. {question}
@@ -656,13 +611,30 @@ const PitchDeckAnalyser = () => {
                   </Card>
                 )}
 
+                {/* First Impression */}
+                {analysis.first_impression && (
+                  <Card className="border-2 shadow-lg bg-white">
+                    <CardContent className="p-8">
+                      <div className="space-y-4">
+                        <div className="text-xl font-bold text-[#171717]">First Impression (Slides 1-3)</div>
+                        <div className="text-lg font-semibold text-[#171717]">
+                          {analysis.first_impression.verdict === 'CONTINUE' ? 'Continue Reading' : 'Likely Pass'}
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {analysis.first_impression.reasoning}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 {/* Missing Slides */}
                 {analysis.missing_slides && analysis.missing_slides.length > 0 && (
-                  <Card className="border">
-                    <CardContent className="p-6">
+                  <Card className="border-2 shadow-lg bg-white">
+                    <CardContent className="p-8">
                       <div className="space-y-4">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground">Missing Essential Slides</div>
-                        <div className="space-y-2">
+                        <div className="text-xl font-bold text-[#171717] mb-4">Missing Essential Slides</div>
+                        <div className="space-y-3">
                           {analysis.missing_slides.map((slide: string, idx: number) => (
                             <div key={idx} className="text-sm font-medium text-[#171717] py-2 border-b border-gray-100 last:border-0">
                               • {slide}
@@ -678,26 +650,43 @@ const PitchDeckAnalyser = () => {
 
                 {/* Recent Analyses */}
                 {pastAnalyses.length > 0 && (
-                  <Card className="border">
-                    <CardContent className="p-6">
+                  <Card className="border-2 shadow-lg bg-white">
+                    <CardContent className="p-8">
                       <div className="space-y-4">
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground">Recent Analyses</div>
-                        <div className="space-y-2">
+                        <div className="text-xl font-bold text-[#171717] mb-4">Your Recent Analyses</div>
+                        <div className="space-y-3">
                           {pastAnalyses.map((item) => (
                             <div
                               key={item.id}
                               onClick={() => loadPastAnalysis(item)}
-                              className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer group"
+                              className="flex items-center justify-between p-4 rounded-lg border-2 bg-slate-50/50 hover:bg-slate-100/50 hover:border-gray-300 transition-all cursor-pointer group"
                             >
-                              <div className="flex-1">
-                                <div className="text-sm font-medium">
-                                  {item.term_sheet_text.substring(0, 60)}...
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-center gap-3">
+                                  <div className="text-sm font-medium text-[#171717]">
+                                    {item.term_sheet_text.split('(')[0].substring(0, 40)}...
+                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    {item.stage}
+                                  </Badge>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {new Date(item.created_at).toLocaleDateString()} at {new Date(item.created_at).toLocaleTimeString()}
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                  <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {new Date(item.created_at).toLocaleDateString()}
+                                  </span>
+                                  {item.analysis_result?.deck_score_overall && (
+                                    <span>Deck: {item.analysis_result.deck_score_overall.toFixed(1)}/10</span>
+                                  )}
+                                  {item.analysis_result?.startup_score_overall && (
+                                    <span>Startup: {item.analysis_result.startup_score_overall.toFixed(1)}/10</span>
+                                  )}
                                 </div>
                               </div>
-                              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                              <Button variant="ghost" size="sm" className="gap-2 group-hover:bg-white">
+                                View report
+                                <ArrowRight className="w-4 h-4" />
+                              </Button>
                             </div>
                           ))}
                         </div>

@@ -233,75 +233,30 @@ Analyze this ${stage || 'startup'} pitch deck comprehensively. You have been pro
                   properties: {
                     executive_summary: {
                       type: 'string',
-                      description: '2-3 sentence summary of the deck quality (presentation, structure, communication)'
-                    },
-                    strengths: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          title: { type: 'string', description: 'Short title of the strength' },
-                          description: { type: 'string', description: 'Detailed explanation' }
-                        },
-                        required: ['title', 'description']
-                      },
-                      description: 'What the deck does well (2-3 items)'
-                    },
-                    weaknesses: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          title: { type: 'string', description: 'Short title of the weakness' },
-                          description: { type: 'string', description: 'Detailed explanation' },
-                          severity: { type: 'string', enum: ['critical', 'high', 'medium'], description: 'How severe this issue is' }
-                        },
-                        required: ['title', 'description', 'severity']
-                      },
-                      description: 'Areas that need improvement (2-3 items)'
+                      description: 'Maximum 3 sentences summary of deck quality (presentation, structure, communication)'
                     },
                     priority_actions: {
                       type: 'array',
                       items: { type: 'string' },
-                      description: '2-3 specific, actionable changes ordered by impact'
+                      description: '2-3 specific, actionable changes to improve deck presentation, ordered by impact. Maximum 2 sentences each.'
                     }
                   },
-                  required: ['executive_summary', 'strengths', 'weaknesses', 'priority_actions']
+                  required: ['executive_summary', 'priority_actions']
                 },
                 startup_feedback: {
                   type: 'object',
                   properties: {
                     executive_summary: {
                       type: 'string',
-                      description: '2-3 sentence summary of overall startup quality and investment readiness'
+                      description: 'Maximum 3 sentences summary of overall startup quality and investment readiness'
                     },
-                    strengths: {
+                    priority_actions: {
                       type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          title: { type: 'string', description: 'Short title of the strength' },
-                          description: { type: 'string', description: 'Detailed explanation with evidence from deck' }
-                        },
-                        required: ['title', 'description']
-                      },
-                      description: 'What is compelling about this business (2-3 items)'
-                    },
-                    concerns: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          title: { type: 'string', description: 'Short title of the concern' },
-                          description: { type: 'string', description: 'Detailed explanation of the risk and why it matters' },
-                          severity: { type: 'string', enum: ['critical', 'high', 'medium'], description: 'How severe this risk is' }
-                        },
-                        required: ['title', 'description', 'severity']
-                      },
-                      description: 'Key risks or gaps (2-3 items)'
+                      items: { type: 'string' },
+                      description: '2-3 specific, actionable steps to improve business and investment readiness, ordered by impact. Maximum 2 sentences each.'
                     }
                   },
-                  required: ['executive_summary', 'strengths', 'concerns']
+                  required: ['executive_summary', 'priority_actions']
                 },
                 missing_slides: {
                   type: 'array',
