@@ -122,55 +122,60 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 md:p-8 lg:p-12 relative">
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
-        <div className="space-y-10">
-          <div className="space-y-4">
+        <div className="space-y-4">
+          <div className="space-y-2">
             <div className="flex items-center gap-4">
               <img
                 src="/arconic-logo.svg"
                 alt="Arconic Logo"
                 className="h-12 w-12"
               />
-              <h1 className="text-5xl font-bold">
+              <h1 className="text-4xl font-bold">
                 Fundraising Hub
               </h1>
             </div>
-            <p className="text-2xl text-muted-foreground">
+            <p className="text-lg text-muted-foreground">
               The complete investment toolkit for ambitious founders
             </p>
           </div>
 
-          <div className="space-y-8">
-            <div className="flex items-start gap-6">
-              <div className="p-4 border">
+          <div className="space-y-6">
+            {/* Description */}
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Practical AI tools to help founders raise with clarity and confidence. Each solves a real challenge in the fundraising process. Sign up to make fundraising simpler.
+            </p>
+
+            <div className="flex items-start gap-5">
+              <div className="p-3 border">
                 <TrendingUp className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">AI-Powered Analysis</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-medium text-sm mb-0.5">AI-Powered Analysis</h3>
+                <p className="text-muted-foreground text-xs">
                   Get instant insights on term sheets, metrics, and valuations
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-6">
-              <div className="p-4 border">
+            <div className="flex items-start gap-5">
+              <div className="p-3 border">
                 <Shield className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Secure & Private</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-medium text-sm mb-0.5">Secure & Private</h3>
+                <p className="text-muted-foreground text-xs">
                   Your data is encrypted and never shared with third parties
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-6">
-              <div className="p-4 border">
+            <div className="flex items-start gap-5">
+              <div className="p-3 border">
                 <Zap className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Lightning Fast</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-medium text-sm mb-0.5">Lightning Fast</h3>
+                <p className="text-muted-foreground text-xs">
                   Calculate complex scenarios in seconds, not hours
                 </p>
               </div>
