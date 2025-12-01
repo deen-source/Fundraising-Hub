@@ -11,7 +11,7 @@ interface TeamGuardProps {
   allowedDomains?: string[]; // e.g., ['@arconic.com', '@example.com']
 }
 
-export const TeamGuard = ({ children, allowedDomains = ['@arconic.com'] }: TeamGuardProps) => {
+export const TeamGuard = ({ children, allowedDomains = ['@arconiccap.com'] }: TeamGuardProps) => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
