@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import * as pdfjsLib from 'pdfjs-dist';
+import { canAnalyzeDeck, DAILY_ANALYSIS_LIMIT, formatTimeUntilReset } from '@/lib/pitch-deck-service';
 
 // Set up PDF.js worker with proper path
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -34,10 +35,26 @@ const PitchDeckAnalyser = () => {
   const [extracting, setExtracting] = useState(false);
   const [pastAnalyses, setPastAnalyses] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [analysesRemaining, setAnalysesRemaining] = useState<number>(DAILY_ANALYSIS_LIMIT);
+  const [analysesUsed, setAnalysesUsed] = useState<number>(0);
 
   useEffect(() => {
     loadPastAnalyses();
+    checkDailyLimit();
   }, []);
+
+  const checkDailyLimit = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const limitCheck = await canAnalyzeDeck(user.id);
+      setAnalysesUsed(limitCheck.count);
+      setAnalysesRemaining(limitCheck.remaining);
+    } catch (error) {
+      console.error('Error checking daily limit:', error);
+    }
+  };
 
   const loadPastAnalyses = async () => {
     try {
@@ -167,6 +184,14 @@ const PitchDeckAnalyser = () => {
         return;
       }
 
+      // Check daily limit
+      const limitCheck = await canAnalyzeDeck(user.id);
+      if (!limitCheck.allowed) {
+        toast.error(`Daily limit reached. You can analyse ${DAILY_ANALYSIS_LIMIT} decks per day. Resets in ${formatTimeUntilReset()}.`);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('analyze-pitch-deck', {
         body: { images: deckImages, stage },
       });
@@ -194,6 +219,7 @@ const PitchDeckAnalyser = () => {
       } else {
         toast.success('Analysis complete and saved!');
         loadPastAnalyses(); // Refresh history
+        checkDailyLimit(); // Refresh usage count
       }
     } catch (error: any) {
       console.error('Analysis error:', error);
@@ -288,6 +314,27 @@ const PitchDeckAnalyser = () => {
               <h1 className="text-3xl md:text-4xl font-bold tracking-wide leading-tight">
                 See your deck the way investors will, before they do.
               </h1>
+
+              {/* Daily Limit Banner */}
+              {analysesRemaining === 0 ? (
+                <Card className="border-2 border-amber-200 bg-amber-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 text-amber-800">
+                      <AlertCircle className="w-5 h-5" />
+                      <div className="text-sm">
+                        <strong>Daily limit reached.</strong> You've used all {DAILY_ANALYSIS_LIMIT} analyses for today. Resets in {formatTimeUntilReset()}.
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  <Badge variant="outline" className="gap-1">
+                    <TrendingUp className="w-3 h-3" />
+                    {analysesRemaining} of {DAILY_ANALYSIS_LIMIT} analyses remaining today
+                  </Badge>
+                </div>
+              )}
             </div>
 
             {/* Upload Form */}
@@ -362,7 +409,7 @@ const PitchDeckAnalyser = () => {
 
                 <Button
                   onClick={handleAnalyse}
-                  disabled={loading || extracting || deckImages.length === 0}
+                  disabled={loading || extracting || deckImages.length === 0 || analysesRemaining === 0}
                   className="w-full text-lg font-bold py-6"
                   size="lg"
                 >
