@@ -106,12 +106,24 @@ const PitchDeckAnalyser = () => {
       // Convert each page to image
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        let scale = 1.5; // Reduced from 2.0 to keep images smaller
+        const MAX_DIMENSION = 2000; // Anthropic's limit for multi-image requests
+
+        // Calculate initial scale to ensure dimensions don't exceed 2000px
+        const initialViewport = page.getViewport({ scale: 1.0 });
+        const maxInitialScale = Math.min(
+          MAX_DIMENSION / initialViewport.width,
+          MAX_DIMENSION / initialViewport.height,
+          1.5 // Cap at 1.5 for quality
+        );
+
+        let scale = maxInitialScale;
         let quality = 0.85; // JPEG quality
         let imageData: string;
         let imageSizeKB: number;
+        let finalWidth = 0;
+        let finalHeight = 0;
 
-        // Render and compress until under 4MB
+        // Render and compress until under 4MB and dimensions under 2000px
         do {
           const viewport = page.getViewport({ scale });
 
@@ -122,6 +134,20 @@ const PitchDeckAnalyser = () => {
 
           canvas.height = viewport.height;
           canvas.width = viewport.width;
+
+          // Ensure dimensions don't exceed 2000px
+          if (canvas.width > MAX_DIMENSION || canvas.height > MAX_DIMENSION) {
+            const dimensionScale = Math.min(
+              MAX_DIMENSION / canvas.width,
+              MAX_DIMENSION / canvas.height
+            );
+            scale *= dimensionScale;
+            continue; // Retry with adjusted scale
+          }
+
+          // Store final dimensions for logging
+          finalWidth = canvas.width;
+          finalHeight = canvas.height;
 
           // Render PDF page to canvas
           await page.render({
@@ -140,7 +166,7 @@ const PitchDeckAnalyser = () => {
           if (imageSizeKB > 4000) { // 4MB limit
             if (quality > 0.5) {
               quality -= 0.1; // Reduce quality first
-            } else if (scale > 1.0) {
+            } else if (scale > 0.5) {
               scale -= 0.25; // Then reduce scale
               quality = 0.85; // Reset quality
             } else {
@@ -149,9 +175,10 @@ const PitchDeckAnalyser = () => {
               break;
             }
           }
-        } while (imageSizeKB > 4000 && (scale > 1.0 || quality > 0.5));
+        } while ((imageSizeKB > 4000 || scale !== maxInitialScale) && scale > 0.5);
 
         images.push(imageData);
+        console.log(`Slide ${i}: ${finalWidth}x${finalHeight}px, ${Math.round(imageSizeKB)}KB`);
       }
 
       setDeckImages(images);
