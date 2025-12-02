@@ -192,7 +192,7 @@ const PitchDeckAnalyser = () => {
         return;
       }
 
-      const { data, error } = await supabase.functions.invoke('analyse-pitch-deck', {
+      const { data, error } = await supabase.functions.invoke('analyze-pitch-deck', {
         body: { images: deckImages, stage },
       });
 
