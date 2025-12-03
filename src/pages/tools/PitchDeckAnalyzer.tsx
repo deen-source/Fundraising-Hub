@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { StarField } from '@/components/StarField';
 import { AuthGuard } from '@/components/AuthGuard';
-import { TeamGuard } from '@/components/TeamGuard';
 import { ArrowLeft, Loader2, FileText, TrendingUp, AlertTriangle, CheckCircle, Target, BarChart3, Sparkles, ArrowRight, BookOpen, Lightbulb, AlertCircle, Users, DollarSign, LineChart, Presentation, Upload, X, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -317,8 +316,7 @@ const PitchDeckAnalyser = () => {
 
   return (
     <AuthGuard>
-      <TeamGuard>
-        <div className="min-h-screen relative bg-slate-50">
+      <div className="min-h-screen relative bg-slate-50">
         <div className="container mx-auto px-4 py-12 max-w-7xl">
           {/* Back Button and Logo Row */}
           <div className="flex justify-between items-center mb-6">
@@ -554,9 +552,14 @@ const PitchDeckAnalyser = () => {
                 {/* Combined Deck Section */}
                 {(analysis.deck_feedback || analysis.deck_categories) && (
                   <Card className="border-2 shadow-lg bg-white">
-                    <CardContent className="p-8">
-                      <div className="space-y-8">
-                        <div className="text-xl font-bold text-[#171717]">Deck Evaluation</div>
+                    <CardContent className="p-0">
+                      <Accordion type="single" collapsible defaultValue="deck-evaluation" className="w-full">
+                        <AccordionItem value="deck-evaluation" className="border-0">
+                          <AccordionTrigger className="px-8 py-6 text-xl font-bold text-[#171717] hover:no-underline">
+                            Deck Evaluation
+                          </AccordionTrigger>
+                          <AccordionContent className="px-8 pb-8">
+                            <div className="space-y-8">
 
                         {/* Executive Summary */}
                         {analysis.deck_feedback?.executive_summary && (
@@ -605,7 +608,10 @@ const PitchDeckAnalyser = () => {
                             </div>
                           </div>
                         )}
-                      </div>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </CardContent>
                   </Card>
                 )}
@@ -613,9 +619,14 @@ const PitchDeckAnalyser = () => {
                 {/* Combined Startup Section */}
                 {(analysis.startup_feedback || analysis.startup_categories) && (
                   <Card className="border-2 shadow-lg bg-white">
-                    <CardContent className="p-8">
-                      <div className="space-y-8">
-                        <div className="text-xl font-bold text-[#171717]">Startup Evaluation</div>
+                    <CardContent className="p-0">
+                      <Accordion type="single" collapsible defaultValue="startup-evaluation" className="w-full">
+                        <AccordionItem value="startup-evaluation" className="border-0">
+                          <AccordionTrigger className="px-8 py-6 text-xl font-bold text-[#171717] hover:no-underline">
+                            Startup Evaluation
+                          </AccordionTrigger>
+                          <AccordionContent className="px-8 pb-8">
+                            <div className="space-y-8">
 
                         {/* Executive Summary */}
                         {analysis.startup_feedback?.executive_summary && (
@@ -664,7 +675,10 @@ const PitchDeckAnalyser = () => {
                             </div>
                           </div>
                         )}
-                      </div>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </CardContent>
                   </Card>
                 )}
@@ -672,65 +686,41 @@ const PitchDeckAnalyser = () => {
                 {/* Investor Questions */}
                 {analysis.investor_questions && analysis.investor_questions.length > 0 && (
                   <Card className="border-2 shadow-lg bg-white">
-                    <CardContent className="p-8">
-                      <div className="space-y-4">
-                        <div className="text-xl font-bold text-[#171717] mb-4">Questions Investors Will Ask</div>
-                        <div className="space-y-3">
-                          {analysis.investor_questions.map((question: string, idx: number) => (
-                            <div key={idx} className="text-sm text-muted-foreground py-2 border-b border-gray-100 last:border-0">
-                              {idx + 1}. {question}
+                    <CardContent className="p-0">
+                      <Accordion type="single" collapsible defaultValue="investor-questions" className="w-full">
+                        <AccordionItem value="investor-questions" className="border-0">
+                          <AccordionTrigger className="px-8 py-6 text-xl font-bold text-[#171717] hover:no-underline">
+                            Questions Investors Will Ask
+                          </AccordionTrigger>
+                          <AccordionContent className="px-8 pb-8">
+                            <div className="space-y-3">
+                              {analysis.investor_questions.map((question: string, idx: number) => (
+                                <div key={idx} className="text-sm text-muted-foreground py-2 border-b border-gray-100 last:border-0">
+                                  {idx + 1}. {question}
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </CardContent>
                   </Card>
                 )}
 
-                {/* First Impression */}
-                {analysis.first_impression && (
-                  <Card className="border-2 shadow-lg bg-white">
-                    <CardContent className="p-8">
-                      <div className="space-y-4">
-                        <div className="text-xl font-bold text-[#171717]">First Impression (Slides 1-3)</div>
-                        <div className="text-lg font-semibold text-[#171717]">
-                          {analysis.first_impression.verdict === 'CONTINUE' ? 'Continue Reading' : 'Likely Pass'}
-                        </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {analysis.first_impression.reasoning}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Missing Slides */}
-                {analysis.missing_slides && analysis.missing_slides.length > 0 && (
-                  <Card className="border-2 shadow-lg bg-white">
-                    <CardContent className="p-8">
-                      <div className="space-y-4">
-                        <div className="text-xl font-bold text-[#171717] mb-4">Missing Essential Slides</div>
-                        <div className="space-y-3">
-                          {analysis.missing_slides.map((slide: string, idx: number) => (
-                            <div key={idx} className="text-sm font-medium text-[#171717] py-2 border-b border-gray-100 last:border-0">
-                              • {slide}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
                   </div>
                 )}
 
                 {/* Recent Analyses */}
                 {pastAnalyses.length > 0 && (
                   <Card className="border-2 shadow-lg bg-white">
-                    <CardContent className="p-8">
-                      <div className="space-y-4">
-                        <div className="text-xl font-bold text-[#171717] mb-4">Your Recent Analyses</div>
-                        <div className="space-y-3">
+                    <CardContent className="p-0">
+                      <Accordion type="single" collapsible defaultValue="recent-analyses" className="w-full">
+                        <AccordionItem value="recent-analyses" className="border-0">
+                          <AccordionTrigger className="px-8 py-6 text-xl font-bold text-[#171717] hover:no-underline">
+                            Your Recent Analyses
+                          </AccordionTrigger>
+                          <AccordionContent className="px-8 pb-8">
+                            <div className="space-y-3">
                           {pastAnalyses.map((item) => (
                             <div
                               key={item.id}
@@ -765,8 +755,10 @@ const PitchDeckAnalyser = () => {
                               </Button>
                             </div>
                           ))}
-                        </div>
-                      </div>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     </CardContent>
                   </Card>
                 )}
@@ -859,10 +851,27 @@ const PitchDeckAnalyser = () => {
                 </Card>
               </TabsContent>
             </Tabs>
+
+            {/* Disclaimer */}
+            <Card className="border-2 bg-muted/30">
+              <CardContent className="p-6">
+                <div className="space-y-3 text-xs text-muted-foreground">
+                  <p className="font-semibold text-sm text-foreground">Disclaimer</p>
+                  <p>
+                    This tool provides automated feedback based on standardised rubrics. It is not investment advice and does not indicate interest, intent, or a funding decision from Arconic Capital.
+                  </p>
+                  <p>
+                    The analysis reflects only the information in your uploaded deck. It cannot account for factors central to real investment decisions.
+                  </p>
+                  <p>
+                    Scores and feedback are generated by AI and may miss nuance or contain errors. Treat the output as a starting point for refinement, not a final assessment of your company.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-        </div>
-      </TeamGuard>
+      </div>
     </AuthGuard>
   );
 };
